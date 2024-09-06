@@ -60,7 +60,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -183,7 +183,7 @@ color: #000000; /* black text */
 </string>
             </property>
             <property name="placeholderText">
-             <string>Data path</string>
+             <string>Data directory of the Layers checked on the QGIS layer panel are appended here. You can also add a data using the &quot;Load Data&quot; button</string>
             </property>
            </widget>
           </item>

@@ -210,9 +210,6 @@ print("\n ---------------------------EXTRACTED_CODE:----------------------------
 extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
 
-# print("\n\n")
-# print(f"Code extracted---------------------------: \n\n{extracted_code}")
-# display(Code(code, language='python'))
 
 #%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
 code_review_prompt_str = helper.code_review_prompt(extracted_code, data_path, selected_tool_ID, documentation_str)
@@ -353,9 +350,4 @@ print("-----Script completed-----")
 #
 # print("-----Script completed-----")
 #
-#
-# # # Show the compiled code in a dialog window
-# # msg_box = QMessageBox()
-# # msg_box.setText(f"Compiled Code:\n{code}")
-# # msg_box.exec_()
 #

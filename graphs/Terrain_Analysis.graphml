@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d1" for="node" attr.name="description" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="load_DEM">
+  <data key="d0">operation</data>
+  <data key="d1">Load DEM data from given path</data>
+</node>
+<node id="DEM_data">
+  <data key="d0">data</data>
+  <data key="d2">D:/SampleRasterValue/DEM.tif</data>
+  <data key="d1">DEM data</data>
+</node>
+<node id="generate_slope">
+  <data key="d0">operation</data>
+  <data key="d1">Generate slope from DEM data</data>
+</node>
+<node id="slope_data">
+  <data key="d0">data</data>
+  <data key="d2"></data>
+  <data key="d1">Slope data derived from DEM</data>
+</node>
+<node id="generate_aspect">
+  <data key="d0">operation</data>
+  <data key="d1">Generate aspect from DEM data</data>
+</node>
+<node id="aspect_data">
+  <data key="d0">data</data>
+  <data key="d2"></data>
+  <data key="d1">Aspect data derived from DEM</data>
+</node>
+<node id="generate_hillshade">
+  <data key="d0">operation</data>
+  <data key="d1">Generate hillshade from DEM data</data>
+</node>
+<node id="hillshade_data">
+  <data key="d0">data</data>
+  <data key="d2"></data>
+  <data key="d1">Hillshade data derived from DEM</data>
+</node>
+<node id="raster_calculator">
+  <data key="d0">operation</data>
+  <data key="d1">Combine slope, aspect, and hillshade with specific criteria</data>
+</node>
+<node id="combined_raster">
+  <data key="d0">data</data>
+  <data key="d2"></data>
+  <data key="d1">Combined raster from slope, aspect, and hillshade</data>
+</node>
+<edge source="load_DEM" target="DEM_data"/>
+<edge source="DEM_data" target="generate_slope"/>
+<edge source="DEM_data" target="generate_aspect"/>
+<edge source="DEM_data" target="generate_hillshade"/>
+<edge source="generate_slope" target="slope_data"/>
+<edge source="slope_data" target="raster_calculator"/>
+<edge source="generate_aspect" target="aspect_data"/>
+<edge source="aspect_data" target="raster_calculator"/>
+<edge source="generate_hillshade" target="hillshade_data"/>
+<edge source="hillshade_data" target="raster_calculator"/>
+<edge source="raster_calculator" target="combined_raster"/>
+</graph></graphml>

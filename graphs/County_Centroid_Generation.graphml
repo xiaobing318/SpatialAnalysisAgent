@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="county_boundary_data">
+  <data key="d0">data</data>
+  <data key="d1">D:/Data/PA_Counties2.gpkg</data>
+  <data key="d2">County boundary data for Pennsylvania</data>
+</node>
+<node id="load_county_boundary">
+  <data key="d0">operation</data>
+  <data key="d2">Loading county boundary data</data>
+</node>
+<node id="county_boundary_layer">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Loaded county boundary layer</data>
+</node>
+<node id="generate_centroids">
+  <data key="d0">operation</data>
+  <data key="d2">Generate centroids for each county</data>
+</node>
+<node id="county_centroids_layer">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Generated centroids of counties</data>
+</node>
+<edge source="county_boundary_data" target="county_boundary_layer"/>
+<edge source="load_county_boundary" target="county_boundary_data"/>
+<edge source="county_boundary_layer" target="generate_centroids"/>
+<edge source="generate_centroids" target="county_centroids_layer"/>
+</graph></graphml>

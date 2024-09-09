@@ -1,0 +1,11 @@
+openai:openai
+QSwitchControl:QSwitchControl
+PyQtWebEngine:PyQt5.QtWebEngineWidgets
+nest_asyncio:nest_asyncio
+networkx:networkx
+pyvis:pyvis
+geopandas:geopandas
+IPython:IPython
+iface:iface
+jsonpickle:jsonpickle
+regex:regex

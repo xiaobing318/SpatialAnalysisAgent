@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d1" for="node" attr.name="description" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="load_Pennsylvania_Counties">
+  <data key="d0">operation</data>
+  <data key="d1">Load the shapefile of counties in Pennsylvania</data>
+</node>
+<node id="start"/>
+<node id="PA_Counties_Data">
+  <data key="d0">data</data>
+  <data key="d2">D:/Data/PACounties.shp</data>
+  <data key="d1">County boundary shapefile for Pennsylvania</data>
+</node>
+<node id="vector_information">
+  <data key="d0">operation</data>
+  <data key="d1">Compute vector information including feature count</data>
+</node>
+<node id="counties_info">
+  <data key="d0">data</data>
+  <data key="d1">Output of vector information including the number of counties</data>
+</node>
+<node id="display_counties_info">
+  <data key="d0">operation</data>
+  <data key="d1">Display the number of counties in QGIS as a temporary layer</data>
+</node>
+<edge source="load_Pennsylvania_Counties" target="PA_Counties_Data"/>
+<edge source="start" target="load_Pennsylvania_Counties"/>
+<edge source="PA_Counties_Data" target="vector_information"/>
+<edge source="vector_information" target="counties_info"/>
+<edge source="counties_info" target="display_counties_info"/>
+</graph></graphml>

@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="county_data">
+  <data key="d0">data</data>
+  <data key="d1">/Data/county.shp</data>
+  <data key="d2">Loaded county boundaries for Pennsylvania</data>
+</node>
+<node id="load_county_data">
+  <data key="d0">operation</data>
+  <data key="d2">Load county boundary data from shapefile</data>
+</node>
+<node id="extract_median_income">
+  <data key="d0">operation</data>
+  <data key="d2">Extract counties where Median household income &lt; 50,000</data>
+</node>
+<node id="low_income_counties">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Counties with Median Household Income &lt; 50,000</data>
+</node>
+<node id="extract_pennsylvania_counties">
+  <data key="d0">operation</data>
+  <data key="d2">Extract counties within Pennsylvania by STATEFP code</data>
+</node>
+<node id="pennsylvania_low_income_counties">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Filtered Pennsylvania counties with Median Household Income &lt; 50,000</data>
+</node>
+<edge source="county_data" target="extract_median_income"/>
+<edge source="load_county_data" target="county_data"/>
+<edge source="extract_median_income" target="low_income_counties"/>
+<edge source="low_income_counties" target="extract_pennsylvania_counties"/>
+<edge source="extract_pennsylvania_counties" target="pennsylvania_low_income_counties"/>
+</graph></graphml>

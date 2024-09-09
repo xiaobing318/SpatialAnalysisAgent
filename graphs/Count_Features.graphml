@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="input_layer">
+  <data key="d0">data</data>
+  <data key="d1">D:/Data/Shape1</data>
+  <data key="d2">Input vector layer</data>
+</node>
+<node id="vector_information">
+  <data key="d0">operation</data>
+  <data key="d2">Calculate the number of features in the input layer using 'Vector Information' tool</data>
+</node>
+<node id="feature_count">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Count of features in the input layer</data>
+</node>
+<edge source="input_layer" target="vector_information"/>
+<edge source="vector_information" target="feature_count"/>
+</graph></graphml>

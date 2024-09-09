@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="DEM Data">
+  <data key="d0">data</data>
+  <data key="d1">D:/SampleRasterValue/DEM.tif</data>
+  <data key="d2">Digital Elevation Model (DEM) for the study area.</data>
+</node>
+<node id="Load DEM Data">
+  <data key="d0">operation</data>
+  <data key="d2">Loading DEM data from file path.</data>
+</node>
+<node id="Slope Data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Slope derived from the DEM.</data>
+</node>
+<node id="Calculate Slope">
+  <data key="d0">operation</data>
+  <data key="d2">Use the Slope tool to calculate slope from DEM data.</data>
+</node>
+<node id="Aspect Data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Aspect derived from the DEM.</data>
+</node>
+<node id="Calculate Aspect">
+  <data key="d0">operation</data>
+  <data key="d2">Use the Aspect tool to calculate aspect from DEM data.</data>
+</node>
+<node id="Hillshade Data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Hillshade derived from the DEM.</data>
+</node>
+<node id="Calculate Hillshade">
+  <data key="d0">operation</data>
+  <data key="d2">Use the Hillshade tool to generate hillshade from DEM data.</data>
+</node>
+<node id="Filtered Data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Raster map with slope between 0.3 and 0.5, aspect between 200 and 250, and hillshade less than 350.</data>
+</node>
+<node id="Apply Filters">
+  <data key="d0">operation</data>
+  <data key="d2">Use Raster Calculator to apply slope, aspect, and hillshade filters and combine them into a single output.</data>
+</node>
+<edge source="DEM Data" target="Calculate Slope"/>
+<edge source="DEM Data" target="Calculate Aspect"/>
+<edge source="DEM Data" target="Calculate Hillshade"/>
+<edge source="Load DEM Data" target="DEM Data"/>
+<edge source="Slope Data" target="Apply Filters"/>
+<edge source="Calculate Slope" target="Slope Data"/>
+<edge source="Aspect Data" target="Apply Filters"/>
+<edge source="Calculate Aspect" target="Aspect Data"/>
+<edge source="Hillshade Data" target="Apply Filters"/>
+<edge source="Calculate Hillshade" target="Hillshade Data"/>
+<edge source="Apply Filters" target="Filtered Data"/>
+</graph></graphml>

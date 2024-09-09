@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="input_data">
+  <data key="d0">data</data>
+  <data key="d1">D:/Data/PovertyData/PovertyLayerWithXY.shp</data>
+  <data key="d2">Input vector layer with XY coordinates</data>
+</node>
+<node id="vector_info">
+  <data key="d0">operation</data>
+  <data key="d2">Perform Vector Information operation to get the number of features</data>
+</node>
+<node id="vector_info_output">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Vector Information output containing the number of features</data>
+</node>
+<edge source="input_data" target="vector_info"/>
+<edge source="vector_info" target="vector_info_output"/>
+</graph></graphml>

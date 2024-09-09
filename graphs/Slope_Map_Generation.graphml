@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="DEM_data">
+  <data key="d0">data</data>
+  <data key="d1">D:/Data/SampleRasterValue/DEM.tif</data>
+  <data key="d2">Digital Elevation Model</data>
+</node>
+<node id="Slope_calculation">
+  <data key="d0">operation</data>
+  <data key="d2">Calculate the slope from the DEM using the 'Slope' tool</data>
+</node>
+<node id="Slope_data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Slope of the terrain derived from the DEM</data>
+</node>
+<edge source="DEM_data" target="Slope_calculation"/>
+<edge source="Slope_calculation" target="Slope_data"/>
+</graph></graphml>

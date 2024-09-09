@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="DEM_data">
+  <data key="d0">data</data>
+  <data key="d1">D:/Data/SampleRasterValue/DEM.tif</data>
+  <data key="d2">Loaded DEM data</data>
+</node>
+<node id="load_DEM_data">
+  <data key="d0">operation</data>
+  <data key="d2">Load DEM data</data>
+</node>
+<node id="calculate_slope">
+  <data key="d0">operation</data>
+  <data key="d2">Calculate slope from DEM</data>
+</node>
+<node id="slope_data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Slope derived from DEM</data>
+</node>
+<node id="calculate_aspect">
+  <data key="d0">operation</data>
+  <data key="d2">Calculate aspect from DEM</data>
+</node>
+<node id="aspect_data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Aspect derived from DEM</data>
+</node>
+<node id="calculate_hillshade">
+  <data key="d0">operation</data>
+  <data key="d2">Calculate hillshade from DEM</data>
+</node>
+<node id="hillshade_data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Hillshade derived from DEM</data>
+</node>
+<node id="raster_calculator">
+  <data key="d0">operation</data>
+  <data key="d2">Raster calculator for creating thematic map</data>
+</node>
+<node id="thematic_raster">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Thematic raster map</data>
+</node>
+<node id="display_output">
+  <data key="d0">operation</data>
+  <data key="d2">Display the resulting thematic raster map in QGIS</data>
+</node>
+<edge source="DEM_data" target="calculate_slope"/>
+<edge source="DEM_data" target="calculate_aspect"/>
+<edge source="DEM_data" target="calculate_hillshade"/>
+<edge source="load_DEM_data" target="DEM_data"/>
+<edge source="calculate_slope" target="slope_data"/>
+<edge source="slope_data" target="raster_calculator"/>
+<edge source="calculate_aspect" target="aspect_data"/>
+<edge source="aspect_data" target="raster_calculator"/>
+<edge source="calculate_hillshade" target="hillshade_data"/>
+<edge source="hillshade_data" target="raster_calculator"/>
+<edge source="raster_calculator" target="thematic_raster"/>
+<edge source="thematic_raster" target="display_output"/>
+</graph></graphml>

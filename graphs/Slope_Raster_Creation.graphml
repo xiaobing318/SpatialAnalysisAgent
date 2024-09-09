@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="DEM Data">
+  <data key="d0">data</data>
+  <data key="d1">D:/Data/SampleRasterValue/DEM.tif</data>
+  <data key="d2">Digital Elevation Model</data>
+</node>
+<node id="calculate_slope">
+  <data key="d0">operation</data>
+  <data key="d2">Calculate slope from DEM using the Slope tool</data>
+</node>
+<node id="Slope Data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Slope data derived from DEM</data>
+</node>
+<node id="filter_slope_range">
+  <data key="d0">operation</data>
+  <data key="d2">Filter slope values between 0.3 and 0.5 using Raster Calculator</data>
+</node>
+<node id="Filtered Slope Data">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Slope values filtered between 0.3 and 0.5</data>
+</node>
+<edge source="DEM Data" target="calculate_slope"/>
+<edge source="calculate_slope" target="Slope Data"/>
+<edge source="Slope Data" target="filter_slope_range"/>
+<edge source="filter_slope_range" target="Filtered Slope Data"/>
+</graph></graphml>

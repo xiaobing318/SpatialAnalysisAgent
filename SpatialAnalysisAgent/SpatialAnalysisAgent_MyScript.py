@@ -130,9 +130,7 @@ if isinstance(selected_tools, str):
 
 # Iterate over each selected tool
 for selected_tool in selected_tools:
-    # if not check_running():
-    #     print("Task was interrupted")
-    #     break
+
     if selected_tool in codebase.algorithm_names:
         selected_tool_ID = codebase.algorithms_dict[selected_tool]['ID']
     elif selected_tool in constants.other_QGIS_operations:

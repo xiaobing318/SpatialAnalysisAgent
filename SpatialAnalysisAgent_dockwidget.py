@@ -93,7 +93,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
 
         # Perform the library check only once
-        # self.check_libraries_once()
+      
 
 
 

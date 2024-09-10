@@ -1,65 +1,23 @@
 <?xml version='1.0' encoding='utf-8'?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="data_path" attr.type="string"/>
-<key id="d1" for="node" attr.name="description" attr.type="string"/>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
 <key id="d0" for="node" attr.name="node_type" attr.type="string"/>
-<graph edgedefault="directed"><node id="load_shape_data">
-  <data key="d0">operation</data>
-  <data key="d1">Load shapefile data containing 'HCS_CODE' and 'LOC_ZIP' fields</data>
-</node>
-<node id="shape_data">
+<graph edgedefault="directed"><node id="Hw_SITES_EPSG4326">
   <data key="d0">data</data>
-  <data key="d2">C:/Users/AKINBOYEWA TEMITOPE/Documents/hw_sites_shp/HW_Sites_EPSG4326.shp</data>
-  <data key="d1">Loaded shapefile data</data>
+  <data key="d1">C:/Users/AKINBOYEWA TEMITOPE/Documents/hw_sites_shp/HW_Sites_EPSG4326.shp</data>
+  <data key="d2">Loaded input shapefile for HW Sites</data>
 </node>
-<node id="extract_hcs_code">
+<node id="Load_ShapeFile"/>
+<node id="create_scatter_plot">
   <data key="d0">operation</data>
-  <data key="d1">Extract 'HCS_CODE' field from the shapefile data</data>
+  <data key="d2">Create scatter plot using 'C_X' and 'C_Y' fields</data>
 </node>
-<node id="hcs_code_data">
+<node id="scatter_plot_layer">
   <data key="d0">data</data>
-  <data key="d2"></data>
-  <data key="d1">'HCS_CODE' field data</data>
+  <data key="d1"></data>
+  <data key="d2">Scatter plot of C_X vs C_Y</data>
 </node>
-<node id="extract_loc_zip">
-  <data key="d0">operation</data>
-  <data key="d1">Extract 'LOC_ZIP' field from the shapefile data</data>
-</node>
-<node id="loc_zip_data">
-  <data key="d0">data</data>
-  <data key="d2"></data>
-  <data key="d1">'LOC_ZIP' field data</data>
-</node>
-<node id="join_hcs_loc">
-  <data key="d0">operation</data>
-  <data key="d1">Join 'HCS_CODE' and 'LOC_ZIP' field data for scatterplot creation</data>
-</node>
-<node id="joined_hcs_loc_data">
-  <data key="d0">data</data>
-  <data key="d2"></data>
-  <data key="d1">Joined data of 'HCS_CODE' and 'LOC_ZIP'</data>
-</node>
-<node id="create_scatterplot">
-  <data key="d0">operation</data>
-  <data key="d1">Generate scatterplot from 'HCS_CODE' and 'LOC_ZIP' joined data</data>
-</node>
-<node id="scatterplot_output">
-  <data key="d0">data</data>
-  <data key="d2"></data>
-  <data key="d1">Scatterplot output</data>
-</node>
-<node id="display_output">
-  <data key="d0">operation</data>
-  <data key="d1">Display Scatterplot output in QGIS</data>
-</node>
-<edge source="load_shape_data" target="shape_data"/>
-<edge source="shape_data" target="extract_hcs_code"/>
-<edge source="shape_data" target="extract_loc_zip"/>
-<edge source="extract_hcs_code" target="hcs_code_data"/>
-<edge source="hcs_code_data" target="join_hcs_loc"/>
-<edge source="extract_loc_zip" target="loc_zip_data"/>
-<edge source="loc_zip_data" target="join_hcs_loc"/>
-<edge source="join_hcs_loc" target="joined_hcs_loc_data"/>
-<edge source="joined_hcs_loc_data" target="create_scatterplot"/>
-<edge source="create_scatterplot" target="scatterplot_output"/>
-<edge source="scatterplot_output" target="display_output"/>
+<edge source="Hw_SITES_EPSG4326" target="create_scatter_plot"/>
+<edge source="Load_ShapeFile" target="Hw_SITES_EPSG4326"/>
+<edge source="create_scatter_plot" target="scatter_plot_layer"/>
 </graph></graphml>

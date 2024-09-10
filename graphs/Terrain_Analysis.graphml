@@ -2,88 +2,78 @@
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
 <key id="d1" for="node" attr.name="data_path" attr.type="string"/>
 <key id="d0" for="node" attr.name="node_type" attr.type="string"/>
-<graph edgedefault="directed"><node id="input_data">
+<graph edgedefault="directed"><node id="DEM_Data">
   <data key="d0">data</data>
   <data key="d1">D:/Data/SampleRasterValue/DEM.tif</data>
-  <data key="d2">Input DEM file</data>
+  <data key="d2">Digital Elevation Model</data>
 </node>
+<node id="load_DEM_Data"/>
 <node id="calculate_slope">
   <data key="d0">operation</data>
   <data key="d2">Calculate the slope from DEM</data>
 </node>
-<node id="slope_layer">
+<node id="Slope_Data">
   <data key="d0">data</data>
   <data key="d1"></data>
-  <data key="d2">Slope layer</data>
+  <data key="d2">Slope Data from DEM</data>
 </node>
 <node id="calculate_aspect">
   <data key="d0">operation</data>
   <data key="d2">Calculate the aspect from DEM</data>
 </node>
-<node id="aspect_layer">
+<node id="Aspect_Data">
   <data key="d0">data</data>
   <data key="d1"></data>
-  <data key="d2">Aspect layer</data>
+  <data key="d2">Aspect Data from DEM</data>
 </node>
 <node id="calculate_hillshade">
   <data key="d0">operation</data>
   <data key="d2">Calculate the hillshade from DEM</data>
 </node>
-<node id="hillshade_layer">
+<node id="Hillshade_Data">
   <data key="d0">data</data>
   <data key="d1"></data>
-  <data key="d2">Hillshade layer</data>
+  <data key="d2">Hillshade Data from DEM</data>
 </node>
-<node id="apply_slope_condition">
+<node id="create_mask_1">
   <data key="d0">operation</data>
-  <data key="d2">Apply condition on slope: 0.3 &lt;= slope &lt;= 0.5</data>
+  <data key="d2">Create mask for slope range using Raster Calculator</data>
 </node>
-<node id="slope_condition_layer">
+<node id="Mask_1">
   <data key="d0">data</data>
   <data key="d1"></data>
-  <data key="d2">Slope condition layer</data>
+  <data key="d2">Mask for slope range</data>
 </node>
-<node id="apply_aspect_condition">
+<node id="create_mask_2">
   <data key="d0">operation</data>
-  <data key="d2">Apply condition on aspect: 200 &lt;= aspect &lt;= 250</data>
+  <data key="d2">Create mask for aspect range using Raster Calculator</data>
 </node>
-<node id="aspect_condition_layer">
+<node id="Mask_2">
   <data key="d0">data</data>
   <data key="d1"></data>
-  <data key="d2">Aspect condition layer</data>
+  <data key="d2">Mask for aspect range</data>
 </node>
-<node id="apply_hillshade_condition">
+<node id="combine_masks">
   <data key="d0">operation</data>
-  <data key="d2">Apply condition on hillshade: hillshade &lt; 350</data>
+  <data key="d2">Combine masks using Raster Calculator</data>
 </node>
-<node id="hillshade_condition_layer">
+<node id="Combined_Mask">
   <data key="d0">data</data>
   <data key="d1"></data>
-  <data key="d2">Hillshade condition layer</data>
+  <data key="d2">Combined mask from slope and aspect ranges</data>
 </node>
-<node id="raster_calculator">
-  <data key="d0">operation</data>
-  <data key="d2">Combine all conditions using Raster Calculator</data>
-</node>
-<node id="final_raster_layer">
-  <data key="d0">data</data>
-  <data key="d1"></data>
-  <data key="d2">Final raster layer with specified slope, aspect, and hillshade conditions</data>
-</node>
-<edge source="input_data" target="calculate_slope"/>
-<edge source="input_data" target="calculate_aspect"/>
-<edge source="input_data" target="calculate_hillshade"/>
-<edge source="calculate_slope" target="slope_layer"/>
-<edge source="slope_layer" target="apply_slope_condition"/>
-<edge source="calculate_aspect" target="aspect_layer"/>
-<edge source="aspect_layer" target="apply_aspect_condition"/>
-<edge source="calculate_hillshade" target="hillshade_layer"/>
-<edge source="hillshade_layer" target="apply_hillshade_condition"/>
-<edge source="apply_slope_condition" target="slope_condition_layer"/>
-<edge source="slope_condition_layer" target="raster_calculator"/>
-<edge source="apply_aspect_condition" target="aspect_condition_layer"/>
-<edge source="aspect_condition_layer" target="raster_calculator"/>
-<edge source="apply_hillshade_condition" target="hillshade_condition_layer"/>
-<edge source="hillshade_condition_layer" target="raster_calculator"/>
-<edge source="raster_calculator" target="final_raster_layer"/>
+<edge source="DEM_Data" target="calculate_slope"/>
+<edge source="DEM_Data" target="calculate_aspect"/>
+<edge source="DEM_Data" target="calculate_hillshade"/>
+<edge source="load_DEM_Data" target="DEM_Data"/>
+<edge source="calculate_slope" target="Slope_Data"/>
+<edge source="Slope_Data" target="create_mask_1"/>
+<edge source="calculate_aspect" target="Aspect_Data"/>
+<edge source="Aspect_Data" target="create_mask_2"/>
+<edge source="calculate_hillshade" target="Hillshade_Data"/>
+<edge source="create_mask_1" target="Mask_1"/>
+<edge source="Mask_1" target="combine_masks"/>
+<edge source="create_mask_2" target="Mask_2"/>
+<edge source="Mask_2" target="combine_masks"/>
+<edge source="combine_masks" target="Combined_Mask"/>
 </graph></graphml>

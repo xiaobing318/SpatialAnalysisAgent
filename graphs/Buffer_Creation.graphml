@@ -4,23 +4,22 @@
 <key id="d0" for="node" attr.name="node_type" attr.type="string"/>
 <graph edgedefault="directed"><node id="load_input_data">
   <data key="d0">operation</data>
-  <data key="d1">Load input point shapefile data</data>
+  <data key="d1">Load the shapefile data containing the HW sites</data>
 </node>
-<node id="input_points">
+<node id="input_data">
   <data key="d0">data</data>
   <data key="d2">C:/Users/AKINBOYEWA TEMITOPE/Documents/hw_sites_shp/HW_Sites_EPSG4326.shp</data>
-  <data key="d1">Input point shapefile data</data>
+  <data key="d1">GIS data for HW sites</data>
 </node>
 <node id="create_buffer">
   <data key="d0">operation</data>
-  <data key="d1">Create a buffer around the points with a 0.5 unit radius</data>
+  <data key="d1">Create a buffer of 0.5 units around the HW sites</data>
 </node>
-<node id="buffer_result">
+<node id="buffer_output">
   <data key="d0">data</data>
-  <data key="d2"></data>
-  <data key="d1">Buffer result around points with a 0.5 unit radius</data>
+  <data key="d1">Buffered layer of HW sites</data>
 </node>
-<edge source="load_input_data" target="input_points"/>
-<edge source="input_points" target="create_buffer"/>
-<edge source="create_buffer" target="buffer_result"/>
+<edge source="load_input_data" target="input_data"/>
+<edge source="input_data" target="create_buffer"/>
+<edge source="create_buffer" target="buffer_output"/>
 </graph></graphml>

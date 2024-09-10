@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="input_data">
+  <data key="d0">data</data>
+  <data key="d1">D:/Data/SampleRasterValue/DEM.tif</data>
+  <data key="d2">Input DEM file</data>
+</node>
+<node id="calculate_slope">
+  <data key="d0">operation</data>
+  <data key="d2">Calculate the slope from DEM</data>
+</node>
+<node id="slope_layer">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Slope layer</data>
+</node>
+<node id="calculate_aspect">
+  <data key="d0">operation</data>
+  <data key="d2">Calculate the aspect from DEM</data>
+</node>
+<node id="aspect_layer">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Aspect layer</data>
+</node>
+<node id="calculate_hillshade">
+  <data key="d0">operation</data>
+  <data key="d2">Calculate the hillshade from DEM</data>
+</node>
+<node id="hillshade_layer">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Hillshade layer</data>
+</node>
+<node id="apply_slope_condition">
+  <data key="d0">operation</data>
+  <data key="d2">Apply condition on slope: 0.3 &lt;= slope &lt;= 0.5</data>
+</node>
+<node id="slope_condition_layer">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Slope condition layer</data>
+</node>
+<node id="apply_aspect_condition">
+  <data key="d0">operation</data>
+  <data key="d2">Apply condition on aspect: 200 &lt;= aspect &lt;= 250</data>
+</node>
+<node id="aspect_condition_layer">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Aspect condition layer</data>
+</node>
+<node id="apply_hillshade_condition">
+  <data key="d0">operation</data>
+  <data key="d2">Apply condition on hillshade: hillshade &lt; 350</data>
+</node>
+<node id="hillshade_condition_layer">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Hillshade condition layer</data>
+</node>
+<node id="raster_calculator">
+  <data key="d0">operation</data>
+  <data key="d2">Combine all conditions using Raster Calculator</data>
+</node>
+<node id="final_raster_layer">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Final raster layer with specified slope, aspect, and hillshade conditions</data>
+</node>
+<edge source="input_data" target="calculate_slope"/>
+<edge source="input_data" target="calculate_aspect"/>
+<edge source="input_data" target="calculate_hillshade"/>
+<edge source="calculate_slope" target="slope_layer"/>
+<edge source="slope_layer" target="apply_slope_condition"/>
+<edge source="calculate_aspect" target="aspect_layer"/>
+<edge source="aspect_layer" target="apply_aspect_condition"/>
+<edge source="calculate_hillshade" target="hillshade_layer"/>
+<edge source="hillshade_layer" target="apply_hillshade_condition"/>
+<edge source="apply_slope_condition" target="slope_condition_layer"/>
+<edge source="slope_condition_layer" target="raster_calculator"/>
+<edge source="apply_aspect_condition" target="aspect_condition_layer"/>
+<edge source="aspect_condition_layer" target="raster_calculator"/>
+<edge source="apply_hillshade_condition" target="hillshade_condition_layer"/>
+<edge source="hillshade_condition_layer" target="raster_calculator"/>
+<edge source="raster_calculator" target="final_raster_layer"/>
+</graph></graphml>

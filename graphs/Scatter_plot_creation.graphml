@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="loaded_vector_layer">
+  <data key="d0">data</data>
+  <data key="d1">C:/Users/AKINBOYEWA TEMITOPE/Documents/hw_sites_shp/HW_Sites_EPSG4326.shp</data>
+  <data key="d2">Loaded vector layer from specified data path</data>
+</node>
+<node id="load_vector_layer"/>
+<node id="create_scatter_plot">
+  <data key="d0">operation</data>
+  <data key="d2">Create a scatter plot using LAT and LONG coordinates from the vector layer</data>
+</node>
+<node id="scatter_plot_output">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Scatter plot output as temporary layer in QGIS</data>
+</node>
+<edge source="loaded_vector_layer" target="create_scatter_plot"/>
+<edge source="load_vector_layer" target="loaded_vector_layer"/>
+<edge source="create_scatter_plot" target="scatter_plot_output"/>
+</graph></graphml>

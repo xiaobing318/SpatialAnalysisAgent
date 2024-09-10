@@ -11,6 +11,7 @@ if current_script_dir not in sys.path:
     sys.path.append(current_script_dir)
 
 import SpatialAnalysisAgent_Codebase as codebase
+import SpatialAnalysisAgent_helper as helper
 from Tools_Documentations import documentation
 from SpatialAnalysisAgent_Codebase import algorithms_dict, algorithm_names
 
@@ -55,23 +56,23 @@ OperationIdentification_requirements = [
     "If you need to perform more than one operation, put the explanation in a single reply while you make a list of the tools (if more than 1) and assign them to 'Selected tool'",
     "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
     "DO NOT provide Additional details of any tool",
-    "DO NOT make fake tool. If you cannot find any suitable operation, return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
+    f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool you think is most appropriate from the list in {other_QGIS_operations}" ,#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
 
 ]
 
 OperationIdentification_reply_example_1 = ''' {'Explanation': " To select the tracts with population above 3000, the tool suitable for the operation is found in the qgis processing tools and the name is  'Extract by attribute' tool. This tool create a new vector layer that only contains matching features from an input layer",
 'Selected tool': 'Extract by attribute', 'QGIS Processing toolbox' :'Yes', 'Customized': 'No'
 }'''
-OperationIdentification_reply_example_2 = '''{'Explanation': " To create a thematic map there is no suitable tool within the qgis processing tool. Therefore, I will be performing operation using other qgis technique. I will be using 'Thematic map creation' operation to perform this task. This operation enables rendering a map using a specified attribute",
+OperationIdentification_reply_example_2 = '''{'Explanation': " To create a thematic map there is no suitable tool within the qgis processing tool. Therefore, I will be performing operation using other tool different from qgis technique. I will be using 'Thematic map creation' operation to perform this task. This operation enables rendering a map using a specified attribute",
  ",'Selected tool': 'Thematic map creation', 'QGIS Processing toolbox' :'No', 'Customized': 'Yes'
  }
 '''
 
 other_QGIS_operations_dict = {
-
-     "Thematic Map Creation": {"ID": "Thematic_Map_Creation"},
-     "Land Use Land Cover (LULC)":{"ID":"LULC"},
-     "Others": {"ID": "Others"}
+    "Thematic Map Creation": {"ID": "Thematic_Map_Creation"},
+    "Land Use Land Cover (LULC)":{"ID":"LULC"},
+    "scatterplot":{"ID":"ScatterPlot"},
+    "Others": {"ID": "Others"}
 }
 
 
@@ -188,11 +189,15 @@ operation_requirement = [
     "If you need to use any field from the input shapefile layer, first access the fields (example code: `fields = input_layer.fields()`), then select the appropriate field carefully from the list of fields in the layer.",
     "If you need to load a raster layer, use this format `output_layer = QgsRasterLayer(output_path, 'Slope Output')`",
     "When using Raster calculator 'native:rastercalculator' is wrong rather the correct ID for the Raster Calculator algorithm is 'native:rastercalc'.",
+    "When creating a scatterplot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot",
     "When loading a CSV layer as a layer, use this: `'f'file///{csv_path}?delimeter=,''`, assuming the csv is comma-separated, but use the csv_path directly for the Input parameter in join operations.",
     "When using the processing algorithm, you do not need to include the code to load a data",
-    "When creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",# Always print out the result"
+    "Do not generate a layer for tasks that only require printing the answer, like questions of how, what, why, etc. e.g., for tasks like: 'How many counties are there in PA?', 'What is the distance from A to B', etc.",
+    "When creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",# Always print out the result"
+     "When using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
+    "Ensure that temporary layer is not used as the output paarameter"
     # "When using the processing algorithm, make the output parameter a temporary layer by using `'OUTPUT':'memory:name_of_the_layer'` and load the output layer using `output_layer = result['OUTPUT']`.",
-    "When using the processing algorithm, make the output parameter to be a virtual memory by using '/vsimem/layer_name'. For example, '/vsimem/layer_name.shp' for the case of a shapefile. And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile."
+
    #  "If using `QgsVectorLayerJoinInfo()` to create join information, always include the JoinLayer, and apply the join to the target layer using the following: `target_layer.addJoin(join_info)`"
    #  "Create a dictionary for fast lookups of CSV attributes, then Create a new layer to store the results with joined attributes.  Add all features to the new layer. The new layer must contain all the attributes of the each features. To ensure the joined attributes are included in the new layer, you must explicitly transfer the joined attributes to the new layer's attribute table. Load the new layer"
    # "Use the setter methods to set the join information (e.g. `join_info = QgsVectorLayerJoinInfo() join_info.setJoinFieldName('GEOID')` ; `join_info.setJoinLayer(join_layer)`"
@@ -213,14 +218,16 @@ operation_code_review_requirement = ["Review the codes very carefully to ensure 
                                     "Put your reply into a Python code block, Explanation or conversation can be Python comments at the begining of the code block(enclosed by ```python and ```).",
                                      "The python code is only in a function named in with the operation name e.g 'perform_idw_interpolation()'. The last line is to execute this function.",
                                      # "Ensure that any intermediary layers are loaded, but avoid loading a layer when not neccessary.",
-                                     "Do not generate a layer for tasks that only require printing the answer, e.g., for a task like 'How many counties are there in PA?'. ",
+                                     "Do not generate a layer for tasks that only require printing the answer, like questions of how, what, why, etc. e.g., for tasks like 'How many counties are there in PA?', 'What is the distance from A to B', etc.",
                                      "The data needed for the task are already loaded in the qgis environment, so there is no need to load data; just use the provided data path.",
                                      "The code should not contain any validity check.",
                                      "The code is designed to be run within the QGIS Python environment, where the relevant QGIS libraries are available. However, if any third-party libraries needed, it should always be imported.",
                                      "Ensure that the data paths in the code examples are replaced with the data paths provided by the user approprately",
-                                    "When using Raster calculator 'native:rastercalculator' is wrong rather the correct ID for the Raster Calculator algorithm is 'native:rastercalc'.",
-                                    "When using the processing algorithm, make the output parameter to be a virtual memory by using '/vsimem/layer_name'. For example, '/vsimem/layer_name.shp' for the case of a shapefile. And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
-                                     "Do not use Temporary layer as the final output parameter, instead use a virtual memory ('/vsimem/layer_name')."
+                                    "When using Raster calculator, 'native:rastercalculator' is wrong rather the correct ID for the Raster Calculator algorithm is 'native:rastercalc'.",
+                                    "When creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",# Always print out the result"
+                                    "When creating a scatter plot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot, ensure the correct tool is used",
+                                    f"When using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
+                                     "Ensure that temporary layer is not used as the output paarameter"
                                      ]
 
 
@@ -255,9 +262,11 @@ debug_requirement = [
     "If you need to use any field from the input shapefile layer, first access the fields (example code: `fields = input_layer.fields()`), then select the appropriate field carefully from the list of fields in the layer.",
    "When loading a CSV layer as a layer, use this: `'f'file///{csv_path}?delimeter=,''`, assuming the csv is comma-separated, but use the csv_path directly for the Input parameter in join operations.",
     # "Do not use `QgsVectorLayer to load the output of a Temporary layer. Use `output_layer = result['OUTPUT']`."
-    "When using the processing algorithm, make the output parameter to be a virtual memory by using '/vsimem/layer_name'. For example, '/vsimem/layer_name.shp' for the case of a shapefile. And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile."
-
-
+    "Do not generate a layer for tasks that only require printing the answer, like questions of how, what, why, etc. e.g., for tasks like 'How many counties are there in PA?', 'What is the distance from A to B', etc.",
+    "When creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",# Always print out the result"
+    "When creating a scatter plot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot, ensure the correct tool is used",
+    "When using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
+    "Ensure that temporary layer is not used as the output paarameter"
     # "If you performed join, always export the joined layer as a new shapefile and load the new shapefile. `QgsVectorFileWriter.writeAsVectorFormatV3()` is recommended to be used to export the joined layer. It is used in this format: `QgsVectorFileWriter.writeAsVectorFormatV3(layer, output, QgsProject.instance().transformContext(), options)`."
     # f"If you performed join, you can follow this tempelate to create your code: {codebase.attribute_join}"
 ]

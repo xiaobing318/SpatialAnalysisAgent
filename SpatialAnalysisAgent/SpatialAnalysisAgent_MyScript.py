@@ -64,7 +64,8 @@ if __name__ == "__main__":
     data_path = sys.argv[2]
     # OpenAI_key = sys.argv[3]
     model_name = sys.argv[3]
-    main(task, data_path, model_name)
+    workspace_directory = sys.argv[4]
+    main(task, data_path,workspace_directory, model_name)
 
 
 task_name = helper.generate_task_name_with_gpt(task)
@@ -113,8 +114,8 @@ chunks = asyncio.run(helper.fetch_chunks(model, OperationIdentification_prompt_s
 clear_output(wait=True)
 # clear_output(wait=False)
 LLM_reply_str = helper.convert_chunks_to_str(chunks=chunks)
-
-print("Select the QGIS tool: \n")
+# print(f"Work directory: {workspace_directory}")
+# print("Select the QGIS tool: \n")
 print(LLM_reply_str)
 #************************************************************************************************************************************************************
 import ast
@@ -142,8 +143,8 @@ for selected_tool in selected_tools:
     documentation_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(documentation_list)])
 
     # Create and print the operation prompt string for each selected tool
-    operation_prompt_str = helper.create_operation_prompt(task, data_path, selected_tool, selected_tool_ID,
-                                                          documentation_str)
+    operation_prompt_str = helper.create_operation_prompt(task, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,
+                                                          documentation_str=documentation_str)
     # print(operation_prompt_str)
 
 
@@ -179,7 +180,7 @@ counter = 1
 while os.path.exists(html_graph_path):
     html_graph_path = os.path.join(graphs_directory, f"{task_name}_solution_graph_{counter}.html")
     counter += 1
-nt.show(html_graph_path)
+# nt.show(html_graph_path)
 print(f"GRAPH_SAVED:{html_graph_path}")
 
 
@@ -204,20 +205,21 @@ LLM_reply_str = helper.convert_chunks_to_str(chunks=Operation_prompt_str_chunks)
 # print(LLM_reply_str)
 #EXTRACTING CODE
 print("```python")
-print("\n ---------------------------EXTRACTED_CODE:--------------------------------------\n")
+print("\n ---------------------------EXTRACTED CODE:--------------------------------------\n")
 extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
 
 
 #%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
-code_review_prompt_str = helper.code_review_prompt(extracted_code, data_path, selected_tool_ID, documentation_str)
+code_review_prompt_str = helper.code_review_prompt(extracted_code, data_path = data_path, workspace_directory = workspace_directory, selected_tool_ID=selected_tool_ID, documentation_str=documentation_str)
+
 # print(code_review_prompt_str)
 code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
 clear_output(wait=True)
 review_str_LLM_reply_str = helper.convert_chunks_to_str(chunks=code_review_prompt_str_chunks)
 #EXTRACTING REVIEW_CODE
 print("\n\n")
-print(f"------------REVIEWED_EXTRACTED_CODE-----------------------------------: \n\n")
+print(f"---------------------------FINAL REVIEWED CODE----------------------------------- \n\n")
 print("```python")
 reviewed_code = helper.extract_code_from_str(review_str_LLM_reply_str, task_explanation)
 print("```")
@@ -241,7 +243,7 @@ print("```")
 #
 
 #%% EXECUTION OF THE CODE
-code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=5, task=task, model_name=model_name, documentation_str=documentation_str, data_path= data_path, review=True)
+code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=5, task=task, model_name=model_name, documentation_str=documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
 # display(Code(code, language='python'))
 
 
@@ -333,18 +335,5 @@ print("-----Script completed-----")
 # # output = helper.capture_print_output(code=code)
 # # # output = helper.capture_print_output(code=code)
 # # # # # display(Code(code, language='python'))
-# # # #
-# # # # # Display the captured output (like the file path) in your GUI or terminal
-# # print(f"Captured Output: {output}")
-# # # # print(output)
-# #
-#
-#
-# code, output = helper.execute_complete_program(code=operation_code, try_cnt=5, task=task, model_name=model_name, documentation_str=documentation_str)
-# # display(Code(code, language='python'))
-#
-# # Display the captured output (like the file path) in your GUI or terminal
-# print(f"Captured Output: {output}")
-#
-# print("-----Script completed-----")
+
 

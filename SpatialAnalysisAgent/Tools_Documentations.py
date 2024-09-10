@@ -1905,7 +1905,33 @@ def scatterplot():
     processing.run("qgis:vectorlayerscatterplot", parameters)
     output_layer = result['OUTPUT']
     print(output_layer)
-output_path = D:/Data/PovertyData/scatterplot.html #use an output directory
+output_path = C:/Data/PovertyData/scatterplot.html #use an output directory
+scatterplot()
+"""],
+
+
+'scatterplot': [r"""
+    
+    --------------------
+     Python sample code
+    --------------------
+    ```
+   def scatterplot():
+    import plotly.express as px
+    import pandas as pd
+
+    # Sample data
+    data = {'field1': [5, 7, 8, 7, 2, 17, 2, 9, 4, 11],
+            'field2': [99, 86, 87, 88, 100, 86, 103, 87, 94, 78]}
+
+    df = pd.DataFrame(data)
+
+    # Create scatter plot
+    fig = px.scatter(df, x='x', y='y', title='Sample Scatter Plot')
+
+    # Save the plot to an HTML file
+    fig.write_html('scatter_plot.html')
+    
 scatterplot()
 """]
 

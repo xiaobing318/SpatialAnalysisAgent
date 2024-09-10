@@ -181,6 +181,15 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Apply the syntax highlighter
         self.highlighter = PythonHighlighter(self.output_text_edit.document())
 
+        # Set default workspace directory to plugin directory
+        # current_script_dir = os.path.dirname(os.path.abspath(__file__))
+        workspace_dir = os.path.join(current_script_dir, 'Default_workspace')
+        self.workspace_directoryLineEdit.setPlainText(workspace_dir)
+
+
+        # Connect button to open directory dialog
+        self.select_workspace_Btn.clicked.connect(self.open_directory_dialog)
+
 
         # Connect the visibility changed signal for all layers
         root = QgsProject.instance().layerTreeRoot()
@@ -640,7 +649,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self.gpt_thread.start()
 
-
+    def open_directory_dialog(self):
+        """Open a dialog for the user to select a workspace directory."""
+        directory = QFileDialog.getExistingDirectory(self, "Select Workspace Directory")
+        if directory:
+            # Set the selected directory to the PlainTextLineEdit
+            self.workspace_directoryLineEdit.setPlainText(directory)
     def run_script(self):
         # self.update_OpenAI_key()
         # Retrieve the API key from the config
@@ -656,6 +670,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self.task = self.task_LineEdit.toPlainText()
         self.data_path = self.data_pathLineEdit.toPlainText()
+        self.workspace_directory = self.workspace_directoryLineEdit.toPlainText()
 
         # Add task to history and update completer
         if self.task not in self.task_history:
@@ -667,7 +682,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.data_path_history.append(self.data_path)
             self.data_path_completer.model().setStringList(self.data_path_history)
 
-        self.thread = ScriptThread(script_path, self.task, self.data_path, self.OpenAI_key, self.model_name)
+        self.thread = ScriptThread(script_path, self.task, self.data_path, self.workspace_directory, self.OpenAI_key, self.model_name)
 
         self.thread.output_line.connect(self.update_output)
         self.thread.graph_ready.connect(self.update_graph)
@@ -717,23 +732,29 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 # Clear the input field after sending the message when switch is checked
                 self.task_LineEdit.clear()
 
-
+    def strip_ansi_sequences(self, text):
+        ansi_escape = re.compile(r'\x1b\[[0-9;]*[A-Za-z]')
+        return ansi_escape.sub('', text)
 
     def update_output(self, line):
-        if "```python" in line or "```" in line:
+
+        clean_line = self.strip_ansi_sequences(line)
+        if "```python" in clean_line or "```" in clean_line:
             self.output_text_edit.insertPlainText(line)
         else:
 
-            self.output_text_edit.insertPlainText(line)
+            self.output_text_edit.insertPlainText(clean_line)
             # Conditionally add newline only if it is not already present
-        if not line.endswith('\n'):
+        if not clean_line.endswith('\n'):
             self.output_text_edit.insertPlainText('\n')
         # self.output_text_edit.insertPlainText('\n')  # Add a newline after each line
         self.output_text_edit.moveCursor(QTextCursor.End)  # Ensure cursor is at the end
         self.output_text_edit.repaint()
+        # Move the scroll bar to the bottom to avoid unwanted gaps or large spaces
+        self.output_text_edit.verticalScrollBar().setValue(self.output_text_edit.verticalScrollBar().maximum())
 
         # Check if the line contains the completion message
-        if "-----Script completed-----" in line:
+        if "-----Script completed-----" in clean_line:
             self.update_chatgpt_ans(f"AI: Done")
 
     def thread_finished(self, success):
@@ -762,6 +783,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             raise ValueError("API key is empty. Please enter a valid OpenAI API key.")
         return api_key
 
+
 class ScriptThread(QThread):
     output_line = pyqtSignal(str)
     chatgpt_update = pyqtSignal(str)
@@ -769,11 +791,12 @@ class ScriptThread(QThread):
     report_ready = pyqtSignal(str)
     finished = pyqtSignal(bool)
 
-    def __init__(self, script_path, task, data_path, OpenAI_key, model_name):
+    def __init__(self, script_path, task, data_path, workspace_directory, OpenAI_key, model_name):
         super().__init__()
         self.script_path = script_path
         self.task = task
         self.data_path = data_path
+        self.workspace_directory = workspace_directory
         self.OpenAI_key = OpenAI_key
         self.model_name = model_name
 
@@ -798,6 +821,7 @@ class ScriptThread(QThread):
 
                 'task': self.task,
                 'data_path': self.data_path,
+                'workspace_directory':self.workspace_directory,
                 # 'OpenAI_key': self.OpenAI_key,
                 'model_name': self.model_name,
                 'check_running': self.check_running,

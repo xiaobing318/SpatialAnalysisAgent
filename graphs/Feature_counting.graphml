@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d1" for="node" attr.name="description" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="load_shapefile">
+  <data key="d0">operation</data>
+  <data key="d1">Load shapefile data from a specified path</data>
+</node>
+<node id="poverty_data">
+  <data key="d0">data</data>
+  <data key="d2">D:/Data/PovertyData/Poverty3.shp</data>
+  <data key="d1">Shapefile containing poverty data</data>
+</node>
+<node id="vector_information">
+  <data key="d0">operation</data>
+  <data key="d1">Retrieve vector information including feature count from the layer</data>
+</node>
+<node id="feature_info">
+  <data key="d0">data</data>
+  <data key="d1">Detailed statistics and information about the features in the layer</data>
+</node>
+<node id="display_output">
+  <data key="d0">operation</data>
+  <data key="d1">Display vector information output in QGIS</data>
+</node>
+<edge source="load_shapefile" target="poverty_data"/>
+<edge source="poverty_data" target="vector_information"/>
+<edge source="vector_information" target="feature_info"/>
+<edge source="feature_info" target="display_output"/>
+</graph></graphml>

@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d1" for="node" attr.name="description" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="load_shapefile">
+  <data key="d0">operation</data>
+  <data key="d1">Load the shapefile containing boundary data</data>
+</node>
+<node id="boundary_data">
+  <data key="d0">data</data>
+  <data key="d2">D:/Data/Shape1/boundary.shp</data>
+  <data key="d1">Boundary shapefile data</data>
+</node>
+<node id="calculate_area">
+  <data key="d0">operation</data>
+  <data key="d1">Calculate the area of the boundary using 'Vector information' tool</data>
+</node>
+<node id="area_temp_layer">
+  <data key="d0">data</data>
+  <data key="d2"></data>
+  <data key="d1">Temporary layer with calculated area</data>
+</node>
+<edge source="load_shapefile" target="calculate_area"/>
+<edge source="boundary_data" target="load_shapefile"/>
+<edge source="calculate_area" target="area_temp_layer"/>
+</graph></graphml>

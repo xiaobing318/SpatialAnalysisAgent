@@ -2,6 +2,7 @@
 #***************************************************************************
 ##Import package
 import os
+import re
 import sys
 
 from io import StringIO
@@ -40,10 +41,12 @@ if current_script_dir not in sys.path:
 
 import SpatialAnalysisAgent_Constants as constants
 import SpatialAnalysisAgent_helper as helper
+import SpatialAnalysisAgent_ToolsDocumentation as ToolsDocumentation
 
 from SpatialAnalysisAgent_kernel import Solution
 import SpatialAnalysisAgent_Codebase as codebase
 from Tools_Documentations import documentation
+
 # from LLMQGIS_Codebase import algorithm_names, algorithms_dict
 
 
@@ -139,8 +142,13 @@ for selected_tool in selected_tools:
     else:
         selected_tool_ID = None
 
+    selected_tool_file_ID = re.sub(r'[ :?\/]', '_', selected_tool_ID)
+    # print(selected_tool_ID)
+    # print(selected_tool_file_ID)
+
     documentation_list = documentation.get(f"{selected_tool_ID}", [])
     documentation_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(documentation_list)])
+    documentation_str = ToolsDocumentation.tool_documentation_collection(tool_ID=selected_tool_file_ID)
 
     # Create and print the operation prompt string for each selected tool
     operation_prompt_str = helper.create_operation_prompt(task, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,

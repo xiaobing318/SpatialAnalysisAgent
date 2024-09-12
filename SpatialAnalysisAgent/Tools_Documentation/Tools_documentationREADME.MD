@@ -62,3 +62,8 @@ To add a documentation file (.toml) on your local machine, use the ```Add a docu
 
 
 # How to add tool documentation to the github repository
+To add tool documentation to the github repository, use the ```Contribute``` button on the plugin to open the ```Contribute to Spatial Analysis Agent``` dialog. Then follow the steps below. **Note:** you will need to input your GitHub username and a GitHub personal access token. [Learn how to get a token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic). Ensure the token has ```repo``` and ```workflow``` permissions. You can do this by adding them in the ```Select scopes``` when creating your personal token.
+- Fork the plugin repository on GitHub: [Click Here.](https://github.com/Teakinboyewa/SpatialAnalysisAgent)
+- Clone your fork to your local machine. Learn more on [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
+- Upload a TOML file using the ```Contribute to Spatial Analysis Agent``` dialog within the plugin. The uploaded TOML file will go to your forked repository.
+- After uploading, go to GitHub and **open a pull request** from your forked to the main repository.

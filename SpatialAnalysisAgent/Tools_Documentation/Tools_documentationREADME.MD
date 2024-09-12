@@ -48,7 +48,7 @@ The code_example provides a practical example of how to use QGIS's processing to
  ```
 ### An example of a tool documentation file
 
-
+![img.png](img.png)
 
 
 

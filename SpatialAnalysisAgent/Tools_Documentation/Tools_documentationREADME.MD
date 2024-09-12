@@ -46,6 +46,8 @@ The code_example provides a practical example of how to use QGIS's processing to
 5. Load Output Layer
    └── Add the buffered layer to the QGIS project using `QgsProject.instance().addMapLayer()`.
  ```
+Also an example has can be seen in the image below.
+
 ### An example of a tool documentation file
 
 ![img.png](img.png)
@@ -53,7 +55,7 @@ The code_example provides a practical example of how to use QGIS's processing to
 
 
 
-Also an example has can be seen in the image below.
+
 
 # How to add tool documentation to the local machine
 To add a documentation file (.toml) on your local machine, use the ```Add a documentation file``` button within the plugin. This allows you to select and automatically add a documentation file from any location on your local machine to the documentation folder within the plugin directory (```C:\Users\YOUR_USERENAME\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\SpatialAnalysisAgent-master\SpatialAnalysisAgent\Tools_Documentation```). **Note:** Replace "YOUR_USERNAME" with your actual username in the file path. Alternatively, you can manually add the documentation file by copying it directly to the specified plugin directory.

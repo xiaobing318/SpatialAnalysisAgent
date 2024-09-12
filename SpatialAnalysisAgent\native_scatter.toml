@@ -1,0 +1,17 @@
+tool_ID = 'native:scatter'
+
+tool_name = 'scatter'
+
+# provide a brief description (1 line) of the data source to inform AI whether need to use this data source.
+brief_description = '''
+Computes a
+'''
+
+parameters ='''
+INPUT: e…; S
+'''
+
+code_example = '''
+import processing
+
+'''

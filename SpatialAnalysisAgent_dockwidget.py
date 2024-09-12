@@ -21,10 +21,14 @@
  *                                                                         *
  ***************************************************************************/
 """
+import base64
 import configparser
 import importlib
 import os
+import shutil
 import sys
+
+import requests
 from qgis.PyQt import QtGui, QtWidgets, uic
 from qgis.PyQt.QtCore import pyqtSignal
 from qgis.PyQt.QtCore import QSettings
@@ -42,7 +46,7 @@ from PyQt5.QtWebKitWidgets import QWebView
 from qgis.PyQt.QtCore import Qt, QCoreApplication
 from qgis._core import QgsVectorLayer, QgsRasterLayer
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
-from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QWidget, QSizeGrip, QMessageBox
+from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QWidget, QSizeGrip, QMessageBox, QInputDialog
 from PyQt5.QtCore import QThread, pyqtSignal, QUrl, QObject, pyqtSlot, QPropertyAnimation, QPoint, QRect, QSettings
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QDialog, QHBoxLayout
@@ -64,7 +68,7 @@ from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsP
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'SpatialAnalysisAgent_dockwidget_base.ui'))
 
-
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
 from .install_packages.check_packages import check_and_install_libraries , check_missing_libraries, read_libraries_from_file, install_libraries
 class LibraryCheckThread(QThread):
     finished_checking = pyqtSignal(list)
@@ -86,6 +90,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(SpatialAnalysisAgentDockWidget, self).__init__(parent)
+
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
@@ -93,7 +98,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
 
         # Perform the library check only once
-      
+
+        # Initialization of your plugin
+        # self.contribution_dialog = None  # Initialize ContributionDialog later
+
+        # Add this to your plugin’s UI (like a menu or button)
+        # self.contribute_action = QAction("Contribute", self.iface.mainWindow())
+        # self.contribute_action.clicked.connect(self.show_contribution_dialog)
 
 
 
@@ -196,37 +207,19 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         root.visibilityChanged.connect(self.on_layer_visibility_changed)
 
 
+    def show_contribution_dialog(self):
+        """Open the ContributionDialog for user interaction."""
+
+        self.contribution_dialog = ContributionDialog(self)
+
+        self.contribution_dialog.exec_()
 
 
-    # # Check and install required third-party Python libraries
-    # def check_and_install_libraries(self, filename):
-    #     """Check and install required third-party Python libraries."""
-    #     required_libraries = self.read_libraries_from_file(filename)
-    #
-    #     def install_missing_libraries(libraries):
-    #         """Function to install missing libraries using pip."""
-    #         for library, module in libraries:
-    #             try:
-    #                 # Use importlib to check if the module can be imported
-    #                 importlib.import_module(module)
-    #                 print(f"{library} is already installed.")
-    #             except ImportError:
-    #                 # If the module isn't installed, use pip to install the library
-    #                 print(f"{library} is not installed. Installing...")
-    #                 subprocess.check_call(['python3', '-m', 'pip', 'install', library])
-    #
-    #     install_missing_libraries(required_libraries)
-    #
-    # def read_libraries_from_file(self, filename):
-    #     """Read the list of libraries and their import paths from a text file."""
-    #     libraries = []
-    #     with open(filename, 'r') as file:
-    #         for line in file:
-    #             if line.strip():  # Skip empty lines
-    #                 # Each line is in the format: library_name:module_name
-    #                 library, module = line.strip().split(':')
-    #                 libraries.append((library, module))
-    #     return libraries
+
+    # def open_upload_dialog(self):
+    #     """ Open the custom dialog for uploading TOML files """
+    #     dialog = UploadTomlDialog(self)
+    #     dialog.exec_()  # Show the dialog
 
     def handle_missing_libraries(self, missing_packages):
         if missing_packages:
@@ -381,6 +374,9 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.loadData.clicked.connect(self.load_data)
         self.refresh_slnGraph_Btn.clicked.connect(self.refresh_slnGraph)
         self.refresh_report_Btn.clicked.connect(self.refresh_report)
+        self.add_document_button.clicked.connect(self.add_documentation_file)
+        # self.add_document_github_button.clicked.connect(self.open_upload_dialog)
+        self.add_document_github_button.clicked.connect(self.show_contribution_dialog)
         self.tabWidget.setCurrentIndex(0)
 
         # self.read_updated_config()
@@ -783,6 +779,33 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             raise ValueError("API key is empty. Please enter a valid OpenAI API key.")
         return api_key
 
+    def add_documentation_file(self):
+        # current_script_dir = os.path.dirname(os.path.abspath(__file__))
+        # script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
+        destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"SpatialAnalysisAgent", "Tools_Documentation")
+
+        # Ensure the destination directory exists; if not, create it
+        if not os.path.exists(destination_dir):
+            os.makedirs(destination_dir)
+        # Open file dialog to select .toml files
+        files, _ = QFileDialog.getOpenFileNames(
+            None, 'Select Documentation Files', '', 'TOML Files (*.toml)'
+        )
+
+        # If files are selected, process them
+        if files:
+            for file_path in files:
+                # Determine the new path for the file in the destination directory
+                new_file_path = os.path.join(destination_dir, os.path.basename(file_path))
+                # Copy the file to the new directory
+                shutil.copy(file_path, new_file_path)
+                # print(f"File {file_path} copied to {new_file_path}")  # or update your UI to reflect the change
+
+# The classFactory function must be placed at the end of this file
+def classFactory(iface):
+    """Load SpatialAnalysisAgentPlugin class."""
+    return SpatialAnalysisAgentDockWidget(iface)
+
 
 class ScriptThread(QThread):
     output_line = pyqtSignal(str)
@@ -1091,3 +1114,300 @@ class PythonHighlighter(QSyntaxHighlighter):
                     self.setFormat(start, end - start, format)
 
 
+# class UploadTomlDialog(QDialog):
+#     def __init__(self, parent=None):
+#         super().__init__(parent)
+#
+#         self.setWindowTitle("Upload TOML File to GitHub")
+#         self.resize(400, 200)
+#
+#         layout = QVBoxLayout(self)
+#
+#         # File selection label and button
+#         self.file_label = QLabel("No file selected")
+#         self.select_file_button = QPushButton("Select TOML File")
+#         self.select_file_button.clicked.connect(self.select_file)
+#
+#         # GitHub token input
+#         self.token_input = QLineEdit()
+#         self.token_input.setPlaceholderText("Enter GitHub Token (if needed)")
+#
+#         # Upload button
+#         self.upload_button = QPushButton("Upload to GitHub")
+#         self.upload_button.clicked.connect(self.upload_file)
+#
+#         # Add widgets to the layout
+#         layout.addWidget(self.file_label)
+#         layout.addWidget(self.select_file_button)
+#         layout.addWidget(self.token_input)
+#         layout.addWidget(self.upload_button)
+#
+#         self.selected_file = None
+#
+#     def select_file(self):
+#         """ Open file dialog to select the TOML file """
+#         file_dialog = QFileDialog()
+#         toml_file, _ = file_dialog.getOpenFileName(self, "Select a TOML file", "", "TOML Files (*.toml)")
+#
+#         if toml_file:
+#             self.selected_file = toml_file
+#             self.file_label.setText(toml_file)
+#
+#
+#     # def get_github_token(self):
+#     #     # Path to the configuration file
+#     #     current_script_dir = os.path.dirname(os.path.abspath(__file__))
+#     #     githubtokenConfig_path = os.path.join(current_script_dir, "config_files", "GitHubTokenConfig.ini")
+#     #
+#     #     config = configparser.ConfigParser()
+#     #
+#     #     # Check if the config file exists
+#     #     if os.path.exists(githubtokenConfig_path):
+#     #         # If the config file exists, read the token from it
+#     #         config.read(githubtokenConfig_path)
+#     #         token = config.get("GitHub", "token", fallback=None)
+#     #         if not token:
+#     #             token = self.prompt_for_token(githubtokenConfig_path)
+#     #         return token
+#     #     else:
+#     #         # If the config file doesn't exist, create it and prompt for token
+#     #         os.makedirs(os.path.dirname(githubtokenConfig_path), exist_ok=True)
+#     #         return self.prompt_for_token(githubtokenConfig_path)
+#     #
+#     # def prompt_for_token(self, config_file_path):
+#     #     """Prompt the user for a GitHub token and store it in the config file."""
+#     #     token, ok = QInputDialog.getText(self, 'GitHub Token', 'Please enter your GitHub token:')
+#     #     if ok and token:
+#     #         self.save_github_token(config_file_path, token)
+#     #         return token
+#     #     else:
+#     #         return None
+#     #
+#     # def save_github_token(self, config_file_path, token):
+#     #     """Save the GitHub token to the configuration file."""
+#     #     config = configparser.ConfigParser()
+#     #     config.read(config_file_path)
+#     #     config["GitHub"] = {"token": token}
+#     #
+#     #     with open(config_file_path, "w") as config_file:
+#     #         config.write(config_file)
+#
+#     def upload_file(self):
+#         """ Trigger file upload logic """
+#         if not self.selected_file:
+#             QMessageBox.warning(self, "Error", "Please select a TOML file to upload.")
+#             return
+#
+#         token = self.token_input.text().strip()
+#
+#         # Check if token is provided or already stored
+#         if not token:
+#             token = self.get_github_token()
+#
+#         if not token:
+#             QMessageBox.warning(self, "Error", "GitHub token is required for the upload.")
+#             return
+#
+#         # Upload file to GitHub
+#         try:
+#             upload_to_github(token, self.selected_file)
+#             QMessageBox.information(self, "Success", "File successfully uploaded to GitHub.")
+#         except Exception as e:
+#             QMessageBox.warning(self, "Error", f"Failed to upload file: {str(e)}")
+#
+#
+# # Function to upload the file to GitHub using the provided token and file
+# def upload_to_github(token, file_path):
+#     repo = "Teakinboyewa/SpatialAnalysisAgent"  # Hardcoded repository
+#     FOLDER_IN_REPO = "SpatialAnalysisAgent"
+#     path_in_repo = os.path.join(FOLDER_IN_REPO, os.path.basename(file_path))
+#
+#     # Prepare the request
+#     url = f"https://api.github.com/repos/{repo}/contents/{path_in_repo}"
+#     with open(file_path, 'rb') as file:
+#         content = file.read()
+#
+#     encoded_content = base64.b64encode(content).decode("utf-8")
+#
+#     headers = {
+#         "Authorization": f"token {token}",
+#         "Accept": "application/vnd.github.v3+json"
+#     }
+#
+#     data = {
+#         "message": "Adding a new TOML file via QGIS plugin",
+#         "content": encoded_content
+#     }
+#
+#     response = requests.put(url, json=data, headers=headers)
+#
+#     if response.status_code == 201:
+#         print("File successfully uploaded to GitHub.")
+#     else:
+#         print(f"Failed to upload file: {response.json()}")
+#         raise Exception(f"GitHub upload failed: {response.json()}")
+
+
+class ContributionDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.plugin = parent  # Reference to the main plugin class
+
+        self.setWindowTitle("Contribute to SpatialAnalysisAgent")
+        self.setMinimumWidth(400)
+
+        self.setWindowTitle("Contribute to Spatial Analysis Agent")
+        layout = QVBoxLayout(self)
+
+        # Add a label for instructions
+        instructions = QLabel("Instructions for contribution:")
+        layout.addWidget(instructions)
+
+        # Instructional label
+        instructions = QLabel("""
+        <h3>How to Contribute</h3>
+        <ol>
+            <li><b>Fork this repository</b> on GitHub: <a href='https://github.com/Teakinboyewa/SpatialAnalysisAgent'>Click Here</a>.</li>
+            <li><b>Clone your fork</b> to your local machine.</li>
+            <li>Upload a TOML file using this dialog (it will go to your forked repository).</li>
+            <li>After uploading, go to GitHub and <b>open a pull request</b> from your fork to the main repository.</li>
+        </ol>
+        """)
+        instructions.setOpenExternalLinks(True)
+        layout.addWidget(instructions)
+
+        # File upload button
+        self.upload_button = QPushButton("Upload TOML File to Fork")
+        self.upload_button.clicked.connect(self.upload_toml_file)
+        layout.addWidget(self.upload_button)
+
+    def get_github_token(self):
+        """Retrieve the GitHub token from the config file or prompt the user to enter one."""
+
+        # Path to the configuration file
+        current_script_dir = os.path.dirname(os.path.abspath(__file__))
+        githubtokenConfig_path = os.path.join(current_script_dir, "config_files", "GitHubTokenConfig.ini")
+
+        config = configparser.ConfigParser()
+
+        try:
+            # Check if the config file exists
+            if os.path.exists(githubtokenConfig_path):
+                # If the config file exists, read the token from it
+                config.read(githubtokenConfig_path)
+                token = config.get("GitHub", "token", fallback=None)
+
+                # If no token found, prompt for token
+                if not token:
+                    token = self.prompt_for_token(githubtokenConfig_path)
+                return token
+
+            else:
+                # If the config file doesn't exist, create it and prompt for token
+                os.makedirs(os.path.dirname(githubtokenConfig_path), exist_ok=True)
+                return self.prompt_for_token(githubtokenConfig_path)
+
+        except (configparser.Error, IOError) as e:
+            QMessageBox.warning(self, "Error", f"Failed to read or write the token configuration: {e}")
+            return None
+
+    def prompt_for_token(self, config_file_path):
+        """Prompt the user for a GitHub token and store it in the config file."""
+        token, ok = QInputDialog.getText(self, 'GitHub Token', 'Please enter your GitHub token:')
+        if ok and token:
+            self.save_github_token(config_file_path, token)
+            return token
+        else:
+            return None
+
+    def save_github_token(self, config_file_path, token):
+        """Save the GitHub token to the configuration file."""
+        config = configparser.ConfigParser()
+        config.read(config_file_path)
+        config["GitHub"] = {"token": token}
+
+        with open(config_file_path, "w") as config_file:
+            config.write(config_file)
+
+    def check_if_fork_exists(self, token, username):
+        repo = "Teakinboyewa/SpatialAnalysisAgent"
+        url = f"https://api.github.com/repos/{username}/SpatialAnalysisAgent"
+
+        headers = {
+            "Authorization": f"token {token}",
+            "Accept": "application/vnd.github.v3+json"
+        }
+
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            return True  # The fork exists
+        else:
+            return False
+
+    def upload_to_user_fork(self, token, file_path, username):
+        repo = f"{username}/SpatialAnalysisAgent"  # Target the user's fork
+        FOLDER_IN_REPO = "SpatialAnalysisAgent"  # Folder inside the repo
+        file_name =os.path.basename(file_path)
+        path_in_repo = f"{FOLDER_IN_REPO}/{file_name}"
+        url = f"https://api.github.com/repos/{repo}/contents/{path_in_repo}"
+
+
+        with open(file_path, 'rb') as file:
+            content = file.read()
+
+        encoded_content = base64.b64encode(content).decode("utf-8")
+
+        headers = {
+            "Authorization": f"token {token}",
+
+            "Accept": "application/vnd.github.v3+json"
+        }
+
+        data = {
+            "message": "Adding a new TOML file via QGIS plugin",
+            "content": encoded_content
+        }
+
+        response = requests.put(url, json=data, headers=headers)
+
+        if response.status_code == 201:
+            print("File successfully uploaded to the forked GitHub repository.")
+        else:
+            print(f"Failed to upload file: {response.json()}")
+            raise Exception(f"GitHub upload failed: {response.json()}")
+
+    def prompt_pull_request(self, username):
+        pr_url = f"https://github.com/{username}/SpatialAnalysisAgent/compare"
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText(
+            f"File uploaded successfully to your fork.\nPlease open a pull request to merge it into the main repository.")
+        msg.setInformativeText(f"<a href='{pr_url}'>Click here to open a pull request</a>")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+
+    def upload_toml_file(self):
+        """Handle the file upload to the user's fork."""
+        token = self.get_github_token()  # Get GitHub token from main plugin
+
+        if not token:
+            QMessageBox.warning(self, "Error", "GitHub token is required.")
+            return
+
+        # Prompt user to select a file
+        file_dialog = QFileDialog(self)
+        toml_file, _ = file_dialog.getOpenFileName(self, "Select a TOML file", "", "TOML Files (*.toml)")
+
+        if toml_file:
+            # Ask for GitHub username (you can automate this with the token if preferred)
+            username, ok = QInputDialog.getText(self, 'GitHub Username', 'Enter your GitHub username:')
+
+            if ok and username:
+                # Upload the file to the user's fork
+                self.upload_to_user_fork(token, toml_file, username)
+
+                # Prompt the user to open a pull request
+                self.prompt_pull_request(username)
+            else:
+                QMessageBox.warning(self, "Error", "GitHub username is required.")

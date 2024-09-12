@@ -50,7 +50,7 @@ Also an example has can be seen in the image below.
 
 ### An example of a tool documentation file
 
-![img.png](img.png)
+![img.png](../../Doc/Sample_documentation_file.png)
 
 
 

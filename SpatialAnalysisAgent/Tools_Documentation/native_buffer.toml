@@ -1,7 +1,7 @@
-# Tool name.
+tool_ID = 'native:buffer'
+
 tool_name = 'Buffer'
 
-tool_ID = 'native:buffer'
 # provide a brief description (1 line) of the data source to inform AI whether need to use this data source.
 brief_description = '''
 Computes a buffer area for all the features in an input layer, using a fixed or data defined distance.

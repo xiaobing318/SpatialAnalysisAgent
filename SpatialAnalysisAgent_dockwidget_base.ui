@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>702</width>
-    <height>876</height>
+    <width>698</width>
+    <height>867</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -595,7 +595,7 @@ padding: 5px; /* padding inside the text edit */
              </rect>
             </property>
            </widget>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="add_document_button">
             <property name="geometry">
              <rect>
               <x>10</x>
@@ -608,17 +608,17 @@ padding: 5px; /* padding inside the text edit */
              <string>Add a documentation file</string>
             </property>
            </widget>
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="add_document_github_button">
             <property name="geometry">
              <rect>
-              <x>170</x>
+              <x>190</x>
               <y>140</y>
-              <width>161</width>
+              <width>75</width>
               <height>23</height>
              </rect>
             </property>
             <property name="text">
-             <string>Edit a documentation file</string>
+             <string>PushButton</string>
             </property>
            </widget>
           </widget>

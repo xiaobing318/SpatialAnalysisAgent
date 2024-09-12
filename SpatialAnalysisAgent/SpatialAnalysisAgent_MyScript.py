@@ -146,9 +146,10 @@ for selected_tool in selected_tools:
     # print(selected_tool_ID)
     # print(selected_tool_file_ID)
 
-    documentation_list = documentation.get(f"{selected_tool_ID}", [])
-    documentation_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(documentation_list)])
+    # documentation_list = documentation.get(f"{selected_tool_ID}", [])
+    # documentation_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(documentation_list)])
     documentation_str = ToolsDocumentation.tool_documentation_collection(tool_ID=selected_tool_file_ID)
+    print(documentation_str)
 
     # Create and print the operation prompt string for each selected tool
     operation_prompt_str = helper.create_operation_prompt(task, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,

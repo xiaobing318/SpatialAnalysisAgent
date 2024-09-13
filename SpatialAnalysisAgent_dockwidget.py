@@ -1347,7 +1347,7 @@ class ContributionDialog(QDialog):
 
     def upload_to_user_fork(self, token, file_path, username):
         repo = f"{username}/SpatialAnalysisAgent"  # Target the user's fork
-        FOLDER_IN_REPO = "SpatialAnalysisAgent"  # Folder inside the repo
+        FOLDER_IN_REPO = "SpatialAnalysisAgent/Tools_Documentation"  # Folder inside the repo
         file_name =os.path.basename(file_path)
         path_in_repo = f"{FOLDER_IN_REPO}/{file_name}"
         url = f"https://api.github.com/repos/{repo}/contents/{path_in_repo}"

@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="data_path" attr.type="string"/>
+<key id="d0" for="node" attr.name="node_type" attr.type="string"/>
+<graph edgedefault="directed"><node id="san_andreas_zones">
+  <data key="d0">data</data>
+  <data key="d1">D:/LLMQGIS/Data/SpatialQueryData/SAF_SpecialStudyZone.shp</data>
+  <data key="d2">San Andreas Special Study Zones layer</data>
+</node>
+<node id="load_san_andreas_zones"/>
+<node id="damaged_houses">
+  <data key="d0">data</data>
+  <data key="d1">D:/LLMQGIS/Data/SpatialQueryData/DamagedHouses.shp</data>
+  <data key="d2">Damaged houses layer</data>
+</node>
+<node id="load_damaged_houses"/>
+<node id="clip_damaged_houses">
+  <data key="d0">operation</data>
+  <data key="d2">Clip damaged houses to San Andreas Special Study Zones using 'Clip vector by mask layer' tool</data>
+</node>
+<node id="clipped_damaged_houses">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Clipped damaged houses layer within San Andreas Special Study Zones</data>
+</node>
+<node id="count_damaged_houses">
+  <data key="d0">operation</data>
+  <data key="d2">Count the number of damaged houses in the clipped area using 'Count points in polygon' tool</data>
+</node>
+<node id="damaged_houses_count">
+  <data key="d0">data</data>
+  <data key="d1"></data>
+  <data key="d2">Layer with count of damaged houses within the clipped San Andreas Zones</data>
+</node>
+<edge source="san_andreas_zones" target="clip_damaged_houses"/>
+<edge source="load_san_andreas_zones" target="san_andreas_zones"/>
+<edge source="damaged_houses" target="clip_damaged_houses"/>
+<edge source="load_damaged_houses" target="damaged_houses"/>
+<edge source="clip_damaged_houses" target="clipped_damaged_houses"/>
+<edge source="clipped_damaged_houses" target="count_damaged_houses"/>
+<edge source="count_damaged_houses" target="damaged_houses_count"/>
+</graph></graphml>

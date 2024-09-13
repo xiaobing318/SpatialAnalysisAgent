@@ -1,4 +1,4 @@
-tool_ID = 'native:selectbylocation'
+tool_ID = 'qgis:selectbylocation'
 tool_name = 'Select by location'
 
 # provide a brief description (1 line) of the data source to inform AI whether need to use this data source.
@@ -14,22 +14,24 @@ OUTPUT: Specify the output (buffer) layer. One of: Create Temporary Layer (TEMPO
         Save to Geopackage…; Save to Database Table…; Append to Layer…
 '''
 code_example = '''
-
 import processing
-from qgis.core import QgsProject,QgsVectorLayer
-def extract_by_location():
-    parameters = {
-        'INPUT':'D:/Data/Data.shp', #Extract features from
-        'PREDICATE':[1], #Available values: 0:intersect, 1:contain, 2: disjoint, 3: equal, 4:touch, 5:overlap, 6: are within, 7: cross
-        'INTERSECT':'D:/Data/HW_Sites_EPSG4326/HW_Sites_EPSG4326.shp', #By comparing to the features from
-		'METHOD' : 0, #0 — creating new selection, 1 — adding to current selection, 2 — selecting within current selection, 3 — removing from current selection
-        'OUTPUT': 'memory:'  # Use 'memory:' to create a temporary layer in memory
-    }
-    # Perform the extract by attribute operation
-    result = processing.run("native:selectbylocation", parameters)
-    # Load the selected features as a new layer
-    output_layer = result['OUTPUT']
-    QgsProject.instance().addMapLayer(output_layer)
-
-select_by_location()  
+    from qgis.core import QgsProject,QgsVectorLayer
+    def extract_by_expression(input_layer_path):
+        # Define the parameters
+        input_layer = QgsVectorLayer(input_layer_path, "Input Layer", "ogr")
+    
+        # Define the parameters Example below:
+        parameters = {
+            'INPUT': input_layer_path,
+            'EXPRESSION':' "STATEFP"  =\'42\' AND  "Obesity" <30',
+            'OUTPUT': output_layer_path
+        }
+        # Perform the extract by attribute operation
+        result = processing.run("native:selectbylocation", parameters)
+        # Load the selected features as a new layer
+        output_layer = QgsVectorLayer(output_path, 'PA_Obesity<30', 'ogr')
+        QgsProject.instance().addMapLayer(output_layer)
+    input_layer_path = "D:/Data/PrevalenceData.shp"  # path to the input shapefile
+    output_layer_path ="D:/workspace_directory/output_layer.shp"
+    select_by_attribute(input_layer_path)
 '''

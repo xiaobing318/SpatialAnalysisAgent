@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
+    <width>597</width>
     <height>676</height>
    </rect>
   </property>
@@ -419,6 +419,16 @@ padding: 5px; /* padding inside the text edit */
               <pointsize>8</pointsize>
              </font>
             </property>
+            <item>
+             <property name="text">
+              <string>gpt-o1-preview</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>gpt-o1-mini</string>
+             </property>
+            </item>
             <item>
              <property name="text">
               <string>gpt-4o</string>

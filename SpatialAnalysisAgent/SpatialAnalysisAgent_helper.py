@@ -78,7 +78,7 @@ def generate_task_name_with_gpt(task_description):
              f"Underscore '_' is the only alphanumeric symbols that is allowed in a task name. A task_name must not contain quotations or inverted commas example: 'Map_creation'. This is not allowed as task_name \n"
     client = create_openai_client()
     response = client.chat.completions.create(
-        model='gpt-4',
+        model='gpt-4o',
         messages=[
 
             {"role": "user", "content": prompt},
@@ -161,7 +161,7 @@ def get_code_for_operation(task_description, data_path, selected_tool, selected_
         operation_code = ask_LLM_to_review_operation_code(extracted_code, selected_tool_ID, documentation_str)
         return operation_code
     else:
-        return extracted_code
+        return extracted_codeo1-preview
 
 
 def ask_LLM_to_review_operation_code(extracted_code, selected_tool_ID, documentation_str):

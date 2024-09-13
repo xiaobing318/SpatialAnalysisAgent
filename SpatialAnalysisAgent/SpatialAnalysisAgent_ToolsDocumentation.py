@@ -33,43 +33,43 @@ def tool_documentation_collection(tool_ID, tool_dir=Tools_Documentation_dir):
 
 
 #***********************************************************************
-import sqlite3
-
-# Connect to the SQLite database
-def connect_to_database(db_path):
-    try:
-        conn = sqlite3.connect(db_path)
-        return conn
-    except sqlite3.Error as e:
-        print(f"Error connecting to database: {e}")
-        return None
-
-
-# Fetch all documentation records
-def fetch_all_documentation(conn):
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM documentation")
-
-    rows = cursor.fetchall()
-
-    for row in rows:
-        print(f"ID: {row[0]}, Tool Name: {row[1]}, Tool ID: {row[2]}")
-        print(f"Brief Description: {row[3]}")
-        print(f"Parameters: {row[4]}")
-        print(f"Code Example: {row[5]}")
-        print(f"Last Modified: {row[6]}")
-        print("-" * 50)
-
-# Close the connection
-def close_connection(conn):
-    if conn:
-        conn.close()
-
-
-# Main logic
-db_path = 'path_to_your_database.db'
-conn = connect_to_database(db_path)
-
-if conn:
-    fetch_all_documentation(conn)
-    close_connection(conn)
+# import sqlite3
+#
+# # Connect to the SQLite database
+# def connect_to_database(db_path):
+#     try:
+#         conn = sqlite3.connect(db_path)
+#         return conn
+#     except sqlite3.Error as e:
+#         print(f"Error connecting to database: {e}")
+#         return None
+#
+#
+# # Fetch all documentation records
+# def fetch_all_documentation(conn):
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT * FROM documentation")
+#
+#     rows = cursor.fetchall()
+#
+#     for row in rows:
+#         print(f"ID: {row[0]}, Tool Name: {row[1]}, Tool ID: {row[2]}")
+#         print(f"Brief Description: {row[3]}")
+#         print(f"Parameters: {row[4]}")
+#         print(f"Code Example: {row[5]}")
+#         print(f"Last Modified: {row[6]}")
+#         print("-" * 50)
+#
+# # Close the connection
+# def close_connection(conn):
+#     if conn:
+#         conn.close()
+#
+#
+# # Main logic
+# db_path = 'path_to_your_database.db'
+# conn = connect_to_database(db_path)
+#
+# if conn:
+#     fetch_all_documentation(conn)
+#     close_connection(conn)

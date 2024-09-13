@@ -33,12 +33,77 @@ client = OpenAI(api_key=OpenAI_key)
 #*********************************************************************************************************************************************************************
 #---------------------------------Identify Operation type------------------------------------------------------------------------------------------------------------
 OperationIdentification_role = r''' A professional Geo-information scientist with high proficiency in Geographic Information System (GIS) operations. You also have excellent proficiency in QGIS to perform GIS operations. You are very familiar with QGIS Processing toolbox. You have super proficency in python programming. 
+You are very good at providing explanation to a task and  identifying QGIS tools or other tools and functions that can be used to address a problem.
+'''
+OperationIdentification_task_prefix = rf' Provide a brief explanation on which tool that can be used to perform this task. Identify  if any of the available QGIS processing tool algorithms is suitable or there is need for new algorithm in order to perform this task:'
+
+other_tools = ['Thematic Map Creation',
+                         'Land Use Land Cover (LULC)',
+                         'scatterplot',
+                         'Others']
+
+other_tools_dict = {
+    "Thematic Map Creation": {"ID": "Thematic_Map_Creation"},
+    "Land Use Land Cover (LULC)":{"ID":"LULC"},
+    "scatterplot":{"ID":"ScatterPlot"},
+    "Others": {"ID": "Others"}
+}
+
+
+OperationIdentification_requirements = [
+    "Think step by step and skip any step that is not applicable for the task at hand",
+
+    # rf"When creating a thematic map, select the tool named 'Thematic Map Creation'. It is more easier. The tool 'Set style for vector layer' requires a style file, therefore it may not the suitable tool to use.",
+    # f"If you need to create a thematic map, select the customized tool from {other_QGIS_operations} named 'Thematic Map Creation'",
+    f"Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task by saying either 'Yes' or 'No', {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
+    # f"If your answer is 'Yes', then return the exact name of the tool as given in the list. But if your answer is 'No', return any other tool you think is most appropriate from the list in {other_tools} and return the exact name as listed in the list.  DO NOT select any existing QGIS tool for thematic map creation. E.g, do not select 'categorized renderer from styles'",
+    "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
+    "DO NOT provide Additional details of any tool",
+    f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool you think is most appropriate from the list in {other_tools} and if you cannot find other tools, provide any other tools that is suitable"#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
+
+]
+
+OperationIdentification_reply_example_1 = "To select the tracts with population above 3000, the tool suitable for the operation is found in the qgis processing tools and the name is  'Extract by attribute' tool. This tool create a new vector layer that only contains matching features from an input layer",
+
+OperationIdentification_reply_example_2 = "To create a thematic map there is no suitable tool within the qgis processing tool. Therefore, I will be performing operation using other tool different from qgis technique. I will be using 'Thematic map creation' operation to perform this task. This operation enables rendering a map using a specified attribute",
+
+
+
+OperationIdentification_reply_example_3 = "To extract the counties with Median household income below 50,000 in Pennsylvania, the tool suitable for this operation is found in the QGIS processing tools. The steps to be followed are Use the 'Extract by attribute' tool to select counties where the 'Median_hou' field is below 50,000. Then, use the 'Extract by attribute' tool again to select counties where the 'STATEFP' field is 42, which corresponds to Pennsylvania. If multiple conditions can be combined, then the 'Select by expression' tool will achieve this in one step using an expression.",
+
+
+
+
+
+
+#*********************************************************************************************************************************************************************
+#---------------------------------Tool selection------------------------------------------------------------------------------------------------------------
+ToolSelect_role = r''' A professional Geo-information scientist with high proficiency in Geographic Information System (GIS) operations. You also have excellent proficiency in QGIS to perform GIS operations. You are very familiar with QGIS Processing toolbox. You have super proficency in python programming. 
 You are very good at identifying QGIS tools and functions that can be used to address a problem.
 '''
-OperationIdentification_task_prefix = rf' Identify if  any of the available processing tool algorithms is suitable or there is need for new algorithm in order to perform this task:'
+ToolSelect_prefix = rf' I will provide you with the explanation of a task. Identify the suitable QGIS processing tool algorithms or other suitable tool that can be used to accomplish this task explanation: '
+
+
+
+ToolSelect_requirements = ["Think step by step and skip any step that is not applicable for the task at hand",
+                        f"Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task by saying either 'Yes' or 'No', {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
+                        f"If your answer is 'Yes', then return the exact name of the tool as given in the list. But if your answer is 'No', return any other tools you think is most appropriate from the list of tools in {other_tools} and return the exact name as listed in the list. NOTE: the name should be assigned to 'Selected tool'. DO NOT select any existing QGIS tool for thematic map creation. E.g, do not select 'categorized renderer from styles'",
+                        "If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from {other_QGIS_operations} . E.g, do not select 'categorized renderer from styles'",
+                        "If you need to perform more than one operation, the tools should be in a list and name the list 'Selected tool'",
+                        "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
+                        "DO NOT provide Additional details of any tool",
+                        f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool you think is most appropriate from the list in {other_tools}" ,#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
+                        "Your response should be in a dictionary that contain the tool you have selected. Do not add any other explanation or comments.,"
+
+]
+
+ToolSelect_reply_example1 = """ {"Selected tool": "Select by attribute"}"""
+ToolSelect_reply_example2 = """{"Selected tool": ["Select by expression", "Select by location"]}"""
 
 other_QGIS_operations = ['Thematic Map Creation',
-                         'Land Use Land Cover (LULC)']
+                         'Land Use Land Cover (LULC)',
+                         'scatterplot',
+                         'Others']
 
 
 OperationIdentification_requirements = [
@@ -60,13 +125,25 @@ OperationIdentification_requirements = [
 
 ]
 
-OperationIdentification_reply_example_1 = ''' {'Explanation': " To select the tracts with population above 3000, the tool suitable for the operation is found in the qgis processing tools and the name is  'Extract by attribute' tool. This tool create a new vector layer that only contains matching features from an input layer",
-'Selected tool': 'Extract by attribute', 'QGIS Processing toolbox' :'Yes', 'Customized': 'No'
-}'''
-OperationIdentification_reply_example_2 = '''{'Explanation': " To create a thematic map there is no suitable tool within the qgis processing tool. Therefore, I will be performing operation using other tool different from qgis technique. I will be using 'Thematic map creation' operation to perform this task. This operation enables rendering a map using a specified attribute",
- ",'Selected tool': 'Thematic map creation', 'QGIS Processing toolbox' :'No', 'Customized': 'Yes'
- }
-'''
+OperationIdentification_reply_example_1 = """{
+"Explanation": "To select the tracts with population above 3000, the tool suitable for the operation is found in the qgis processing tools and the name is  'Extract by attribute' tool. This tool create a new vector layer that only contains matching features from an input layer",
+"Selected tool": "Extract by attribute", 
+"QGIS Processing toolbox" : "Yes", 
+"Customized": "No"
+}"""
+OperationIdentification_reply_example_2 = """{
+"Explanation": "To create a thematic map there is no suitable tool within the qgis processing tool. Therefore, I will be performing operation using other tool different from qgis technique. I will be using 'Thematic map creation' operation to perform this task. This operation enables rendering a map using a specified attribute", 
+"Selected tool": "Thematic map creation", 
+"QGIS Processing toolbox" :"No", 
+"Customized": "Yes"
+ }"""
+
+OperationIdentification_reply_example_3 = """{
+"Explanation": "To extract the counties with Median household income below 50,000 in Pennsylvania, the tool suitable for this operation is found in the QGIS processing tools. The steps to be followed are Use the 'Extract by attribute' tool to select counties where the 'Median_hou' field is below 50,000. Then, use the 'Extract by attribute' tool again to select counties where the 'STATEFP' field is 42, which corresponds to Pennsylvania. If multiple conditions can be combined, then the 'Select by expression' tool will achieve this in one step using an expression.",
+ "Selected tool": ["Extract by attribute", "Extract by expression"] 
+ "QGIS Processing toolbox" :"Yes", 
+ "Customized": "No"
+ }"""
 
 other_QGIS_operations_dict = {
     "Thematic Map Creation": {"ID": "Thematic_Map_Creation"},
@@ -74,6 +151,9 @@ other_QGIS_operations_dict = {
     "scatterplot":{"ID":"ScatterPlot"},
     "Others": {"ID": "Others"}
 }
+
+
+
 
 
 # # ***********************************************************************************************************************************************************************

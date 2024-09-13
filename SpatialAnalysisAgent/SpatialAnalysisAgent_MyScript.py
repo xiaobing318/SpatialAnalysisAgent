@@ -120,12 +120,26 @@ LLM_reply_str = helper.convert_chunks_to_str(chunks=chunks)
 # print(f"Work directory: {workspace_directory}")
 # print("Select the QGIS tool: \n")
 print(LLM_reply_str)
+task_breakdown = LLM_reply_str
+##*************************************** TOOL SELECT *******************************************************
+ToolSelect_prompt_str = helper.create_ToolSelect_prompt(task=task_breakdown)
+ToolSelect_chunks = asyncio.run(helper.fetch_chunks(model, ToolSelect_prompt_str))
+
+clear_output(wait=True)
+# Selected_Tools_reply =helper.extract_selected_tools(chunks=ToolSelect_chunks)
+Selected_Tools_reply = helper.convert_chunks_to_str(chunks=ToolSelect_chunks)
+print(Selected_Tools_reply)
+
 #************************************************************************************************************************************************************
 import ast
-select_operation = ast.literal_eval(LLM_reply_str)
-
+import json
+select_operation = json.loads(Selected_Tools_reply)
+print(select_operation)
+# # select_operation = json.loads(LLM_reply_str)
+# select_operation = ast.literal_eval(Selected_Tools_reply)
 selected_tools = select_operation['Selected tool']
 
+print(selected_tools)
 
 # Check if the selected_tools is a string or a list
 if isinstance(selected_tools, str):
@@ -155,8 +169,8 @@ for selected_tool in selected_tools:
     operation_prompt_str = helper.create_operation_prompt(task, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,
                                                           documentation_str=documentation_str)
     # print(operation_prompt_str)
-
-
+#
+#
 # #%% --------------------------------------------------------SOLUTION GRAPH -----------------------------------------------
 script_directory = os.path.dirname(os.path.abspath(__file__))
 save_dir = os.path.join(script_directory, "graphs")
@@ -189,10 +203,11 @@ counter = 1
 while os.path.exists(html_graph_path):
     html_graph_path = os.path.join(graphs_directory, f"{task_name}_solution_graph_{counter}.html")
     counter += 1
-# nt.show(html_graph_path)
+nt.show(html_graph_path)
+# print(f"GRAPH_SAVED:")
 print(f"GRAPH_SAVED:{html_graph_path}")
-
-
+#
+#
 # #%%***************************************** #Get code for operation without Solution graph ************************
 # from IPython.display import clear_output
 # async def fetch_LLM_str(model, operation_prompt_str):

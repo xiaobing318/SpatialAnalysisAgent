@@ -1353,10 +1353,6 @@ class ContributionDialog(QDialog):
         url = f"https://api.github.com/repos/{repo}/contents/{path_in_repo}"
 
 
-        with open(file_path, 'rb') as file:
-            content = file.read()
-
-        encoded_content = base64.b64encode(content).decode("utf-8")
 
         headers = {
             "Authorization": f"token {token}",
@@ -1364,18 +1360,48 @@ class ContributionDialog(QDialog):
             "Accept": "application/vnd.github.v3+json"
         }
 
+        # Check if the file already exists to get its S
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            file_data = response.json()
+            sha = file_data["sha"]  # Get the SHA of the existing file
+            file_exists = True
+        elif response.status_code == 404:
+            file_exists = False
+            sha = None  # File doesn't exist, no SHA needed
+        else:
+            print(f"Error checking file existence: {response.json()}")
+            raise Exception(f"Error checking file existence: {response.json()}")
+
+        # Read the file content to upload
+        with open(file_path, 'rb') as file:
+            content = file.read()
+
+        encoded_content = base64.b64encode(content).decode("utf-8")
+
         data = {
             "message": "Adding a new TOML file via QGIS plugin",
             "content": encoded_content
         }
 
+        # If the file exists, include the SHA to update it
+        if file_exists:
+            data["sha"] = sha
+
         response = requests.put(url, json=data, headers=headers)
 
-        if response.status_code == 201:
-            print("File successfully uploaded to the forked GitHub repository.")
+        if response.status_code in[200,201]:
+            print("File successfully uploaded/updated in the forked GitHub repository.")
         else:
-            print(f"Failed to upload file: {response.json()}")
-            raise Exception(f"GitHub upload failed: {response.json()}")
+            print(f"Failed to upload/update file: {response.json()}")
+            raise Exception(f"GitHub upload/update failed: {response.json()}")
+
+        # if response.status_code == 201:
+        #     print("File successfully uploaded to the forked GitHub repository.")
+        # else:
+        #     print(f"Failed to upload file: {response.json()}")
+        #     raise Exception(f"GitHub upload failed: {response.json()}")
 
     def prompt_pull_request(self, username):
         pr_url = f"https://github.com/{username}/SpatialAnalysisAgent/compare"
@@ -1397,15 +1423,16 @@ class ContributionDialog(QDialog):
 
         # Prompt user to select a file
         file_dialog = QFileDialog(self)
-        toml_file, _ = file_dialog.getOpenFileName(self, "Select a TOML file", "", "TOML Files (*.toml)")
+        toml_files, _ = file_dialog.getOpenFileNames(self, "Select a TOML file", "", "TOML Files (*.toml)")
 
-        if toml_file:
+        if toml_files:
             # Ask for GitHub username (you can automate this with the token if preferred)
             username, ok = QInputDialog.getText(self, 'GitHub Username', 'Enter your GitHub username:')
 
             if ok and username:
-                # Upload the file to the user's fork
-                self.upload_to_user_fork(token, toml_file, username)
+                for toml_file in toml_files:
+                    # Upload the file to the user's fork
+                    self.upload_to_user_fork(token, toml_file, username)
 
                 # Prompt the user to open a pull request
                 self.prompt_pull_request(username)

@@ -95,21 +95,17 @@ def create_OperationIdentification_promt(task):
     prompt = f"Your role: {constants.OperationIdentification_role} \n" + \
              f"Your mission: {constants.OperationIdentification_task_prefix}: " + f"{task}\n\n" + \
              f"Requirements: \n{OperationIdentification_requirement_str} \n\n" + \
-             f"List of QGIS tools: {codebase.algorithm_names} \n" + \
-             f"List of other QGIS operations: {constants.other_QGIS_operations}\n" + \
-             f'Your reply examples: {constants.OperationIdentification_reply_example_1} + ' or ' + {constants.OperationIdentification_reply_example_2}'
+             f"Your reply examples: {constants.OperationIdentification_reply_example_1} + ' or ' + {constants.OperationIdentification_reply_example_2} + ' or ' + {constants.OperationIdentification_reply_example_3} + ' depending on the task ' "
     return prompt
 
 
 def create_ToolSelect_prompt(task):
-    ToolSelect_requirement_str = '\n'.join(
-        [f"{idx + 1}. {line}" for idx, line in enumerate(constants.ToolSelect_requirements)])
+    ToolSelect_requirement_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(constants.ToolSelect_requirements)])
 
     prompt = f"Your role: {constants.ToolSelect_role} \n" + \
-             f"Your mission: {constants.ToolSelect_task_prefix}: " + f"{task}\n\n" + \
+             f"Your mission: {constants.ToolSelect_prefix}: " + f"{task}\n\n" + \
              f"Requirements: \n{ToolSelect_requirement_str} \n\n" + \
-             f"QGIS_tools:{constants.QGIS_tools} \n" + \
-             f'Your reply example: {constants.ToolSelect_reply_example}'
+             f'Put the response in a dictionary and should be in standard JSON format to avoid JSONDecodeError. Example for a scenario of single tool: {constants.ToolSelect_reply_example1}. Example for multiple tools: {constants.ToolSelect_reply_example2}'
     return prompt
 
 
@@ -202,8 +198,19 @@ def convert_chunks_to_str(chunks):
     LLM_reply_str = ""
     for c in chunks:
         # print(c)
-        LLM_reply_str += c.content  # c['content']
+
+        LLM_reply_str += c.content # c['content']
+        # # Append content, remove backticks, and strip leading/trailing whitespace
+        # cleaned_str = LLM_reply_str.replace("```json", "").replace("```", "")
     return LLM_reply_str
+
+# def convert_chunks_to_str(chunks):
+#     LLM_reply_str = ""
+#     for c in chunks:
+#         # Append content, remove backticks, and strip leading/trailing whitespace
+#         cleaned_str = c.content.replace("```json", "").replace("```", "").strip()
+#         LLM_reply_str += cleaned_str
+#     return LLM_reply_str
 
 
 def get_LLM_reply(prompt="Provide Python code to read a CSV file from this URL and store the content in a variable. ",
@@ -374,6 +381,35 @@ async def fetch_chunks(model, prompt_str):
 
 nest_asyncio.apply()
 
+def extract_selected_tools(chunks):
+    """
+    Extracts and combines selected tools from a list of chunk dictionaries.
+
+    :param chunks: List of dictionaries, each containing a "Selected tools" key.
+    :return: A string of combined selected tools separated by commas.
+    """
+    all_tools = []
+
+    for chunk in chunks:
+        # Ensure the key exists and its value is a list
+        tools = chunk.get("Selected tools", [])
+        if isinstance(tools, list):
+            all_tools.extend(tools)
+        else:
+            print(f"Warning: 'Selected tools' is not a list in chunk: {chunk}")
+
+    # Optional: Remove duplicates while preserving order
+    seen = set()
+    unique_tools = []
+    for tool in all_tools:
+        if tool not in seen:
+            seen.add(tool)
+            unique_tools.append(tool)
+
+    # Combine the tools into a single string separated by commas
+    combined_tools_str = ', '.join(unique_tools)
+
+    return combined_tools_str
 
 def extract_code(response, verbose=False):
     '''

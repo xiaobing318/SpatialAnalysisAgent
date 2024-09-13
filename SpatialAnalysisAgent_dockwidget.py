@@ -166,7 +166,20 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         #Add switch control
         self.switch_control = SwitchControl()
         # Reduce the size of the SwitchControl
-        self.switch_control.setFixedSize(50, 25)  # Set the desired width and height
+        self.switch_control.setFixedSize(50, 20)  # Set the desired width and height
+        # self.switch_control.setStyleSheet("border-radius: 10px; padding: 2px;")  # Adjust padding
+        self.switch_control.setStyleSheet("""
+            QSwitchControl::indicator {
+                width: 14px;  # Set the desired width of the circle
+                height: 14px;  # Set the desired height of the circle
+                border-radius: 7px;  # Half of width/height to make it a circle
+                background-color: lightgray;
+            }
+
+            QSwitchControl::indicator:checked {
+                background-color: green;
+            }
+        """)
         # # Replace the placeholder with the layer tree view
         placeholderLayout.replaceWidget(placeholder, self.switch_control)
 
@@ -195,7 +208,8 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Set default workspace directory to plugin directory
         # current_script_dir = os.path.dirname(os.path.abspath(__file__))
         workspace_dir = os.path.join(current_script_dir, 'Default_workspace')
-        self.workspace_directoryLineEdit.setPlainText(workspace_dir)
+        # self.workspace_directoryLineEdit.setPlainText(workspace_dir)
+        self.workspace_directoryLineEdit2.setText(workspace_dir)
 
 
         # Connect button to open directory dialog
@@ -650,7 +664,8 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         directory = QFileDialog.getExistingDirectory(self, "Select Workspace Directory")
         if directory:
             # Set the selected directory to the PlainTextLineEdit
-            self.workspace_directoryLineEdit.setPlainText(directory)
+            # self.workspace_directoryLineEdit.setPlainText(directory)
+            self.workspace_directoryLineEdit2.setPlainText(directory)
     def run_script(self):
         # self.update_OpenAI_key()
         # Retrieve the API key from the config
@@ -666,7 +681,9 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self.task = self.task_LineEdit.toPlainText()
         self.data_path = self.data_pathLineEdit.toPlainText()
-        self.workspace_directory = self.workspace_directoryLineEdit.toPlainText()
+        # self.workspace_directory = self.workspace_directoryLineEdit.toPlainText()
+        self.workspace_directory = self.workspace_directoryLineEdit2.text()
+
 
         # Add task to history and update completer
         if self.task not in self.task_history:
@@ -780,26 +797,37 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         return api_key
 
     def add_documentation_file(self):
-        # current_script_dir = os.path.dirname(os.path.abspath(__file__))
-        # script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
-        destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"SpatialAnalysisAgent", "Tools_Documentation")
+        try:
+            # current_script_dir = os.path.dirname(os.path.abspath(__file__))
+            # script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
+            destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"SpatialAnalysisAgent", "Tools_Documentation")
 
-        # Ensure the destination directory exists; if not, create it
-        if not os.path.exists(destination_dir):
-            os.makedirs(destination_dir)
-        # Open file dialog to select .toml files
-        files, _ = QFileDialog.getOpenFileNames(
-            None, 'Select Documentation Files', '', 'TOML Files (*.toml)'
-        )
+            # Ensure the destination directory exists; if not, create it
+            if not os.path.exists(destination_dir):
+                os.makedirs(destination_dir)
+            # Open file dialog to select .toml files
+            files, _ = QFileDialog.getOpenFileNames(
+                None, 'Select Documentation Files', '', 'TOML Files (*.toml)'
+            )
 
-        # If files are selected, process them
-        if files:
-            for file_path in files:
-                # Determine the new path for the file in the destination directory
-                new_file_path = os.path.join(destination_dir, os.path.basename(file_path))
-                # Copy the file to the new directory
-                shutil.copy(file_path, new_file_path)
-                # print(f"File {file_path} copied to {new_file_path}")  # or update your UI to reflect the change
+            # If files are selected, process them
+            if files:
+                for file_path in files:
+                    # Determine the new path for the file in the destination directory
+                    new_file_path = os.path.join(destination_dir, os.path.basename(file_path))
+                    # Copy the file to the new directory
+                    shutil.copy(file_path, new_file_path)
+                    # print(f"File {file_path} copied to {new_file_path}")  # or update your UI to reflect the change
+                    # Display success message
+                QMessageBox.information(None, 'Success',
+                                        f'Documentation files have been successfully uploaded to {destination_dir}')
+                # else:
+                #     # If no files were selected, show an info message
+                #     QMessageBox.information(None, 'No Files Selected', 'No documentation files were selected.')
+
+        except Exception as e:
+            # Display failure message in case of any errors
+            QMessageBox.critical(None, 'Error', f'Failed to upload documentation files: {str(e)}')
 
 # The classFactory function must be placed at the end of this file
 def classFactory(iface):

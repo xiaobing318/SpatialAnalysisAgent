@@ -1,6 +1,7 @@
 import ast
 import asyncio
 import io
+import json
 import sys
 import re
 import traceback
@@ -105,7 +106,7 @@ def create_ToolSelect_prompt(task):
     prompt = f"Your role: {constants.ToolSelect_role} \n" + \
              f"Your mission: {constants.ToolSelect_prefix}: " + f"{task}\n\n" + \
              f"Requirements: \n{ToolSelect_requirement_str} \n\n" + \
-             f'Put the response in a dictionary and should be in standard JSON format to avoid JSONDecodeError. Example for a scenario of single tool: {constants.ToolSelect_reply_example1}. Example for multiple tools: {constants.ToolSelect_reply_example2}'
+             f'Example for your reply: {constants.ToolSelect_reply_example2}.'
     return prompt
 
 
@@ -199,18 +200,46 @@ def convert_chunks_to_str(chunks):
     for c in chunks:
         # print(c)
 
-        LLM_reply_str += c.content # c['content']
+        cleaned_str = c.content.replace("```json", "").replace("```", "")
+        LLM_reply_str += cleaned_str
         # # Append content, remove backticks, and strip leading/trailing whitespace
-        # cleaned_str = LLM_reply_str.replace("```json", "").replace("```", "")
+
     return LLM_reply_str
 
-# def convert_chunks_to_str(chunks):
-#     LLM_reply_str = ""
-#     for c in chunks:
-#         # Append content, remove backticks, and strip leading/trailing whitespace
-#         cleaned_str = c.content.replace("```json", "").replace("```", "").strip()
-#         LLM_reply_str += cleaned_str
-#     return LLM_reply_str
+def convert_chunks_to_code_str(chunks):
+    LLM_reply_str = ""
+    for c in chunks:
+        # Append content, remove backticks, and strip leading/trailing whitespace
+        LLM_reply_str += c.content
+    return LLM_reply_str
+
+
+def fix_json_format(incorrect_json_str):
+    # Fix common JSON issues such as missing double quotes around keys
+    # Example: convert {selected tool: ["Clip","Scatterplot"]} to {"selected tool": ["Clip","Scatterplot"]}
+    fixed_json_str = re.sub(r'(\w+):', r'"\1":', incorrect_json_str)
+    return fixed_json_str
+
+def parse_llm_reply(LLM_reply_str):
+    try:
+        # Try to load the string directly as JSON
+        selection_operation = json.loads(LLM_reply_str)
+    except json.JSONDecodeError:
+        # If it fails, try to fix the JSON format and decode again
+        corrected_reply = fix_json_format(LLM_reply_str)
+        try:
+            selection_operation = json.loads(corrected_reply)
+        except json.JSONDecodeError as e:
+            # If it still fails, return None or raise an error as per your needs
+            print(f"Failed to parse LLM reply: {e}")
+            selection_operation = None
+    except TypeError as e:
+        # Catch the case where input is not a string, bytes, or bytearray
+        print(f"TypeError: {e} - Input must be a valid JSON string.")
+        selection_operation = None
+    return selection_operation
+
+
 
 
 def get_LLM_reply(prompt="Provide Python code to read a CSV file from this URL and store the content in a variable. ",
@@ -517,7 +546,7 @@ def review_operation_code(extracted_code, data_path, workspace_directory, docume
 
     code_review_prompt_str_chunks = asyncio.run(fetch_chunks(model, operation_code_review_prompt))
     clear_output(wait=True)
-    review_str_LLM_reply_str = convert_chunks_to_str(chunks=code_review_prompt_str_chunks)
+    review_str_LLM_reply_str = convert_chunks_to_code_str(chunks=code_review_prompt_str_chunks)
     # EXTRACTING REVIEW_CODE
     print("\n\n")
     print(f"--------------------------FINAL_CODE--------------------------------------------: \n\n")

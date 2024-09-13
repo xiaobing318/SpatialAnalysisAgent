@@ -1,4 +1,4 @@
-
+import json
 #***************************************************************************
 ##Import package
 import os
@@ -119,7 +119,7 @@ clear_output(wait=True)
 LLM_reply_str = helper.convert_chunks_to_str(chunks=chunks)
 # print(f"Work directory: {workspace_directory}")
 # print("Select the QGIS tool: \n")
-print(LLM_reply_str)
+# print(LLM_reply_str)
 task_breakdown = LLM_reply_str
 ##*************************************** TOOL SELECT *******************************************************
 ToolSelect_prompt_str = helper.create_ToolSelect_prompt(task=task_breakdown)
@@ -132,12 +132,13 @@ print(Selected_Tools_reply)
 
 #************************************************************************************************************************************************************
 import ast
-import json
-select_operation = json.loads(Selected_Tools_reply)
-print(select_operation)
-# # select_operation = json.loads(LLM_reply_str)
-# select_operation = ast.literal_eval(Selected_Tools_reply)
-selected_tools = select_operation['Selected tool']
+# import json
+# # select_operation = json.loads(Selected_Tools_reply)
+# # print(select_operation)
+# selection_operation1 = helper.parse_llm_reply(Selected_Tools_reply)
+# selection_operation = json.loads(selection_operation1)
+selection_operation = ast.literal_eval(Selected_Tools_reply)
+selected_tools = selection_operation['Selected tool']
 
 print(selected_tools)
 
@@ -151,8 +152,8 @@ for selected_tool in selected_tools:
 
     if selected_tool in codebase.algorithm_names:
         selected_tool_ID = codebase.algorithms_dict[selected_tool]['ID']
-    elif selected_tool in constants.other_QGIS_operations:
-        selected_tool_ID = constants.other_QGIS_operations_dict[selected_tool]['ID']
+    elif selected_tool in constants.other_tools:
+        selected_tool_ID = constants.other_tools_dict[selected_tool]['ID']
     else:
         selected_tool_ID = None
 
@@ -168,7 +169,7 @@ for selected_tool in selected_tools:
     # Create and print the operation prompt string for each selected tool
     operation_prompt_str = helper.create_operation_prompt(task, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,
                                                           documentation_str=documentation_str)
-    # print(operation_prompt_str)
+    print(operation_prompt_str)
 #
 #
 # #%% --------------------------------------------------------SOLUTION GRAPH -----------------------------------------------
@@ -225,11 +226,12 @@ Operation_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, operation_p
 
 clear_output(wait=True)
 # clear_output(wait=False)
-LLM_reply_str = helper.convert_chunks_to_str(chunks=Operation_prompt_str_chunks)
-# print(LLM_reply_str)
+LLM_reply_str = helper.convert_chunks_to_code_str(chunks=Operation_prompt_str_chunks)
+print(LLM_reply_str)
 #EXTRACTING CODE
-print("```python")
+
 print("\n ---------------------------EXTRACTED CODE:--------------------------------------\n")
+print("```python")
 extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
 
@@ -240,7 +242,7 @@ code_review_prompt_str = helper.code_review_prompt(extracted_code, data_path = d
 # print(code_review_prompt_str)
 code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
 clear_output(wait=True)
-review_str_LLM_reply_str = helper.convert_chunks_to_str(chunks=code_review_prompt_str_chunks)
+review_str_LLM_reply_str = helper.convert_chunks_to_code_str(chunks=code_review_prompt_str_chunks)
 #EXTRACTING REVIEW_CODE
 print("\n\n")
 print(f"---------------------------FINAL REVIEWED CODE----------------------------------- \n\n")

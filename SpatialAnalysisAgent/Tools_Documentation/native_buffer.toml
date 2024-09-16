@@ -3,7 +3,6 @@ tool_ID = 'native:buffer'
 
 tool_name = 'Buffer'
 
-# provide a brief description (1 line) of the data source to inform AI whether need to use this data source.
 brief_description = '''
 Computes a buffer area for all the features in an input layer, using a fixed or data defined distance.
 '''
@@ -25,8 +24,8 @@ from qgis.core import QgsProject,QgsVectorLayer
 def buffer():
     # Paths to input layers
     data_path = "D:/SpatialAnalysisAgent/Data/Point_data.shp"
+    output_path = "D:/Output_Directory/Output_layer.shp"
     data_layer = QgsVectorLayer(data_path, 'dataLayer', 'ogr')
-
     # Define the parameters Example below:
     parameters = {
         'INPUT': data_layer,
@@ -37,11 +36,11 @@ def buffer():
         'MITER_LIMIT':2,
         'DISSOLVE':False,
         'SEPARATE_DISJOINT':False,
-        'OUTPUT':'memory: buffered'}
+        'OUTPUT':output_path}
     # Perform the extract by attribute operation
     result = processing.run("native:buffer", parameters)
     ## Load the selected features as a new layer
-    output_layer = result['OUTPUT']
+     output_layer = QgsVectorLayer(result['OUTPUT'], 'Buffer Layer', 'ogr')
     QgsProject.instance().addMapLayer(output_layer)
 buffer()
 '''

@@ -1193,11 +1193,7 @@ fieldcalculator()
 'native:countpointsinpolygon': ["""
 Count points in polygon (native:countpointsinpolygon)
 
-Counts point features located within polygon features.
-
-This algorithm takes a points layer and a polygon layer and counts the number of points from the first one in each polygons of the second one.
-
-A new polygons layer is generated, with the exact same content as the input polygons layer, but containing an additional field with the points count corresponding to each polygon.
+Counts point features located within polygon features. This algorithm takes a points layer and a polygon layer and counts the number of points from the first one in each polygons of the second one. A new polygons layer is generated, with the exact same content as the input polygons layer, but containing an additional field with the points count corresponding to each polygon.
 
 An optional weight field can be used to assign weights to each point. If set, the count generated will be the sum of the weight field for each point contained by the polygon.
 
@@ -1444,7 +1440,7 @@ intersection()
 
 """],
 
-"native:extractwithindistance":["""Creates a new vector layer that only contains matching features from an input 
+"native:native:extractwithindistancenative:extractwithindistance":["""Creates a new vector layer that only contains matching features from an input 
 layer. Features are copied wherever they are within the specified maximum distance from the features in an additional 
 reference layer.
 

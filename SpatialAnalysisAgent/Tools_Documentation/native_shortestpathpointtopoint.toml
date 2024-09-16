@@ -1,37 +1,56 @@
-tool_ID = 'native:rastercalc'
-tool_name = 'Raster calculator'
+tool_ID = 'native:shortestpathpointtopoint'
+tool_name = 'Shortest path (point to point)'
 
 # provide a brief description (1 line) of the data source to inform AI whether need to use this data source.
 brief_description = '''
-This algorithm allows performing algebraic operations using raster layers.
-The resulting layer will have its values computed according to an expression. The expression can contain numerical values, operators and references to any of the layers in the current project
+This algorithm computes optimal (shortest or fastest) route between given start and end points.
 '''
 parameters ='''
-INPUT: Input vector layer
-EXPRESSION: Raster-based expression that will be used to calculate the output raster layer. When writing the expression, raster layers are referred by their name and the number of the band, e.g., `layer_name@1`. For instance, the first band from a layer named DEM will be referred as DEM@1. Operators contains a number of calculation operators for pixels manipulation: 
-                -Arithmetical: +, -, *, sqrt, abs, ln, … 
-                -Trigonometric: sin, cos, tan, …
-                -Comparison: =, !=, <, >=, …
-                - Logical: IF, AND, OR, (, )
-                - Statistical: min, max
-OUTPUT: Specify the output (buffer) layer. One of: Create Temporary Layer (TEMPORARY_OUTPUT); Save to File…;
-        Save to Geopackage…; Save to Database Table…; Append to Layer…
+INPUT: Vector layer representing network
+START_POINT:
+END_POINT:
+STRATEGY:
+OUTPUT:
 '''
 code_example = '''
+def find_shortest_path():
+    # Import necessary QGIS and PyQt5 modules
+    from qgis.core import QgsProject, QgsVectorLayer
+    import processing
+    from PyQt5.QtCore import QVariant
 
-def rastercalc():
-    slope_path = '/vsimem/slope.tif'
-    slope_layer = QgsRasterLayer(slope_path, 'Slope Layer')
-   
-    parameters = {
-    'LAYERS':[slope_layer], # These are the list of all the layers loaded, these ae not the path
-    'EXPRESSION':'"Slope Layer@1"<0.3',
-    'EXTENT': None,
-    'CELL_SIZE':None,
-    'OUTPUT':'/vsimem/raster_calc_output.tif'}
-    result = processing.run("native:rastercalc", parameters)
-    
-    raster_calc_layer = QgsRasterLayer(result['OUTPUT'], 'Raster Calculator Result')
-    QgsProject.instance().addMapLayer(raster_calc_layer)
-rastercalc()
+    # Define paths to the input data
+    network_points_path = 'D:/Data/network_analysis/network_points.shp'
+    network_lines_path = 'D:/Data/network_analysis/network_lines.shp'
+    output_directory = 'C:/Output_directory/Output_layer.shp'
+    output_path = f'{output_directory}/shortest_path.shp'
+
+    # Load the network points and lines layers
+    network_points_layer = QgsVectorLayer(network_points_path, 'Network Points', 'ogr')
+    network_lines_layer = QgsVectorLayer(network_lines_path, 'Network Lines', 'ogr')
+
+    # Define start and end points using the attributes in the network points layer
+    # Assuming the first two points from the network_points_layer are City A and City B
+    start_point = network_points_layer.getFeature(0).geometry().asPoint()
+    end_point = network_points_layer.getFeature(1).geometry().asPoint()
+
+    # Define the parameters for the shortest path (point to point) algorithm
+    params = {
+        'INPUT': network_lines_layer,  # Input is the network lines layer
+        'START_POINT': f'{start_point.x()},{start_point.y()}',   # Start point geometry as string "x,y"
+        'END_POINT': f'{end_point.x()},{end_point.y()}',         # End point geometry as string "x,y"
+        'STRATEGY': 0,                # Strategy 0 means shortest path
+        'OUTPUT': output_path         # Save the output to specified folder
+    }
+
+    # Execute the algorithm
+    result = processing.run("native:shortestpathpointtopoint", params)
+
+    # Load the output layer as a virtual layer within QGIS
+    output_layer = QgsVectorLayer(result['OUTPUT'], 'Shortest Path', 'ogr')
+    QgsProject.instance().addMapLayer(output_layer)
+
+# Execute the function to find and load the shortest path
+find_shortest_path()
+
 '''

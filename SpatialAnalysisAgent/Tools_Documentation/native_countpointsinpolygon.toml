@@ -40,7 +40,10 @@ def CountPointsinPolygon():
     # Perform the extract by attribute operation
     result = processing.run("native:countpointsinpolygon", parameters)
     # Load the selected features as a new layer
-    output_layer = QgsVectorLayer(result['OUTPUT'], 'output Layer', 'ogr')
-    QgsProject.instance().addMapLayer(output_layer)
+    output_layer = QgsVectorLayer(result['OUTPUT'], 'counted', 'ogr')
+	 # Assuming there's only one polygon (PA)
+    feature = next(output_layer.getFeatures())
+    count = feature['NUMPOINTS']
+	print(f'Total counts: {count}')
 CountPointsinPolygon()
 '''

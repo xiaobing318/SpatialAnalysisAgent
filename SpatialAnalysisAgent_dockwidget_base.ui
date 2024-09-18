@@ -60,7 +60,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -294,13 +294,6 @@ padding: 5px; /* padding inside the text edit */
           <item row="0" column="0">
            <widget class="QWidget" name="report_widget" native="true"/>
           </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="refresh_report_Btn">
-            <property name="text">
-             <string>Refresh</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
        </layout>
@@ -419,16 +412,6 @@ padding: 5px; /* padding inside the text edit */
               <pointsize>8</pointsize>
              </font>
             </property>
-            <item>
-             <property name="text">
-              <string>gpt-o1-preview</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>gpt-o1-mini</string>
-             </property>
-            </item>
             <item>
              <property name="text">
               <string>gpt-4o</string>

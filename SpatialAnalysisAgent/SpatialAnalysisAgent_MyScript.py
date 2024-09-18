@@ -119,7 +119,7 @@ clear_output(wait=True)
 LLM_reply_str = helper.convert_chunks_to_str(chunks=chunks)
 # print(f"Work directory: {workspace_directory}")
 # print("Select the QGIS tool: \n")
-# print(LLM_reply_str)
+print(LLM_reply_str)
 task_breakdown = LLM_reply_str
 ##*************************************** TOOL SELECT *******************************************************
 ToolSelect_prompt_str = helper.create_ToolSelect_prompt(task=task_breakdown)
@@ -167,7 +167,7 @@ for selected_tool in selected_tools:
     print(documentation_str)
 
     # Create and print the operation prompt string for each selected tool
-    operation_prompt_str = helper.create_operation_prompt(task, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,
+    operation_prompt_str = helper.create_operation_prompt(task = task_breakdown, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,
                                                           documentation_str=documentation_str)
     print(operation_prompt_str)
 #
@@ -269,7 +269,7 @@ print("```")
 #
 
 #%% EXECUTION OF THE CODE
-code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=5, task=task, model_name=model_name, documentation_str=documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
+code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=3, task=task, model_name=model_name, documentation_str=documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
 # display(Code(code, language='python'))
 
 

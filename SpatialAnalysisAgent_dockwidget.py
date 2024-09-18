@@ -91,22 +91,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """Constructor."""
         super(SpatialAnalysisAgentDockWidget, self).__init__(parent)
 
-        # Set up the user interface from Designer.
-        # After setupUI you can access any designer object by doing
-        # self.<objectname>, and you can use autoconnect slots - see
-        # http://doc.qt.io/qt-5/designer-using-a-ui-file.html
-        # #widgets-and-dialogs-with-auto-connect
-
-        # Perform the library check only once
-
-        # Initialization of your plugin
-        # self.contribution_dialog = None  # Initialize ContributionDialog later
-
-        # Add this to your plugin’s UI (like a menu or button)
-        # self.contribute_action = QAction("Contribute", self.iface.mainWindow())
-        # self.contribute_action.clicked.connect(self.show_contribution_dialog)
-
-
 
         self.setupUi(self)
 
@@ -208,6 +192,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Set default workspace directory to plugin directory
         # current_script_dir = os.path.dirname(os.path.abspath(__file__))
         workspace_dir = os.path.join(current_script_dir, 'Default_workspace')
+        self.create_default_workspace(workspace_dir)
         # self.workspace_directoryLineEdit.setPlainText(workspace_dir)
         self.workspace_directoryLineEdit2.setText(workspace_dir)
 
@@ -234,6 +219,15 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     #     """ Open the custom dialog for uploading TOML files """
     #     dialog = UploadTomlDialog(self)
     #     dialog.exec_()  # Show the dialog
+
+    def create_default_workspace(self, workspace_dir):
+        """Create the Default_workspace directory if it doesn't exist."""
+        if not os.path.exists(workspace_dir):
+            try:
+                os.makedirs(workspace_dir)
+
+            except Exception as e:
+                print(f"Error creating default workspace: {e}")
 
     def handle_missing_libraries(self, missing_packages):
         if missing_packages:
@@ -340,20 +334,11 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         layer_path = layer.dataProvider().dataSourceUri().split("|")[0]
 
         if layer_path in existing_paths:
-            # # Remove the path from the LineEdit
-            # updated_paths = existing_paths.replace(layer_path, "").replace(";;", ";")
-            # # Clean up leading/trailing semicolons
-            # updated_paths = updated_paths.strip("; ")
-
             updated_paths = existing_paths.replace(layer_path, "").replace("\n\n", "\n")
             # Clean up leading/trailing newlines
             updated_paths = updated_paths.strip("\n")
 
             self.data_pathLineEdit.setPlainText(updated_paths)
-
-
-
-
         # Update data_pathLineEdit based on the remaining visible layers
         self.on_layer_visibility_changed()
 
@@ -387,7 +372,8 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.clear_textboxesBtn.clicked.connect(self.clear_textboxes)
         self.loadData.clicked.connect(self.load_data)
         self.refresh_slnGraph_Btn.clicked.connect(self.refresh_slnGraph)
-        self.refresh_report_Btn.clicked.connect(self.refresh_report)
+        # self.refresh_report_Btn.clicked.connect(self.refresh_report)
+        self.run_button.clicked.connect(self.clear_report)
         self.add_document_button.clicked.connect(self.add_documentation_file)
         # self.add_document_github_button.clicked.connect(self.open_upload_dialog)
         self.add_document_github_button.clicked.connect(self.show_contribution_dialog)
@@ -397,6 +383,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Populate data_pathLineEdit with currently loaded layers
         # self.populate_data_path_line_edit()
         self.on_layer_visibility_changed()
+    def clear_report(self):
+        if not self.switch_control.isChecked() and self.data_pathLineEdit.toPlainText().strip() and self.task_LineEdit.toPlainText().strip():
+            self.report_web_view.setHtml('')
+            # self.refresh_report_Btn.clicked.connect(self.refresh_report)
+        else:
+            return
 
     def populate_data_path_line_edit(self):
         # Retrieve all layers currently in the project
@@ -481,15 +473,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         settings.setValue('API_Key/OpenAI_key', api_key)
 
     def load_OpenAI_key(self):
-        # settings = QSettings('YourOrganization', 'YourApplication')
-        # # Load the OpenAI key from QSettings
-        # api_key = settings.value('API_Key/OpenAI_key', '')
-        #
-        # if api_key:
-        #     # If the key is found in QSettings, set it in the LineEdit
-        #     self.OpenAI_key_LineEdit.setText(api_key)
-        # else:
-        # Fallback to loading from the config file
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(current_script_dir, 'SpatialAnalysisAgent', 'config.ini')
         config = configparser.ConfigParser()
@@ -513,8 +496,8 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Clear the web view content
         self.web_view.setHtml("<html><body><h1>Solution Graph Cleared</h1></body></html>")
 
-    def refresh_report(self):
-        self.report_web_view.setHtml("<html><body><h1>Reports Cleared</h1></body></html>")
+    # def refresh_report(self):
+    #     self.report_web_view.setHtml("<html><body><h1>Reports Cleared</h1></body></html>")
 
 
     def set_initial_extent(self):
@@ -665,7 +648,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if directory:
             # Set the selected directory to the PlainTextLineEdit
             # self.workspace_directoryLineEdit.setPlainText(directory)
-            self.workspace_directoryLineEdit2.setPlainText(directory)
+            self.workspace_directoryLineEdit2.setText(directory)
     def run_script(self):
         # self.update_OpenAI_key()
         # Retrieve the API key from the config
@@ -701,8 +684,16 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.thread.graph_ready.connect(self.update_graph)
         self.thread.report_ready.connect(self.update_report)
         self.thread.chatgpt_update.connect(self.update_chatgpt_ans)
-        self.thread.finished.connect(self.thread_finished)
+        self.thread.script_finished.connect(self.thread_finished)
         self.thread.start()
+
+        # Disable the send_button
+        self.run_button.setEnabled(False)
+        self.clear_textboxesBtn.setEnabled(False)
+        self.task_LineEdit.setEnabled(False)
+        self.data_pathLineEdit.setEnabled(False)
+        self.loadData.setEnabled(False)
+
 
     def update_chatgpt_ans(self, message, is_user=False):
         # Append new message to conversation history
@@ -719,6 +710,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.thread.terminate()
             self.update_chatgpt_ans(f"SpatialAnalysisAgent: Script terminated")
             # print("Script terminated")
+            # Re-enable the send_button
+        self.run_button.setEnabled(True)
+        self.clear_textboxesBtn.setEnabled(True)
+        self.task_LineEdit.setEnabled(True)
+        self.data_pathLineEdit.setEnabled(True)
+        self.loadData.setEnabled(True)
+
 
     def append_text_with_format(self, text, is_user=True):
         cursor = self.chatgpt_ans.textCursor()
@@ -769,8 +767,16 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Check if the line contains the completion message
         if "-----Script completed-----" in clean_line:
             self.update_chatgpt_ans(f"AI: Done")
+            self.run_button.setEnabled(True)
+            self.clear_textboxesBtn.setEnabled(True)
+            self.task_LineEdit.setEnabled(True)
+            self.data_pathLineEdit.setEnabled(True)
+            self.loadData.setEnabled(True)
 
+
+    # @pyqtSlot(bool)
     def thread_finished(self, success):
+
         if success:
             # self.output_text_edit.append("The script ran successfully.")
             self.output_text_edit.insertPlainText("The script ran successfully.")
@@ -780,11 +786,25 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.output_text_edit.insertPlainText("The script finished with errors.")
             self.update_chatgpt_ans(f"SpatialAnalysisAgent: The script finished with errors.")
 
+        # Ensure the thread is stopped and cleaned up
+        self.thread.quit()  # This will stop the event loop in the thread
+        self.thread.wait()  # This will block until the thread has finished executing
+
+        # Re-enable the send_button    #Not working
+        self.run_button.setEnabled(True)
+        self.task_LineEdit.setEnabled(True)
+        self.data_pathLineEdit.setEnabled(True)
+        self.loadData.setEnabled(True)
+
+
+
     def clear_textboxes(self):
         self.output_text_edit.clear()
         self.task_LineEdit.clear()
         self.chatgpt_ans.clear()
         # self.output_text_edit_2.clear()
+        # Clear conversation history to ensure no previous responses are carried forward
+        self.conversation_history = []
 
     def interrupt(self):
         if self.thread:
@@ -840,7 +860,7 @@ class ScriptThread(QThread):
     chatgpt_update = pyqtSignal(str)
     graph_ready = pyqtSignal(str)
     report_ready = pyqtSignal(str)
-    finished = pyqtSignal(bool)
+    script_finished = pyqtSignal(bool)
 
     def __init__(self, script_path, task, data_path, workspace_directory, OpenAI_key, model_name):
         super().__init__()
@@ -850,6 +870,7 @@ class ScriptThread(QThread):
         self.workspace_directory = workspace_directory
         self.OpenAI_key = OpenAI_key
         self.model_name = model_name
+
 
         self._is_running = True  # Flag to control the running state
 
@@ -964,14 +985,16 @@ class ScriptThread(QThread):
             sys.stderr = original_stderr
 
             # Emit success signal
-            self.finished.emit(True)
+            self.script_finished.emit(True)
+
 
         except Exception as e:
             # Print traceback error to the text_edit
             traceback_str = traceback.format_exc()
             self.output_line.emit(f"Error: {e}\n{traceback_str}")  # Emit any exceptions to the UI
             self.chatgpt_update.emit(f"AI: An error occured: {str(e)}\n{traceback_str}")
-            self.finished.emit(False)  # Signal failure
+            self.script_finished.emit(False)  # Signal failure
+
 
     def stop(self):
         self._is_running = False
@@ -983,37 +1006,6 @@ class ScriptThread(QThread):
     def check_running(self):
         return self._is_running
 
-    # def update_config_file(self):
-    #     # Retrieve the API key from the line edit
-    #     # OpenAI_key = self.OpenAI_key_LineEdit.text()
-    #
-    #     current_script_dir = os.path.dirname(os.path.abspath(__file__))
-    #     config_path = os.path.join(current_script_dir, 'SpatialAnalysisAgent', 'config.ini')
-    #     # config_path = os.path.join(os.path.dirname(self.script_path), 'config.ini')
-    #     # Ensure the directory exists, if not, create it
-    #     config_dir = os.path.dirname(config_path)
-    #     if not os.path.exists(config_dir):
-    #         os.makedirs(config_dir)
-    #
-    #     config = configparser.ConfigParser()
-    #
-    #     # Check if the config file exists
-    #     if os.path.exists(config_path):
-    #         # If the config file exists, read the existing content
-    #         config.read(config_path)
-    #
-    #     if 'API_Key' not in config:
-    #         config['API_Key'] = {}
-    #
-    #     config['API_Key']['OpenAI_key'] = self.OpenAI_key
-    #
-    #     with open(config_path, 'w') as configfile:
-    #         config.write(configfile)
-    #
-    #     # # Update the QSettings (optional, if you want to store it there too)
-    #     settings = QSettings('YourOrganization', 'YourApplication')
-    #     settings.setValue('API_Key/OpenAI_key', self.OpenAI_key)
-
 from openai import OpenAI
 class GPTRequestThread(QThread):
     output_line = pyqtSignal(str)
@@ -1024,38 +1016,6 @@ class GPTRequestThread(QThread):
         self.prompt = prompt
         self.OpenAI_key = OpenAI_key
         self.model_name = model_name
-
-
-    # def update_config_file(self):
-    #     # Retrieve the API key from the line edit
-    #     # OpenAI_key = self.OpenAI_key_LineEdit.text()
-    #
-    #     current_script_dir = os.path.dirname(os.path.abspath(__file__))
-    #     config_path = os.path.join(current_script_dir, 'SpatialAnalysisAgent', 'config.ini')
-    #     # config_path = os.path.join(os.path.dirname(self.script_path), 'config.ini')
-    #     # Ensure the directory exists, if not, create it
-    #     config_dir = os.path.dirname(config_path)
-    #     if not os.path.exists(config_dir):
-    #         os.makedirs(config_dir)
-    #
-    #     config = configparser.ConfigParser()
-    #
-    #     # Check if the config file exists
-    #     if os.path.exists(config_path):
-    #     # If the config file exists, read the existing content
-    #         config.read(config_path)
-    #
-    #     if 'API_Key' not in config:
-    #         config['API_Key'] = {}
-    #
-    #     config['API_Key']['OpenAI_key'] = self.OpenAI_key
-    #
-    #     with open(config_path, 'w') as configfile:
-    #         config.write(configfile)
-    #
-    #     # # Update the QSettings (optional, if you want to store it there too)
-    #     settings = QSettings('YourOrganization', 'YourApplication')
-    #     settings.setValue('API_Key/OpenAI_key', self.OpenAI_key)
 
 
     def load_api_key_from_config(self):
@@ -1140,141 +1100,6 @@ class PythonHighlighter(QSyntaxHighlighter):
                 for match in pattern.finditer(text):
                     start, end = match.span()
                     self.setFormat(start, end - start, format)
-
-
-# class UploadTomlDialog(QDialog):
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#
-#         self.setWindowTitle("Upload TOML File to GitHub")
-#         self.resize(400, 200)
-#
-#         layout = QVBoxLayout(self)
-#
-#         # File selection label and button
-#         self.file_label = QLabel("No file selected")
-#         self.select_file_button = QPushButton("Select TOML File")
-#         self.select_file_button.clicked.connect(self.select_file)
-#
-#         # GitHub token input
-#         self.token_input = QLineEdit()
-#         self.token_input.setPlaceholderText("Enter GitHub Token (if needed)")
-#
-#         # Upload button
-#         self.upload_button = QPushButton("Upload to GitHub")
-#         self.upload_button.clicked.connect(self.upload_file)
-#
-#         # Add widgets to the layout
-#         layout.addWidget(self.file_label)
-#         layout.addWidget(self.select_file_button)
-#         layout.addWidget(self.token_input)
-#         layout.addWidget(self.upload_button)
-#
-#         self.selected_file = None
-#
-#     def select_file(self):
-#         """ Open file dialog to select the TOML file """
-#         file_dialog = QFileDialog()
-#         toml_file, _ = file_dialog.getOpenFileName(self, "Select a TOML file", "", "TOML Files (*.toml)")
-#
-#         if toml_file:
-#             self.selected_file = toml_file
-#             self.file_label.setText(toml_file)
-#
-#
-#     # def get_github_token(self):
-#     #     # Path to the configuration file
-#     #     current_script_dir = os.path.dirname(os.path.abspath(__file__))
-#     #     githubtokenConfig_path = os.path.join(current_script_dir, "config_files", "GitHubTokenConfig.ini")
-#     #
-#     #     config = configparser.ConfigParser()
-#     #
-#     #     # Check if the config file exists
-#     #     if os.path.exists(githubtokenConfig_path):
-#     #         # If the config file exists, read the token from it
-#     #         config.read(githubtokenConfig_path)
-#     #         token = config.get("GitHub", "token", fallback=None)
-#     #         if not token:
-#     #             token = self.prompt_for_token(githubtokenConfig_path)
-#     #         return token
-#     #     else:
-#     #         # If the config file doesn't exist, create it and prompt for token
-#     #         os.makedirs(os.path.dirname(githubtokenConfig_path), exist_ok=True)
-#     #         return self.prompt_for_token(githubtokenConfig_path)
-#     #
-#     # def prompt_for_token(self, config_file_path):
-#     #     """Prompt the user for a GitHub token and store it in the config file."""
-#     #     token, ok = QInputDialog.getText(self, 'GitHub Token', 'Please enter your GitHub token:')
-#     #     if ok and token:
-#     #         self.save_github_token(config_file_path, token)
-#     #         return token
-#     #     else:
-#     #         return None
-#     #
-#     # def save_github_token(self, config_file_path, token):
-#     #     """Save the GitHub token to the configuration file."""
-#     #     config = configparser.ConfigParser()
-#     #     config.read(config_file_path)
-#     #     config["GitHub"] = {"token": token}
-#     #
-#     #     with open(config_file_path, "w") as config_file:
-#     #         config.write(config_file)
-#
-#     def upload_file(self):
-#         """ Trigger file upload logic """
-#         if not self.selected_file:
-#             QMessageBox.warning(self, "Error", "Please select a TOML file to upload.")
-#             return
-#
-#         token = self.token_input.text().strip()
-#
-#         # Check if token is provided or already stored
-#         if not token:
-#             token = self.get_github_token()
-#
-#         if not token:
-#             QMessageBox.warning(self, "Error", "GitHub token is required for the upload.")
-#             return
-#
-#         # Upload file to GitHub
-#         try:
-#             upload_to_github(token, self.selected_file)
-#             QMessageBox.information(self, "Success", "File successfully uploaded to GitHub.")
-#         except Exception as e:
-#             QMessageBox.warning(self, "Error", f"Failed to upload file: {str(e)}")
-#
-#
-# # Function to upload the file to GitHub using the provided token and file
-# def upload_to_github(token, file_path):
-#     repo = "Teakinboyewa/SpatialAnalysisAgent"  # Hardcoded repository
-#     FOLDER_IN_REPO = "SpatialAnalysisAgent"
-#     path_in_repo = os.path.join(FOLDER_IN_REPO, os.path.basename(file_path))
-#
-#     # Prepare the request
-#     url = f"https://api.github.com/repos/{repo}/contents/{path_in_repo}"
-#     with open(file_path, 'rb') as file:
-#         content = file.read()
-#
-#     encoded_content = base64.b64encode(content).decode("utf-8")
-#
-#     headers = {
-#         "Authorization": f"token {token}",
-#         "Accept": "application/vnd.github.v3+json"
-#     }
-#
-#     data = {
-#         "message": "Adding a new TOML file via QGIS plugin",
-#         "content": encoded_content
-#     }
-#
-#     response = requests.put(url, json=data, headers=headers)
-#
-#     if response.status_code == 201:
-#         print("File successfully uploaded to GitHub.")
-#     else:
-#         print(f"Failed to upload file: {response.json()}")
-#         raise Exception(f"GitHub upload failed: {response.json()}")
-
 
 class ContributionDialog(QDialog):
     def __init__(self, parent=None):

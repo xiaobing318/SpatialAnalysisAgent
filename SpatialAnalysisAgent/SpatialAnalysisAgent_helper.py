@@ -72,10 +72,9 @@ import SpatialAnalysisAgent_Codebase as codebase
 
 # Add this function to generate the task name using GPT-3.5
 def generate_task_name_with_gpt(task_description):
-    prompt = f"Given the following task description: '{task_description}',give the best operation word that represents this task.\n\n" + \
-             f"Provide the task name in one or two words. If you think one word is not enough then separate multiple words with underscore(_). \n\n" + \
-             f"The task_name should capture the task operation. E.g for a task: Calculate the population density of each county, you can use 'Population_density_calculation'. \n\n" + \
-             f"Underscore '_' is the only alphanumeric symbols that is allowed in a task name. A task_name must not contain quotations or inverted commas example: 'Map_creation'. This is not allowed as task_name \n"
+    prompt = f"Given the following task description: '{task_description}',give the best task that represents this task.\n\n" + \
+             f"Provide the task name in just one or two words. \n\n" + \
+             f"Underscore '_' is the only alphanumeric symbols that is allowed in a task name. A task_name must not contain quotations or inverted commas example or space. \n"
     client = create_openai_client()
     response = client.chat.completions.create(
         model='gpt-4o',
@@ -296,6 +295,7 @@ def get_LLM_reply(prompt="Provide Python code to read a CSV file from this URL a
     return response
 
 
+
 def extract_content_from_LLM_reply(response):
     stream = False
     if isinstance(response, list):
@@ -492,6 +492,7 @@ def execute_complete_program(code: str, try_cnt: int, task: str, model_name: str
 
     while count < try_cnt:
         print(f"\n\n-------------- Running code (trial # {count + 1}/{try_cnt}) --------------\n\n")
+        original_stdout.flush()  # Ensure the message is printed immediately
         try:
             count += 1
             # Redirect stdout to capture print output

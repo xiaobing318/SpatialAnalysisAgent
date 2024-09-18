@@ -38,14 +38,18 @@ You are very good at providing explanation to a task and  identifying QGIS tools
 OperationIdentification_task_prefix = rf' Provide a brief explanation on which tool that can be used to perform this task. Identify  if any of the available QGIS processing tool algorithms is suitable or there is need for new algorithm in order to perform this task:'
 
 other_tools = ['Thematic Map Creation',
-                         'Land Use Land Cover (LULC)',
-                         'scatterplot',
-                         'Others']
+                'Land Use Land Cover (LULC)',
+                'Density map (Kernel Density Estimation)',
+                'Inverse Distance Weighted interpolation',
+                'scatterplot',
+                'Others']
 
 other_tools_dict = {
     "Thematic Map Creation": {"ID": "thematic_map_creation"},
     "Land Use Land Cover (LULC)":{"ID":"lulc"},
     "scatterplot":{"ID":"scatter_plot"},
+    "Density map (Kernel Density Estimation)":{"ID":"densitymap_kerneldensityestimation"},
+    "Inverse Distance Weighted interpolation":{"ID":"idw_interpolation"},
     "Others": {"ID": "others"}
 }
 
@@ -60,7 +64,11 @@ OperationIdentification_requirements = [
     "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
     "DO NOT provide Additional details of any tool",
     f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool you think is most appropriate from the list in {other_tools} and if you cannot find other tools, provide any other tools that is suitable"#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
-
+    f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from {other_tools} . E.g, do not select 'categorized renderer from styles'",
+    f"If a task involve the creation of density map, DO NOT select any existing QGIS tool for density map creation, rather select density map  depending on the method to be used. E.g 'Density map (Kernel Density Estimation)' for density map creation using kernel density estimation:{other_tools}.",
+    f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from ({other_tools})"
+    # f"If a task involve the creation of density map using kernel density estimation method, NOTE: 'Density map (Kernel Density Estimation)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}",
+    # f"If a task involve the creation of density map using inverse distance weighting , NOTE: 'Density map (idw)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}"
 ]
 
 OperationIdentification_reply_example_1 = "To select the tracts with population above 3000, the tool suitable for the operation is found in the qgis processing tools and the name is  'Extract by attribute' tool. This tool create a new vector layer that only contains matching features from an input layer",
@@ -83,19 +91,24 @@ You are very good at identifying QGIS tools and functions that can be used to ad
 '''
 ToolSelect_prefix = rf' I will provide you with the explanation of a task. Identify the suitable QGIS processing tool algorithms or other suitable tool that can be used to accomplish this task explanation: '
 
-ToolSelect_reply_example1 = ''' "Selected tool": "Select by attribute" '''
-ToolSelect_reply_example2 = '''{"Selected tool": ["Select by expression", "Select by location"]}'''
+ToolSelect_reply_example1 =  ''' {'Selected tool': 'Select by attribute'} '''
+ToolSelect_reply_example2 = ''' {'Selected tool': ['Select by expression'"', 'Select by location']} '''
 
 
 ToolSelect_requirements = ["Think step by step and skip any step that is not applicable for the task at hand",
                         f"Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task by saying either 'Yes' or 'No', {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
                         f"If your answer is 'Yes', then return the exact name of the tool as given in the list. But if your answer is 'No', return any other tools you think is most appropriate from the list of tools in {other_tools} and return the exact name as listed in the list. NOTE: the name should be assigned to 'Selected tool'. DO NOT select any existing QGIS tool for thematic map creation. E.g, do not select 'categorized renderer from styles'",
-                        "If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from {other_QGIS_operations} . E.g, do not select 'categorized renderer from styles'",
+                        f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from {other_tools} . E.g, do not select 'categorized renderer from styles'",
+                        f"If a task involve the creation of density map, DO NOT select any existing QGIS tool for density map creation, rather select density map  depending on the method to be used. E.g 'Density map (Kernel Density Estimation)' for density map creation using kernel density estimation:{other_tools}.",
+                        f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from ({other_tools})"
+                        # f"If a task involve the creation of density map, NOTE: 'Density map (Kernel Density Estimation)' is to be used for kernel density estimation method and 'Density map (idw)' is to be used for inverse distance weighted method. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}",
+                        # f"If a task involve the creation of density map using kernel density estimation method, NOTE: 'Density map (Kernel Density Estimation)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}",
+                        # f"If a task involve the creation of density map using inverse distance weighting , NOTE: 'Density map (idw)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}",
                         "If you need to perform more than one operation, the tools should be in a list and name the list 'Selected tool'",
                         "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
                         "DO NOT provide Additional details of any tool",
                         f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool you think is most appropriate from the list in {other_tools}" ,#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
-                        f"Your response should be in a dictionary format example: {ToolSelect_reply_example1}.Do not add any other explanation or comments."
+                        f"Your response should be strictly in the format example: {ToolSelect_reply_example2}.Do not add any other explanation or comments."
 
 ]
 
@@ -233,9 +246,9 @@ graph_requirement = ["The graph should contain the basic steps to carry out the 
 #****************************************************************************************************************************************************************
 ## CONSTANTS FOR OPERATION GENERATION ------------------------------------------
 
-operation_role = r'''A professional Geo-information scientist with high proficiency in GIS operations. You are also proficient in using QGIS processing tool python functions to solve a particular task. You know when to use a particular tool and when not to.
+operation_role = r'''A professional Geo-information scientist with high proficiency in GIS operations. You are also proficient in using QGIS processing tool python functions and other python functions such as geopandas, numpy etc. to solve a particular task. You know when to use a particular tool and when not to. You are not limited to QGIS tools
 '''
-operation_task_prefix = r'You need to generate qgis Python function to do: '
+operation_task_prefix = r'You need to generate Python function to do: '
 
 operation_reply_example = """
 ```python',
@@ -254,16 +267,17 @@ operation_requirement = [
     "Think step by step",
     # "Pay close attention to the task. You may need to perform more than one operation. For example, you may need to perform aggregation first before performing select by attribute",
     "If you need to perform more than one operation, you must perform the operations step by step",
-    "DO NOT include the QGIS initialization code in the script",
-    "Intending to use the QGIS processing tool to perform tasks",
+    "You are not limited to QGIS python functions, you can also use other python functions asuch as geoppandas, numpy, scipy etc.",
+    # "DO NOT include the QGIS initialization code in the script",
+    # "Intending to use the QGIS processing tool to perform tasks",
     "Put your reply into a Python code block, Explanation or conversation can be Python comments at the begining of the code block(enclosed by ```python and ```).",
 
     "The python code is only in a function named in with the operation name e.g 'perform_idw_interpolation()'. The last line is to execute this function.",
     "If you need to use `QVariant` should be imported from `PyQt5.Qtcore` and NOT `qgis.core`",
-    "NOTE: `QgsVectorJoinInfo` may not always be available or accessible in recent QGIS installations, thus use `QgsVectorLayerJoinInfo` instead",
+    # "NOTE: `QgsVectorJoinInfo` may not always be available or accessible in recent QGIS installations, thus use `QgsVectorLayerJoinInfo` instead",
     "Put your reply into a Python code block (enclosed by python and ), NO explanation or conversation outside the code block.",
     "If you need to use `QgsVectorLayer`, it should always be imported from qgis.core.",
-    "The output should not be saved but should be loaded as a virtual layer within the QGIS",
+    # "The output should not be saved but should be loaded as a virtual layer within the QGIS",
     # "Display Output in QGIS",
     "DO NOT add validity check and DO NOT raise any exception.",
     "DO NOT raise exceptions messages.",
@@ -273,10 +287,10 @@ operation_requirement = [
     "When creating a scatterplot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot.",
 
     "When loading a CSV layer as a layer, use this: `'f'file///{csv_path}?delimeter=,''`, assuming the csv is comma-separated, but use the csv_path directly for the Input parameter in join operations.",
-    "When using the processing algorithm, you do not need to include the code to load a data",
+    "If you are to use processing algorithm, you do not need to include the code to load a data",
     "Do not generate a layer for tasks that only require printing the answer, like questions of how, what, why, etc. e.g., for tasks like: 'How many counties are there in PA?', 'What is the distance from A to B', etc.",
-    "When creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",# Always print out the result"
-     "When using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
+    "If you are creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",# Always print out the result"
+     "If you are using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
     "Ensure that temporary layer is not used as the output parameter"
     # "When using the processing algorithm, make the output parameter a temporary layer by using `'OUTPUT':'memory:name_of_the_layer'` and load the output layer using `output_layer = result['OUTPUT']`.",
 
@@ -306,9 +320,11 @@ operation_code_review_requirement = ["Review the codes very carefully to ensure 
                                      "The code is designed to be run within the QGIS Python environment, where the relevant QGIS libraries are available. However, if any third-party libraries needed, it should always be imported.",
                                      "Ensure that the data paths in the code examples are replaced with the data paths provided by the user approprately",
                                     "When using Raster calculator, 'native:rastercalculator' is wrong rather the correct ID for the Raster Calculator algorithm is 'native:rastercalc'.",
-                                    "When creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource. "# Always print out the result"
+                                    "When creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource. ",# Always print out the result"
                                     "When printing the result of plots e.g barplot,scatterplot, boxplot etc, always print out the file path of the result only, ensure any description or comment is not added.",
+                                    "Do not generate a layer for tasks that only require printing the answer, like questions of how, what, why, etc. e.g., for tasks like 'How many counties are there in PA?', 'What is the distance from A to B', etc.",
                                     "When creating a scatter plot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot, ensure the correct tool is used",
+                                    "When creating density maps, do not use `matplotlib` to visualize the result, ensure the result is saved as 'tif' and loaded to QGIS",
                                     f"When using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
                                      "Ensure that temporary layer is not used as the output paarameter"
                                      ]
@@ -330,7 +346,7 @@ debug_requirement = [
     "If you need to perform more than one operation, you must perform the operations step by step",
     "When using `QgsVectorLayer`, it should always be imported from `qgis.core`.",
     "Use the latest qgis libraries and methods.",
-    "Utilize qgis python library instead of geopandas. Do not use geopandas in any of the processes.",
+    # "Utilize qgis python library instead of geopandas. Do not use geopandas in any of the processes.",
     "DO NOT include the QGIS initialization code in the script",
     f"Make yor codes to be concise/short and accurate",
     " `QVariant` should be imported from `PyQt5.Qtcore` and NOT `qgis.core`",

@@ -1,0 +1,50 @@
+
+tool_ID = 'idw_interpolation'
+
+tool_name = 'Inverse Distance Weighted interpolation'
+
+brief_description = '''
+ Produces an interpolated surface by estimating values at unsampled locations based on nearby points and their values. It uses the inverse of the distance to weight nearby points more than distant ones.
+'''
+
+parameters ='''
+
+
+'''
+
+code_example = '''
+import geopandas as gpd
+
+# Load the shapefile containing fast-food restaurants
+gdf = gpd.read_file('D:/Data/PA_Data_EPSG4326/PA_Data_EPSG4326.shp')
+
+# Ensure the GeoDataFrame has a projected coordinate system (not WGS84)
+gdf = gdf.to_crs(epsg=26918)  # Using UTM Zone 18N for Pennsylvania, or use your preferred CRS
+
+gdf.to_file("temp_fastfood_restaurants.shp")
+
+from osgeo import gdal
+
+# Define output raster file
+output_file = r'C:/Output_path/output_idw.tif'
+
+# Define IDW options
+idw_options = gdal.GridOptions(
+    algorithm='invdist:power=2.0:smoothing=0.0',  # IDW power and smoothing
+    outputType=gdal.GDT_Float32,                  # Set output data type (32-bit float)
+    zfield='Coronary_h',                    	# Set the attribute field for z values (e.g., restaurant visit count)
+    width=500,                                    # Width of the output raster in pixels
+    height=500,                                   # Height of the output raster in pixels
+    outputBounds=gdf.total_bounds                 # Extent (bounding box) for the raster output
+)
+
+# Perform IDW interpolation
+gdal.Grid(output_file, "temp_fastfood_restaurants.shp", options=idw_options)
+
+print(f"IDW interpolation saved at: {output_file}")
+
+#Displaying the result in QGIS
+output_layer = QgsRasterLayer(output_file, 'idw_Output')
+QgsProject.instance().addMapLayer(output_layer)
+'''
+

@@ -9,3 +9,4 @@ IPython:IPython
 iface:iface
 jsonpickle:jsonpickle
 regex:regex
+langchain_openai:langchain_openai

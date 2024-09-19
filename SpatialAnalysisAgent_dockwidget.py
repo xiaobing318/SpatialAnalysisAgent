@@ -115,7 +115,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         QgsProject.instance().layerWasAdded.connect(self.on_layer_added)
         QgsProject.instance().layerWillBeRemoved.connect(self.on_layer_removed)
 
-        self.thread = None  # Initialize thread variable
+        # self.thread = None  # Initialize thread variable
         self.interrupt_button.clicked.connect(self.interrupt)
         # Set the window size
         self.resize(800, 600)

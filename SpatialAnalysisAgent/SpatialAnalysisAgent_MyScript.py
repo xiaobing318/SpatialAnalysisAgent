@@ -167,7 +167,7 @@ for selected_tool in selected_tools:
     print(documentation_str)
 
     # Create and print the operation prompt string for each selected tool
-    operation_prompt_str = helper.create_operation_prompt(task = task_breakdown, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,
+    operation_prompt_str = helper.create_operation_prompt(task = task, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,
                                                           documentation_str=documentation_str)
     print(operation_prompt_str)
 #

@@ -1006,7 +1006,7 @@ class ScriptThread(QThread):
     def check_running(self):
         return self._is_running
 
-from openai import OpenAI
+# from openai import OpenAI
 class GPTRequestThread(QThread):
     output_line = pyqtSignal(str)
     finished_signal = pyqtSignal()

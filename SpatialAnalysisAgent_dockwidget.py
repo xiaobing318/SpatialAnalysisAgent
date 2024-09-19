@@ -28,6 +28,10 @@ import os
 import shutil
 import sys
 
+
+
+
+
 import requests
 from qgis.PyQt import QtGui, QtWidgets, uic
 from qgis.PyQt.QtCore import pyqtSignal
@@ -70,6 +74,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 from .install_packages.check_packages import check_and_install_libraries , check_missing_libraries, read_libraries_from_file, install_libraries
+
 class LibraryCheckThread(QThread):
     finished_checking = pyqtSignal(list)
 
@@ -101,11 +106,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # check_and_install_libraries(required_packages)
 
-        self.thread = LibraryCheckThread(required_packages)
-        self.thread.finished_checking.connect(self.handle_missing_libraries)
-        self.thread.start()  # Start the background thread
+        self.library_check_thread = LibraryCheckThread(required_packages)
+        self.library_check_thread.finished_checking.connect(self.handle_missing_libraries)
+        self.library_check_thread.start()  # Start the background thread
 
         self.import_libraries()
+
+
 
         self.load_OpenAI_key()
 
@@ -147,6 +154,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         placeholder = self.findChild(QWidget, 'placeholder_widget')
         placeholderLayout = placeholder.parentWidget().layout()
 
+        from QSwitchControl import SwitchControl
         #Add switch control
         self.switch_control = SwitchControl()
         # Reduce the size of the SwitchControl
@@ -169,6 +177,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Connect the switch_control to the slot function
         self.switch_control.toggled.connect(self.toggle_data_path_line_edit)
+
 
         # Add a map view to display the solution graph
         self.web_view_layout = QVBoxLayout()
@@ -205,6 +214,39 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         root = QgsProject.instance().layerTreeRoot()
         root.visibilityChanged.connect(self.on_layer_visibility_changed)
 
+
+    def initUI(self):
+        # # Creat switch control
+        # switch_control = SwitchControl()
+        # self.switch_layout = QHBoxLayout()
+        # self.switch_layout.addWidget(switch_control, Qt.AlignCenter, Qt.AlignCenter)
+        # self.setLayout(self.switch_layout)
+
+        # Disable the data_pathLineEdit permanently
+        # self.data_pathLineEdit.setEnabled(False)
+        self.run_button = self.findChild(QPushButton, 'run_button')
+        # self.run_button.clicked.connect(self.run_script)
+        self.run_button.clicked.connect(self.send_button_clicked)
+        # self.run_button.clicked.connect(lambda: self.append_message(self.task_LineEdit.toPlainText()))
+        # self.ESGpushButton.clicked.connect(self.run_slnGraph_script)sss
+        self.interrupt_button.clicked.connect(self.interrupt)
+        self.interrupt_button.clicked.connect(self.stop_script)
+        # self.pushButton = self.findChild(QPushButton, 'pushButton')
+        # self.SelectDataPath_ToolBtn.clicked.connect(self.openFileDialog)
+        self.clear_textboxesBtn.clicked.connect(self.clear_textboxes)
+        self.loadData.clicked.connect(self.load_data)
+        self.refresh_slnGraph_Btn.clicked.connect(self.refresh_slnGraph)
+        # self.refresh_report_Btn.clicked.connect(self.refresh_report)
+        self.run_button.clicked.connect(self.clear_report)
+        self.add_document_button.clicked.connect(self.add_documentation_file)
+        # self.add_document_github_button.clicked.connect(self.open_upload_dialog)
+        self.add_document_github_button.clicked.connect(self.show_contribution_dialog)
+        self.tabWidget.setCurrentIndex(0)
+
+        # self.read_updated_config()
+        # Populate data_pathLineEdit with currently loaded layers
+        # self.populate_data_path_line_edit()
+        self.on_layer_visibility_changed()
 
     def show_contribution_dialog(self):
         """Open the ContributionDialog for user interaction."""
@@ -264,12 +306,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """Dynamically import the third-party libraries after ensuring they're installed."""
 
         """Dynamically import the third-party libraries after ensuring they're installed."""
-        global SwitchControl, QWebEngineView, OpenAI, nest_asyncio
-        from QSwitchControl import SwitchControl
-        from PyQt5.QtWebEngineWidgets import QWebEngineView
+        # global SwitchControl, QWebEngineView, OpenAI, nest_asyncio
+        # from QSwitchControl import SwitchControl
+        # from PyQt5.QtWebEngineWidgets import QWebEngineView
         # from PyQtWebEngine import QWebEngineView
-        from openai import OpenAI
-        import nest_asyncio
+        # from openai import OpenAI
+        # import nest_asyncio
+        pass
 
 
     def on_layer_visibility_changed(self):
@@ -351,38 +394,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.closingPlugin.emit()
         event.accept()
 
-    def initUI(self):
-        # Creat switch control
-        switch_control = SwitchControl()
-        self.switch_layout = QHBoxLayout()
-        self.switch_layout.addWidget(switch_control, Qt.AlignCenter, Qt.AlignCenter)
-        self.setLayout(self.switch_layout)
 
-        # Disable the data_pathLineEdit permanently
-        # self.data_pathLineEdit.setEnabled(False)
-        self.run_button = self.findChild(QPushButton, 'run_button')
-        # self.run_button.clicked.connect(self.run_script)
-        self.run_button.clicked.connect(self.send_button_clicked)
-        # self.run_button.clicked.connect(lambda: self.append_message(self.task_LineEdit.toPlainText()))
-        # self.ESGpushButton.clicked.connect(self.run_slnGraph_script)sss
-        self.interrupt_button.clicked.connect(self.interrupt)
-        self.interrupt_button.clicked.connect(self.stop_script)
-        # self.pushButton = self.findChild(QPushButton, 'pushButton')
-        # self.SelectDataPath_ToolBtn.clicked.connect(self.openFileDialog)
-        self.clear_textboxesBtn.clicked.connect(self.clear_textboxes)
-        self.loadData.clicked.connect(self.load_data)
-        self.refresh_slnGraph_Btn.clicked.connect(self.refresh_slnGraph)
-        # self.refresh_report_Btn.clicked.connect(self.refresh_report)
-        self.run_button.clicked.connect(self.clear_report)
-        self.add_document_button.clicked.connect(self.add_documentation_file)
-        # self.add_document_github_button.clicked.connect(self.open_upload_dialog)
-        self.add_document_github_button.clicked.connect(self.show_contribution_dialog)
-        self.tabWidget.setCurrentIndex(0)
-
-        # self.read_updated_config()
-        # Populate data_pathLineEdit with currently loaded layers
-        # self.populate_data_path_line_edit()
-        self.on_layer_visibility_changed()
     def clear_report(self):
         if not self.switch_control.isChecked() and self.data_pathLineEdit.toPlainText().strip() and self.task_LineEdit.toPlainText().strip():
             self.report_web_view.setHtml('')
@@ -1006,7 +1018,7 @@ class ScriptThread(QThread):
     def check_running(self):
         return self._is_running
 
-# from openai import OpenAI
+
 class GPTRequestThread(QThread):
     output_line = pyqtSignal(str)
     finished_signal = pyqtSignal()
@@ -1034,7 +1046,7 @@ class GPTRequestThread(QThread):
     def run(self):
         try:
             # self.update_config_file()
-
+            from openai import OpenAI
             client = OpenAI(api_key=self.OpenAI_key)
             response = client.chat.completions.create(
                 model= self.model_name,#"gpt-4",
@@ -1291,3 +1303,6 @@ class ContributionDialog(QDialog):
                 self.prompt_pull_request(username)
             else:
                 QMessageBox.warning(self, "Error", "GitHub username is required.")
+
+
+

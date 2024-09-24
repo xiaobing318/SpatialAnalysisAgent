@@ -142,11 +142,12 @@ from qgis.core import QgsApplication
 algorithm_names = []
 for alg in QgsApplication.processingRegistry().algorithms():
     algorithm_names.append(alg.displayName())
-# print("algorithms names: ", algorithm_names)
 
-algorithm_IDs = []
-for alg in QgsApplication.processingRegistry().algorithms():
-    algorithm_names.append(alg.id())
+
+
+# algorithm_IDs = []
+# for alg in QgsApplication.processingRegistry().algorithms():
+#     algorithm_names.append(alg.id())
 
 
 algorithms_dict = {}
@@ -167,7 +168,99 @@ def documentation (selected_tool_ID,algorithm_names):
 #************************************************************************************************************************
 
 
+algorithms_dict = {}
+# Iterate through the algorithms in the processing registry
+for alg in QgsApplication.processingRegistry().algorithms():
+    algorithms_dict[alg.displayName()] = {'ID': alg.id()}
 
+#*******************************************************************************************************************
+
+import os
+import toml
+
+def list_files_in_folder(folder_path):
+    try:
+        # List the .toml files in the directory
+        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and f.endswith('.toml')]
+        return files
+    except FileNotFoundError:
+        return "Folder not found."
+
+def extract_tool_info(file_path):
+    # Load the .toml file and extract the required information
+    try:
+        with open(file_path, 'r') as file:
+            tool_data = toml.load(file)
+            tool_name = tool_data.get('tool_name', 'Unknown')
+            tool_description = tool_data.get('brief_description', 'No description provided')
+            return tool_name, tool_description
+    except Exception as e:
+        return None, None
+
+
+
+import os
+# Get the directory of the current script
+# current_script_dir = os.path.dirname(os.path.abspath(__file__))
+current_script_dir = os.getcwd()
+folder_path  = os.path.join(current_script_dir, 'Tools_Documentation', 'Customized_tools')
+
+# folder_path = r"C:\Users\AKINBOYEWA TEMITOPE\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\SpatialAnalysisAgent-master\SpatialAnalysisAgent\Tools_Documentation\Customized_tools"
+# def index_tools(folder_path=folder_path):
+# tools_index = []
+# files = list_files_in_folder(folder_path)
+# print(f"Folder path: {folder_path}")
+# print(f"Files found: {files}")
+# for file in files:
+#     tool_ID = os.path.splitext(file)[0]  # The file name without extension is the tool_ID
+#     file_path = os.path.join(folder_path, file)
+#
+#     tool_name, tool_description = extract_tool_info(file_path)
+#     print(f"Tool name: {tool_name}, Tool description: {tool_description}")
+#
+#     if tool_name and tool_description:
+#         tools_index.append({
+#             'tool_ID': tool_ID,
+#             'tool_name': tool_name,
+#             'tool_description': tool_description
+#
+#         })
+
+
+# In SpatialAnalysisAgent_Codebase.py
+def index_tools(folder_path):
+
+    tools_index = []
+    CustomTools_dict = {}
+    tool_names_lists = []
+    files = list_files_in_folder(folder_path)
+
+    for file in files:
+        tool_ID = os.path.splitext(file)[0]
+        file_path = os.path.join(folder_path, file)
+
+        tool_name, tool_description = extract_tool_info(file_path)
+
+        tool_names_lists.append(tool_name)
+        tools_index.append({
+            'tool_ID': tool_ID,
+            'tool_name': tool_name,
+            'tool_description': tool_description
+
+        })
+        # Populate the separate dictionary with tool_ID and tool_name only
+        # CustomTools_dict[tool_name] = tool_ID
+        CustomTools_dict[tool_name] = {'ID': tool_ID}
+
+    return tools_index, CustomTools_dict, tool_names_lists
+
+current_script_dir = os.getcwd()
+# folder_path  = os.path.join(current_script_dir, 'Tools_Documentation', 'Customized_tools')
+#
+# tools_index, CustomTools_dict, tool_names_lists = index_tools(folder_path)
+# # print(CustomTools_dict)
+# tool_name, tool_description = extract_tool_info(folder_path )
+# print(tool_names_lists)
 
 
 

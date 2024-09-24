@@ -6,11 +6,28 @@ current_script_dir = os.path.dirname(os.path.abspath(__file__))
 Tools_Documentation_dir = os.path.join(current_script_dir, 'Tools_Documentation')
 
 def tool_documentation_collection(tool_ID, tool_dir=Tools_Documentation_dir):
-    tool_file = os.path.join(tool_dir, f'{tool_ID}.toml')
+    # Initialize the tool file path variable
+    tool_file = None
 
-    # Check if the file exists
-    if not os.path.exists(tool_file):
+    # Walk through all subdirectories and files in the Tools_Documentation folder
+    for root, dirs, files in os.walk(tool_dir):
+        # Check if the tool file exists in any subdirectory
+        for file in files:
+            if file ==f'{tool_ID}.toml':
+                tool_file = os.path.join(root, file)
+                break # Stop once the file is found
+
+        if tool_file:  # Exit the loop early if the file was found
+            break
+
+    # tool_file = os.path.join(tool_dir, f'{tool_ID}.toml')
+
+    ## If the file is not found, return an empty string
+    if not tool_file:
         return ""
+    # #Check if the file exists
+    # if not os.path.exists(tool_file):
+    #     return ""
 
     with open(tool_file, "rb") as f:
         tool = tomllib.load(f)

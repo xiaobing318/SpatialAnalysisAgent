@@ -95,33 +95,37 @@ def create_OperationIdentification_promt(task):
     prompt = f"Your role: {constants.OperationIdentification_role} \n" + \
              f"Your mission: {constants.OperationIdentification_task_prefix}: " + f"{task}\n\n" + \
              f"Requirements: \n{OperationIdentification_requirement_str} \n\n" + \
-             f"Your reply examples: {constants.OperationIdentification_reply_example_1} + ' or ' + {constants.OperationIdentification_reply_example_2} + ' or ' + {constants.OperationIdentification_reply_example_3} + ' depending on the task ' "
+             f"Customized tools:\n{constants.tools_index}\n" + \
+             f"Your reply examples, depending on the task. Example 1: {constants.OperationIdentification_reply_example_1}\n " + " OR " + f"Example 2: {constants.OperationIdentification_reply_example_2}\n" + " OR " + f"Example 3: {constants.OperationIdentification_reply_example_3}"
     return prompt
 
 
 def create_ToolSelect_prompt(task):
-    ToolSelect_requirement_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(constants.ToolSelect_requirements)])
+    ToolSelect_requirement_str = '\n'.join(
+        [f"{idx + 1}. {line}" for idx, line in enumerate(constants.ToolSelect_requirements)])
 
     prompt = f"Your role: {constants.ToolSelect_role} \n" + \
              f"Your mission: {constants.ToolSelect_prefix}: " + f"{task}\n\n" + \
              f"Requirements: \n{ToolSelect_requirement_str} \n\n" + \
-             f'Example for your reply: {constants.ToolSelect_reply_example2}.'
+             f"Customized tools:\n{constants.tools_index}\n" + \
+             f"Example for your reply: {constants.ToolSelect_reply_example2}\n"
+
     return prompt
 
 
-def create_operation_prompt(task, data_path, selected_tool, selected_tool_ID, documentation_str, workspace_directory):
+def create_operation_prompt(task, data_path, selected_tools, documentation_str, workspace_directory):
     operation_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(constants.operation_requirement)])
     prompt = f"Your role: {constants.operation_role} \n" + \
              f"Your mission: {constants.operation_task_prefix}: " + f"{task}" + "Using the following data paths: " + f"{data_path}" + "and this output directory:" + f"{workspace_directory}\n\n" + \
-            f"Selected tool: {selected_tool}\n" + \
-             f"{selected_tool_ID} Documentation: \n{documentation_str}\n" + \
+             f"Selected tools: {selected_tools}\n" + \
+             f"Documentation of the selected tools: \n{documentation_str}\n" + \
              f"requirements: \n{operation_requirement_str}\n" + \
              f"Set: " + f"{workspace_directory}" + " as the output directory for any operation"
     return prompt
 
 
-def code_review_prompt(extracted_code, data_path, workspace_directory, selected_tool_ID, documentation_str):
+def code_review_prompt(extracted_code, data_path, workspace_directory, documentation_str):
     operation_code_review_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(constants.operation_code_review_requirement)])
     # print(f"Code passed to review: {extracted_code}")
@@ -160,7 +164,7 @@ def get_code_for_operation(task_description, data_path, selected_tool, selected_
         operation_code = ask_LLM_to_review_operation_code(extracted_code, selected_tool_ID, documentation_str)
         return operation_code
     else:
-        return extracted_codeo1-preview
+        return extracted_code
 
 
 def ask_LLM_to_review_operation_code(extracted_code, selected_tool_ID, documentation_str):
@@ -205,6 +209,22 @@ def convert_chunks_to_str(chunks):
 
     return LLM_reply_str
 
+def extract_dictionary_from_response(response):
+    dict_pattern = r"\{.*?\}"
+    match = re.search(dict_pattern, response)
+    if match:
+        dict_string = match.group()  # Extract the dictionary-like string
+        # try:
+        #     # Safely evaluate the dictionary string to convert it to an actual dictionary
+        #     result_dict = ast.literal_eval(dict_string)
+        #     print(result_dict)
+        # except (SyntaxError, ValueError) as e:
+        #     print("Error parsing the dictionary:", e)
+    else:
+        print("No dictionary found in the response.")
+
+    return dict_string
+
 def convert_chunks_to_code_str(chunks):
     LLM_reply_str = ""
     for c in chunks:
@@ -218,6 +238,7 @@ def fix_json_format(incorrect_json_str):
     # Example: convert {selected tool: ["Clip","Scatterplot"]} to {"selected tool": ["Clip","Scatterplot"]}
     fixed_json_str = re.sub(r'(\w+):', r'"\1":', incorrect_json_str)
     return fixed_json_str
+
 
 def parse_llm_reply(LLM_reply_str):
     try:
@@ -237,8 +258,6 @@ def parse_llm_reply(LLM_reply_str):
         print(f"TypeError: {e} - Input must be a valid JSON string.")
         selection_operation = None
     return selection_operation
-
-
 
 
 def get_LLM_reply(prompt="Provide Python code to read a CSV file from this URL and store the content in a variable. ",
@@ -293,7 +312,6 @@ def get_LLM_reply(prompt="Provide Python code to read a CSV file from this URL a
     response = response_chucks  # good for saving
 
     return response
-
 
 
 def extract_content_from_LLM_reply(response):
@@ -410,6 +428,7 @@ async def fetch_chunks(model, prompt_str):
 
 nest_asyncio.apply()
 
+
 def extract_selected_tools(chunks):
     """
     Extracts and combines selected tools from a list of chunk dictionaries.
@@ -439,6 +458,7 @@ def extract_selected_tools(chunks):
     combined_tools_str = ', '.join(unique_tools)
 
     return combined_tools_str
+
 
 def extract_code(response, verbose=False):
     '''
@@ -484,7 +504,8 @@ def extract_code_from_str(LLM_reply_str, verbose=False):
     return python_code
 
 
-def execute_complete_program(code: str, try_cnt: int, task: str, model_name: str, documentation_str: str, data_path, workspace_directory,
+def execute_complete_program(code: str, try_cnt: int, task: str, model_name: str, documentation_str: str, data_path,
+                             workspace_directory,
                              review=True) -> (str, str):
     count = 0
     output_capture = io.StringIO()
@@ -526,7 +547,8 @@ def execute_complete_program(code: str, try_cnt: int, task: str, model_name: str
             code = extract_code(response)
             if review:
                 print("\n\n-------------- REVIEWING THE DEBUG CODE ---------------\n\n")
-                code = review_operation_code(extracted_code=code, data_path=data_path, workspace_directory = workspace_directory,
+                code = review_operation_code(extracted_code=code, data_path=data_path,
+                                             workspace_directory=workspace_directory,
                                              documentation_str=documentation_str)
     return code, output_capture.getvalue()
 
@@ -552,7 +574,7 @@ def review_operation_code(extracted_code, data_path, workspace_directory, docume
     print("\n\n")
     print(f"--------------------------FINAL_CODE--------------------------------------------: \n\n")
     print("```python")
-    reviewed_code = extract_code_from_str(LLM_reply_str = review_str_LLM_reply_str, verbose=True)
+    reviewed_code = extract_code_from_str(LLM_reply_str=review_str_LLM_reply_str, verbose=True)
     # print(reviewed_code)
     # print("```")
     return reviewed_code

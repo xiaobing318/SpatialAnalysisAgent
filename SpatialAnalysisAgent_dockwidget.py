@@ -502,7 +502,26 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.web_view.load(QUrl.fromLocalFile(html_path))
 
     def update_report(self, generated_report_path):
-        self.report_web_view.load(QUrl.fromLocalFile(generated_report_path))
+        # Check the file extension to determine if it's an image or HTML
+        file_extension = os.path.splitext(generated_report_path)[1].lower()
+
+        if file_extension in ['.png', '.jpg', '.jpeg', '.gif']:  # Handle image files
+            # Create a simple HTML file that embeds the image
+            image_html_path = os.path.join(os.path.dirname(generated_report_path), 'image_report.html')
+            with open(image_html_path, 'w') as f:
+                f.write(f'<html><body><img src="{generated_report_path}" alt="Report Image" /></body></html>')
+
+            # Load the generated HTML file that contains the image
+            self.report_web_view.load(QUrl.fromLocalFile(image_html_path))
+
+        elif file_extension == '.html':  # Handle HTML files
+            # Directly load the HTML file
+            self.report_web_view.load(QUrl.fromLocalFile(generated_report_path))
+
+        else:
+            print("Unsupported file type.")
+
+        # self.report_web_view.load(QUrl.fromLocalFile(generated_report_path))
 
     def refresh_slnGraph(self):
         # Clear the web view content

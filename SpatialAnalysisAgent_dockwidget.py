@@ -849,32 +849,67 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     def add_documentation_file(self):
         try:
-            # current_script_dir = os.path.dirname(os.path.abspath(__file__))
-            # script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
-            destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"SpatialAnalysisAgent", "Tools_Documentation")
-
-            # Ensure the destination directory exists; if not, create it
-            if not os.path.exists(destination_dir):
-                os.makedirs(destination_dir)
-            # Open file dialog to select .toml files
-            files, _ = QFileDialog.getOpenFileNames(
-                None, 'Select Documentation Files', '', 'TOML Files (*.toml)'
+            # Popup to select the tool category (QGIS Processing Tool or Customized Tool)
+            tool_categories = ["QGIS Processing Tool", "Customized Tool"]
+            tool_choice, ok = QInputDialog.getItem(
+                None, 'Select Tool Category', 'Choose the category of the tool:', tool_categories, 0, False
             )
+            # If user made a choice and confirmed it
+            if ok and tool_choice:
+                if tool_choice == "QGIS Processing Tool":
+                    # Set destination for QGIS Processing Tool
+                    destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SpatialAnalysisAgent",
+                                                   "Tools_Documentation","QGIS_Tools")
+                elif tool_choice == "Customized Tool":
+                    # Set destination for Customized Tool
+                    destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SpatialAnalysisAgent",
+                                                   "Tools_Documentation","Customized_Tools")
 
-            # If files are selected, process them
-            if files:
-                for file_path in files:
-                    # Determine the new path for the file in the destination directory
-                    new_file_path = os.path.join(destination_dir, os.path.basename(file_path))
-                    # Copy the file to the new directory
-                    shutil.copy(file_path, new_file_path)
-                    # print(f"File {file_path} copied to {new_file_path}")  # or update your UI to reflect the change
-                    # Display success message
-                QMessageBox.information(None, 'Success',
-                                        f'Documentation files have been successfully uploaded to {destination_dir}')
-                # else:
-                #     # If no files were selected, show an info message
-                #     QMessageBox.information(None, 'No Files Selected', 'No documentation files were selected.')
+            # # current_script_dir = os.path.dirname(os.path.abspath(__file__))
+            # # script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
+            # destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"SpatialAnalysisAgent", "Tools_Documentation")
+
+                # Ensure the destination directory exists; if not, create it
+                if not os.path.exists(destination_dir):
+                    os.makedirs(destination_dir)
+                # Open file dialog to select .toml files
+                files, _ = QFileDialog.getOpenFileNames(
+                    None, 'Select Documentation Files', '', 'TOML Files (*.toml)'
+                )
+                # Initialize variables for 'apply to all' options
+                apply_to_all_replace = False
+                apply_to_all_skip = False
+
+                # If files are selected, process them
+                if files:
+                    for file_path in files:
+                        # Determine the new path for the file in the destination directory
+                        new_file_path = os.path.join(destination_dir, os.path.basename(file_path))
+
+                        # Check if the file already exists
+                        if os.path.exists(new_file_path):
+                            # Ask the user if they want to replace the file
+                            # If neither 'replace all' nor 'skip all' is set, ask the user
+
+                            reply = QMessageBox.question(
+                                None, 'File Exists',
+                                f'The file "{os.path.basename(file_path)}" already exists. Do you want to replace it?',
+                                QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+                            )
+                            # If user chooses 'No', skip the file
+                            if reply == QMessageBox.No:
+                                continue  # Skip to the next file
+
+
+                        # Copy the file to the new directory
+                        shutil.copy(file_path, new_file_path)
+                        # print(f"File {file_path} copied to {new_file_path}")  # or update your UI to reflect the change
+                        # Display success message
+                    QMessageBox.information(None, 'Success',
+                                            f'Documentation files have been successfully uploaded to {destination_dir}')
+                else:
+                    # If no files were selected, show an info message
+                    QMessageBox.information(None, 'No Files Selected', 'No documentation files were selected.')
 
         except Exception as e:
             # Display failure message in case of any errors

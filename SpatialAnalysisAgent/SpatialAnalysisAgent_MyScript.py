@@ -4,14 +4,10 @@ import json
 import os
 import re
 import sys
-
 from io import StringIO
-
 import requests
 import networkx as nx
 from PyQt5.QtWidgets import QMessageBox
-#import pandas as pd
-#import geopandas as gpd
 from pyvis.network import Network
 from openai import OpenAI
 from IPython.display import display, HTML, Code
@@ -30,7 +26,6 @@ if ipython:
     ipython.run_line_magic('autoreload', '2')
 
 
-
 # Get the directory of the current script
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
@@ -45,13 +40,11 @@ import SpatialAnalysisAgent_ToolsDocumentation as ToolsDocumentation
 
 from SpatialAnalysisAgent_kernel import Solution
 import SpatialAnalysisAgent_Codebase as codebase
+
 from Tools_Documentations import documentation
 
-# from LLMQGIS_Codebase import algorithm_names, algorithms_dict
 
-
-
-# OpenAI_key = helper.load_OpenAI_key()
+OpenAI_key = helper.load_OpenAI_key()
 
 #**********************************************************************************************************************
 # isReview = True
@@ -84,8 +77,6 @@ if not check_running():
     print("AI: Script interrupted")
     sys.exit()
 
-
-
 # save_dir = os.path.join(os.getcwd(), task_name)
 # os.makedirs(save_dir, exist_ok=True)
 #
@@ -96,21 +87,14 @@ if not check_running():
 OpenAI_key = helper.load_OpenAI_key()
 model = ChatOpenAI(api_key=OpenAI_key, model=model_name, temperature=1)
 
+
+
 ##*************************************** OPERATION IDENTIFICATION *******************************************************
 OperationIdentification_prompt_str = helper.create_OperationIdentification_promt(task=task)
-# print(OperationIdentification_prompt_str)
+print(f"OperationIdentification PROMPT ----------{OperationIdentification_prompt_str}")
 
-# print(algorithm_names)
 from IPython.display import clear_output
 
-
-# async def fetch_chunks(model, prompt_str):
-#     chunks = []
-#     async for chunk in model.astream(prompt_str):
-#         chunks.append(chunk)
-#         # print(chunk.content, end="", flush=True)
-#     return chunks
-# nest_asyncio.apply()
 
 chunks = asyncio.run(helper.fetch_chunks(model, OperationIdentification_prompt_str))
 
@@ -123,6 +107,7 @@ print(LLM_reply_str)
 task_breakdown = LLM_reply_str
 ##*************************************** TOOL SELECT *******************************************************
 ToolSelect_prompt_str = helper.create_ToolSelect_prompt(task=task_breakdown)
+print(f"TOOL SELECT PROMPT ---------------------: {ToolSelect_prompt_str}")
 ToolSelect_chunks = asyncio.run(helper.fetch_chunks(model, ToolSelect_prompt_str))
 
 clear_output(wait=True)
@@ -131,47 +116,60 @@ Selected_Tools_reply = helper.convert_chunks_to_str(chunks=ToolSelect_chunks)
 print(Selected_Tools_reply)
 
 #************************************************************************************************************************************************************
+Refined_Selected_Tools_reply = helper.extract_dictionary_from_response(response=Selected_Tools_reply)
 import ast
+# Convert the string to an actual dictionary
+try:
+    Selected_Tools_Dict = ast.literal_eval(Refined_Selected_Tools_reply)
+    print(f"\nSELECTED TOOLS: {Selected_Tools_Dict}\n")
+except (SyntaxError, ValueError) as e:
+    print("Error parsing the dictionary:", e)
+
+
 # import json
 # # select_operation = json.loads(Selected_Tools_reply)
 # # print(select_operation)
 # selection_operation1 = helper.parse_llm_reply(Selected_Tools_reply)
 # selection_operation = json.loads(selection_operation1)
-selection_operation = ast.literal_eval(Selected_Tools_reply)
-selected_tools = selection_operation['Selected tool']
+# Selected_Tools_Dict = ast.literal_eval(Selected_Tools_reply)
 
-print(selected_tools)
+selected_tools = Selected_Tools_Dict['Selected tool']
 
-# Check if the selected_tools is a string or a list
+# print(f"\nSELECTED TOOLS: {selected_tools}\n")
+
+# # Check if the selected_tools is a string or a list
 if isinstance(selected_tools, str):
     selected_tools = [selected_tools]
-
-
+print(selected_tools)
 # Iterate over each selected tool
+all_documentation =[]
 for selected_tool in selected_tools:
 
     if selected_tool in codebase.algorithm_names:
         selected_tool_ID = codebase.algorithms_dict[selected_tool]['ID']
-    elif selected_tool in constants.other_tools:
-        selected_tool_ID = constants.other_tools_dict[selected_tool]['ID']
-    else:
-        selected_tool_ID = None
 
+    elif selected_tool in constants.tool_names_lists:
+        selected_tool_ID = constants.CustomTools_dict[selected_tool]['ID']
+        print(f"Selected a tool from the customized folder")
+    else:
+        selected_tool_ID = "Unknown"
+    # print(f"SELECTED TOOLS ID: {selected_tool_ID}")
     selected_tool_file_ID = re.sub(r'[ :?\/]', '_', selected_tool_ID)
-    # print(selected_tool_ID)
-    # print(selected_tool_file_ID)
+    print(F"TOOL_ID: {selected_tool_ID}")
+    print(f"Selected tool filename: {selected_tool_file_ID}")
 
     # documentation_list = documentation.get(f"{selected_tool_ID}", [])
     # documentation_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(documentation_list)])
     documentation_str = ToolsDocumentation.tool_documentation_collection(tool_ID=selected_tool_file_ID)
-    print(documentation_str)
+    all_documentation.append(documentation_str)
+    # print(documentation_str)
+# Join all the collected documentation into a single string
+combined_documentation_str = '\n'.join(all_documentation)
 
-    # Create and print the operation prompt string for each selected tool
-    operation_prompt_str = helper.create_operation_prompt(task = task, data_path =data_path, workspace_directory =workspace_directory, selected_tool =selected_tool, selected_tool_ID =selected_tool_ID,
-                                                          documentation_str=documentation_str)
-    print(operation_prompt_str)
-#
-#
+# Create and print the operation prompt string for each selected tool
+operation_prompt_str = helper.create_operation_prompt(task = task, data_path =data_path, workspace_directory =workspace_directory, selected_tools =selected_tools, documentation_str=combined_documentation_str)
+print(f"OPERATION PROMPT: {operation_prompt_str}")
+
 # #%% --------------------------------------------------------SOLUTION GRAPH -----------------------------------------------
 script_directory = os.path.dirname(os.path.abspath(__file__))
 save_dir = os.path.join(script_directory, "graphs")
@@ -204,11 +202,10 @@ counter = 1
 while os.path.exists(html_graph_path):
     html_graph_path = os.path.join(graphs_directory, f"{task_name}_solution_graph_{counter}.html")
     counter += 1
-nt.show(html_graph_path)
-# print(f"GRAPH_SAVED:")
+# nt.show_graph(html_graph_path)
+nt.save_graph(html_graph_path)
 print(f"GRAPH_SAVED:{html_graph_path}")
-#
-#
+
 # #%%***************************************** #Get code for operation without Solution graph ************************
 # from IPython.display import clear_output
 # async def fetch_LLM_str(model, operation_prompt_str):
@@ -227,7 +224,7 @@ Operation_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, operation_p
 clear_output(wait=True)
 # clear_output(wait=False)
 LLM_reply_str = helper.convert_chunks_to_code_str(chunks=Operation_prompt_str_chunks)
-print(LLM_reply_str)
+# print(LLM_reply_str)
 #EXTRACTING CODE
 
 print("\n ---------------------------EXTRACTED CODE:--------------------------------------\n")
@@ -236,8 +233,8 @@ extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
 
 
-#%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
-code_review_prompt_str = helper.code_review_prompt(extracted_code, data_path = data_path, workspace_directory = workspace_directory, selected_tool_ID=selected_tool_ID, documentation_str=documentation_str)
+# #%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
+code_review_prompt_str = helper.code_review_prompt(extracted_code, data_path = data_path, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
 
 # print(code_review_prompt_str)
 code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
@@ -269,7 +266,7 @@ print("```")
 #
 
 #%% EXECUTION OF THE CODE
-code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=3, task=task, model_name=model_name, documentation_str=documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
+code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=3, task=task, model_name=model_name, documentation_str=combined_documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
 # display(Code(code, language='python'))
 
 

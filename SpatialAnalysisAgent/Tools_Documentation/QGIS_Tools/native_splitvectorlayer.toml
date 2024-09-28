@@ -5,12 +5,15 @@ full_description = """Creates a set of vectors in an output folder based on an i
 The number of files generated is equal to the number of different values found for the specified attribute.
 It is the opposite operation of merging.
 Default menu: Vector ► Data Management Tools"""
-parameters = """INPUT: Input Layer. Input vector layer. Type: [vector: any]
-FIELD: Unique ID field. Field to use for splitting. Type: [tablefield: any]
-OUTPUT: Output directory. Specify the directory for the output layers.One of: Save to a Temporary Directory Save to Directory. Type: [folder] Default: [Save to temporary folder]
-FILE_TYPE: Output file type Optional. Select the extension of the output files.If not specified or invalid, the output files format willbe the one set in the “Default output vector layer extension”Processing setting.. Type: [enumeration] Default: gpkg in the dialog window"""
-outputs = "OUTPUT: Output directory. The directory for the output layers. Type: [folder]
-OUTPUT_LAYERS: Output layers. The output vector layers resulting from the split.. Type: [same as input] [list]"
+parameters = """
+INPUT: Input Layer. Input vector layer. Type: [vector: any] 
+FIELD: Unique 
+ID field. Field to use for splitting. Type: [tablefield: any] 
+OUTPUT: Output directory. Specify the directory for the output layers.One of: Save to a Temporary Directory Save to Directory. Type: [folder] Default: [Save to temporary folder] 
+FILE_TYPE: Output file type Optional. Select the extension of the output files.If not specified or invalid, the output files format willbe the one set in the “Default output vector layer extension”Processing setting.. Type: [enumeration] Default: gpkg in the dialog window outputs = 
+OUTPUT: Output directory. The directory for the output layers. Type: [folder] 
+OUTPUT_LAYERS: Output layers. The output vector layers resulting from the split.. Type: [same as input] [list]
+"""
 code_example = """
 from qgis.core import QgsVectorLayer, QgsProject
 import processing

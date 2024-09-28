@@ -3,12 +3,15 @@ tool_name = "Points along geometry"
 brief_description = """Creates points at regular intervals along line or polygon geometries. Created points will have new attributes added for the distance along the geometry and the angle of the line at the point."""
 full_description = """Creates points at regular intervals along line or polygon geometries. Created points will have new attributes added for the distance along the geometry and the angle of the line at the point.
 An optional start and end offset can be specified, which controls how far from the start and end of the geometry the points should be created."""
-parameters = """INPUT: Input layer. Input line or polygon vector layer. Type: [vector: line, polygon]
-DISTANCE: Distance. Distance between two consecutive points along the line. Type: [number ] Default: 1.0
-START_OFFSET: Start offset. Distance from the beginning of the input line, representing theposition of the first point.. Type: [number ] Default: 0.0
-END_OFFSET: End offset. Distance from the end of the input line, representing theposition beyond which no point feature shoud be created.. Type: [number ] Default: 0.0
-OUTPUT: Interpolated points. Specify the output vector layer. One of: Create Temporary Layer ( TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… Append to Layer… The file encoding can also be changed here.. Type: [vector: point] Default: [Create temporary layer]"""
-outputs = "OUTPUT: Interpolated points. Point vector layer with features placed along lines or polygonboundaries of the input layer.. Type: [vector: point]"
+parameters = """
+INPUT: Input layer. Input line or polygon vector layer. Type: [vector: line, polygon] 
+DISTANCE: Distance. Distance between two consecutive points along the line. Type: [number ] Default: 1.0 
+START_OFFSET: Start offset. Distance from the beginning of the input line, representing theposition of the first point.. Type: [number ] Default: 0.0 
+END_OFFSET: End offset. Distance from the end of the input line, representing theposition beyond which no point feature shoud be created.. Type: [number ] Default: 0.0 
+OUTPUT: Interpolated points. Specify the output vector layer. One of: Create Temporary Layer ( 
+TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… Append to Layer… The file encoding can also be changed here.. Type: [vector: point] Default: [Create temporary layer] outputs = 
+OUTPUT: Interpolated points. Point vector layer with features placed along lines or polygonboundaries of the input layer.. Type: [vector: point]
+"""
 code_example = """
 import processing
 from qgis.core import QgsVectorLayer, QgsProject
@@ -32,4 +35,4 @@ def interpolate_points():
     output_layer = QgsVectorLayer(result['OUTPUT'], 'Interpolated Points', 'ogr')
     QgsProject.instance().addMapLayer(output_layer)
 
-interpolate_points()"
+interpolate_points()"""

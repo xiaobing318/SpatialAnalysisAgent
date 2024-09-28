@@ -2,17 +2,24 @@ tool_ID = "native:rastersurfacevolume"
 tool_name = "Raster surface volume"
 brief_description = """Calculates the volume under a raster surface relative to a given base level. This is mainly useful for Digital Elevation Models (DEM)."""
 full_description = """Calculates the volume under a raster surface relative to a given base level. This is mainly useful for Digital Elevation Models (DEM)."""
-parameters = """INPUT: INPUT layer. Input raster, representing a surface. Type: [raster]
-BAND: Band number. If the raster is multiband, choose the band that shall definethe surface.. Type: [raster band] Default: The first band of the raster layer
-LEVEL: Base level. Define a base or reference value.This base is used in the volume calculation according to the Method parameter (see below).. Type: [number] Default: 0.0
-METHOD: Method. Define the method for the volume calculation given by thedifference between the raster pixel value and the Base level .Options: 0 — Count Only Above Base Level: only pixels above the baselevel will add to the volume. 1 — Count Only Below Base Level: only pixels below the baselevel will add to the volume. 2 — Subtract Volumes Below Base level: pixels above thebase level will add to the volume, pixels below the baselevel will subtract from the volume. 3 — Add Volumes Below Base level: Add the volumeregardless whether the pixel is above or below the baselevel.This is equivalent to sum the absolute values of thedifference between the pixel value and the base level.. Type: [enumeration] Default: 0
-OUTPUT_HTML_FILE: Surface volume report. Specification of the output HTML report. One of: Skip Output Create Temporary Layer ( TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [html] Default: [Save to temporary file]
-OUTPUT_TABLE: Surface volume table. Specification of the output table. One of: Skip Output Create Temporary Layer ( TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [table] Default: [Skip output]"""
-outputs = "VOLUME: Volume. The calculated volume. Type: [number]
-AREA: Area. The area in square map units. Type: [number]
-PIXEL_COUNT: Pixel_count. The total number of pixels that have been analyzed. Type: [number]
-OUTPUT_HTML_FILE: Surface volume report. The output report (containing volume, area andpixel count) in HTML format. Type: [html]
-OUTPUT_TABLE: Surface volume table. The output table (containing volume, area andpixel count). Type: [table]"
+parameters = """
+INPUT: 
+INPUT layer. Input raster, representing a surface. Type: [raster] 
+BAND: Band number. If the raster is multiband, choose the band that shall definethe surface.. Type: [raster band] Default: The first band of the raster layer 
+LEVEL: Base level. Define a base or reference value.This base is used in the volume calculation according to the Method parameter (see below).. Type: [number] Default: 0.0 
+METHOD: Method. Define the method for the volume calculation given by thedifference between the raster pixel value and the Base level .Options: 0 — Count Only Above Base Level: only pixels above the baselevel will add to the volume. 1 — Count Only Below Base Level: only pixels below the baselevel will add to the volume. 2 — Subtract Volumes Below Base level: pixels above thebase level will add to the volume, pixels below the baselevel will subtract from the volume. 3 — Add Volumes Below Base level: Add the volumeregardless whether the pixel is above or below the baselevel.This is equivalent to sum the absolute values of thedifference between the pixel value and the base level.. Type: [enumeration] Default: 0 
+OUTPUT_HTML_FILE: Surface volume report. Specification of the output 
+HTML report. One of: Skip Output Create Temporary Layer ( 
+TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [html] Default: [Save to temporary file] 
+OUTPUT_TABLE: Surface volume table. Specification of the output table. One of: Skip Output Create Temporary Layer ( 
+TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [table] Default: [Skip output] outputs = 
+VOLUME: Volume. The calculated volume. Type: [number] 
+AREA: Area. The area in square map units. Type: [number] 
+PIXEL_COUNT: Pixel_count. The total number of pixels that have been analyzed. Type: [number] 
+OUTPUT_HTML_FILE: Surface volume report. The output report (containing volume, area andpixel count) in 
+HTML format. Type: [html] 
+OUTPUT_TABLE: Surface volume table. The output table (containing volume, area andpixel count). Type: [table]
+"""
 code_example = """
 from qgis.core import QgsRasterLayer, QgsProject
 import processing

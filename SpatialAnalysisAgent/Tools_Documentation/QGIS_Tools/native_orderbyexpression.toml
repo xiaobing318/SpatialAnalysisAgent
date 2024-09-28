@@ -3,12 +3,15 @@ tool_name = "Order by expression"
 brief_description = """Sorts a vector layer according to an expression: changes the feature index according to an expression."""
 full_description = """Sorts a vector layer according to an expression: changes the feature index according to an expression.
 Be careful, it might not work as expected with some providers, the order might not be kept every time."""
-parameters = """INPUT: Input Layer. Input vector layer to sort. Type: [vector: any]
-EXPRESSION: Expression. Expression to use for the sorting. Type: [expression]
-ASCENDING: Sort ascending. If checked the vector layer will be sorted fromsmall to large values.. Type: [boolean] Default: True
-NULLS_FIRST: Sort nulls first. If checked, Null values are placed first. Type: [boolean] Default: False
-OUTPUT: Ordered. Specify the output vector layer. One of: Create Temporary Layer ( TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [same as input] Default: [Create temporary layer]"""
-outputs = "OUTPUT: Ordered. Output (sorted) vector layer. Type: [same as input]"
+parameters = """
+INPUT: Input Layer. Input vector layer to sort. Type: [vector: any] 
+EXPRESSION: Expression. Expression to use for the sorting. Type: [expression] 
+ASCENDING: Sort ascending. If checked the vector layer will be sorted fromsmall to large values.. Type: [boolean] Default: True 
+NULLS_FIRST: Sort nulls first. If checked, Null values are placed first. Type: [boolean] Default: False 
+OUTPUT: Ordered. Specify the output vector layer. One of: Create Temporary Layer ( 
+TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [same as input] Default: [Create temporary layer] outputs = 
+OUTPUT: Ordered. Output (sorted) vector layer. Type: [same as input]
+"""
 code_example = """
 import processing
 from qgis.core import QgsProject, QgsVectorLayer
@@ -32,4 +35,4 @@ def ordered_by_expression():
     output_layer = QgsVectorLayer(result['OUTPUT'], 'Ordered Layer', 'ogr')
     QgsProject.instance().addMapLayer(output_layer)
 
-ordered_by_expression()"
+ordered_by_expression()"""

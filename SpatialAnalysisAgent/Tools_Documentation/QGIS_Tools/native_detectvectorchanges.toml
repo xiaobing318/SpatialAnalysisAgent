@@ -2,19 +2,24 @@ tool_ID = "native:detectvectorchanges"
 tool_name = "Detect dataset changes"
 brief_description = """Compares two vector layers, and determines which features are unchanged, added or deleted between the two. It is designed for comparing two different versions of the same dataset."""
 full_description = """Compares two vector layers, and determines which features are unchanged, added or deleted between the two. It is designed for comparing two different versions of the same dataset."""
-parameters = """ORIGINAL: Original layer. The vector layer considered as the original version. Type: [vector: any]
-REVISED: Revised layer. The revised or modified vector layer. Type: [vector: any]
-COMPARE_ATTRIBUTES: Attributes to consider for match Optional. Attributes to consider for match. By default, all attributesare compared.. Type: [tablefield: any] [list]
-MATCH_TYPE: Geometry comparison behavior Optional. Defines the criteria for comparison. Options: 0 — Exact Match: includes the order and vertices count ofgeometries 1 — Tolerant Match (Topological Equality): geometries areconsidered equal. Type: [enumeration] Default: 1
-UNCHANGED: Unchanged features Optional. Specify the output vector layer containing the unchangedfeatures. One of: Skip Output Create Temporary Layer ( TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [vector: same as Original layer]
-ADDED: Added features Optional. Specify the output vector layer containing the added features.One of: Skip Output Create Temporary Layer ( TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [vector: same as Original layer]
-DELETED: Deleted features Optional. Specify the output vector layer containing the deletedfeatures. One of: Skip Output Create Temporary Layer ( TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [vector: same as Original layer]"""
-outputs = "UNCHANGED: Unchanged features. Vector layer containing the unchanged features.. Type: [vector: same as Original layer]
-ADDED: Added features. Vector layer containing the added features.. Type: [vector: same as Original layer]
-DELETED: Deleted features. Vector layer containing the deleted features.. Type: [vector: same as Original layer]
-UNCHANGED_COUNT: Count of unchanged features. Count of unchanged features.. Type: [number]
-ADDED_COUNT: Count of features added in revised layer. Count of features added in revised layer.. Type: [number]
-DELETED_COUNT: Count of features deleted from original layer. Count of features deleted from original layer.. Type: [number]"
+parameters = """
+ORIGINAL: Original layer. The vector layer considered as the original version. Type: [vector: any] 
+REVISED: Revised layer. The revised or modified vector layer. Type: [vector: any] 
+COMPARE_ATTRIBUTES: Attributes to consider for match Optional. Attributes to consider for match. By default, all attributesare compared.. Type: [tablefield: any] [list] 
+MATCH_TYPE: Geometry comparison behavior Optional. Defines the criteria for comparison. Options: 0 — Exact Match: includes the order and vertices count ofgeometries 1 — Tolerant Match (Topological Equality): geometries areconsidered equal. Type: [enumeration] Default: 1 
+UNCHANGED: Unchanged features Optional. Specify the output vector layer containing the unchangedfeatures. One of: Skip Output Create Temporary Layer ( 
+TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [vector: same as Original layer] 
+ADDED: Added features Optional. Specify the output vector layer containing the added features.One of: Skip Output Create Temporary Layer ( 
+TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [vector: same as Original layer] 
+DELETED: Deleted features Optional. Specify the output vector layer containing the deletedfeatures. One of: Skip Output Create Temporary Layer ( 
+TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… The file encoding can also be changed here.. Type: [vector: same as Original layer] outputs = 
+UNCHANGED: Unchanged features. Vector layer containing the unchanged features.. Type: [vector: same as Original layer] 
+ADDED: Added features. Vector layer containing the added features.. Type: [vector: same as Original layer] 
+DELETED: Deleted features. Vector layer containing the deleted features.. Type: [vector: same as Original layer] 
+UNCHANGED_COUNT: Count of unchanged features. Count of unchanged features.. Type: [number] 
+ADDED_COUNT: Count of features added in revised layer. Count of features added in revised layer.. Type: [number] 
+DELETED_COUNT: Count of features deleted from original layer. Count of features deleted from original layer.. Type: [number]
+"""
 code_example = """
 import processing
 from qgis.core import QgsProject, QgsVectorLayer

@@ -1,5 +1,5 @@
 
-tool_ID = 'DensityMap_kerneldensityestimation'
+tool_ID = 'densityMap_kerneldensityestimation'
 
 tool_name = 'Heatmap (Kernel Density Estimation) '
 

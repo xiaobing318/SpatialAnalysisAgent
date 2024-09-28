@@ -141,6 +141,7 @@ selected_tools = Selected_Tools_Dict['Selected tool']
 if isinstance(selected_tools, str):
     selected_tools = [selected_tools]
 print(selected_tools)
+Tools_Documentation_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent', 'Tools_Documentation')
 # Iterate over each selected tool
 all_documentation =[]
 for selected_tool in selected_tools:
@@ -150,7 +151,7 @@ for selected_tool in selected_tools:
 
     elif selected_tool in constants.tool_names_lists:
         selected_tool_ID = constants.CustomTools_dict[selected_tool]['ID']
-        print(f"Selected a tool from the customized folder")
+        # print(f"Selected a tool from the customized folder")
     else:
         selected_tool_ID = "Unknown"
     # print(f"SELECTED TOOLS ID: {selected_tool_ID}")
@@ -158,13 +159,62 @@ for selected_tool in selected_tools:
     print(F"TOOL_ID: {selected_tool_ID}")
     print(f"Selected tool filename: {selected_tool_file_ID}")
 
-    # documentation_list = documentation.get(f"{selected_tool_ID}", [])
-    # documentation_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(documentation_list)])
-    documentation_str = ToolsDocumentation.tool_documentation_collection(tool_ID=selected_tool_file_ID)
+    selected_tool_file_path = None
+    # Walk through all subdirectories and files in the given directory
+    for root, dirs, files in os.walk(Tools_Documentation_dir):
+        for file in files:
+            if file == f"{selected_tool_file_ID}.toml":
+                selected_tool_file_path = os.path.join(root, file)
+                break
+        if selected_tool_file_path:
+            break
+    if not selected_tool_file_path:
+        print(f"File {selected_tool_file_ID}.toml not found.")
+        continue
+
+    # Print the tool information
+    print(f"TOOL_ID: {selected_tool_ID}")
+    print(f"Selected tool filename: {selected_tool_file_ID}")
+
+    # Define the path to the file (you'll need to adjust this path as needed)
+    # selected_file_path = os.path.join(Tools_Documentation_dir, f"{selected_tool_file_ID}.toml")
+
+    # Step 1: Check if the file is free from errors
+    if ToolsDocumentation.check_toml_file_for_errors(selected_tool_file_path):
+        # If no errors, get the documentation
+        print(f"File {selected_tool_file_ID} is free from errors.")
+        documentation_str = ToolsDocumentation.tool_documentation_collection(tool_ID=selected_tool_file_ID)
+    else:
+        # Step 2: If there are errors, fix the file and then get the documentation
+        print(f"File {selected_tool_file_ID} has errors. Attempting to fix...")
+        ToolsDocumentation.fix_toml_file(selected_tool_file_path)
+
+        # After fixing, try to retrieve the documentation
+        print(f"Retrieving documentation after fixing {selected_tool_file_ID}.")
+        documentation_str = ToolsDocumentation.tool_documentation_collection(tool_ID=selected_tool_file_ID)
+
+    # Append the retrieved documentation to the list
     all_documentation.append(documentation_str)
-    # print(documentation_str)
-# Join all the collected documentation into a single string
+
+# Step 3: Join all the collected documentation into a single string
 combined_documentation_str = '\n'.join(all_documentation)
+
+# Print or return the combined documentation
+print(combined_documentation_str)
+
+
+
+#
+#     # documentation_list = documentation.get(f"{selected_tool_ID}", [])
+#     # documentation_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(documentation_list)])
+#     documentation_str = ToolsDocumentation.tool_documentation_collection(tool_ID=selected_tool_file_ID)
+#     all_documentation.append(documentation_str)
+#     # print(documentation_str)
+# # Join all the collected documentation into a single string
+# combined_documentation_str = '\n'.join(all_documentation)
+# print(combined_documentation_str)
+
+
 
 # Create and print the operation prompt string for each selected tool
 operation_prompt_str = helper.create_operation_prompt(task = task, data_path =data_path, workspace_directory =workspace_directory, selected_tools =selected_tools, documentation_str=combined_documentation_str)

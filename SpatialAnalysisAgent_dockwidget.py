@@ -150,33 +150,11 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.data_path_completer.setCaseSensitivity(Qt.CaseInsensitive)
         # self.data_pathLineEdit.setCompleter(self.data_path_completer)
 
-        # # fIND THE PLACEHOLDER WIDGET
-        placeholder = self.findChild(QWidget, 'placeholder_widget')
-        placeholderLayout = placeholder.parentWidget().layout()
 
-        from QSwitchControl import SwitchControl
-        #Add switch control
-        self.switch_control = SwitchControl()
-        # Reduce the size of the SwitchControl
-        self.switch_control.setFixedSize(50, 20)  # Set the desired width and height
-        # self.switch_control.setStyleSheet("border-radius: 10px; padding: 2px;")  # Adjust padding
-        self.switch_control.setStyleSheet("""
-            QSwitchControl::indicator {
-                width: 14px;  # Set the desired width of the circle
-                height: 14px;  # Set the desired height of the circle
-                border-radius: 7px;  # Half of width/height to make it a circle
-                background-color: lightgray;
-            }
 
-            QSwitchControl::indicator:checked {
-                background-color: green;
-            }
-        """)
-        # # Replace the placeholder with the layer tree view
-        placeholderLayout.replaceWidget(placeholder, self.switch_control)
 
-        # Connect the switch_control to the slot function
-        self.switch_control.toggled.connect(self.toggle_data_path_line_edit)
+        # Connect the ChatMode_checkbox to the slot function
+        self.ChatMode_checkbox.toggled.connect(self.toggle_data_path_line_edit)
 
 
         # Add a map view to display the solution graph
@@ -216,11 +194,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
 
     def initUI(self):
-        # # Creat switch control
-        # switch_control = SwitchControl()
-        # self.switch_layout = QHBoxLayout()
-        # self.switch_layout.addWidget(switch_control, Qt.AlignCenter, Qt.AlignCenter)
-        # self.setLayout(self.switch_layout)
 
         # Disable the data_pathLineEdit permanently
         # self.data_pathLineEdit.setEnabled(False)
@@ -307,7 +280,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         """Dynamically import the third-party libraries after ensuring they're installed."""
         # global SwitchControl, QWebEngineView, OpenAI, nest_asyncio
-        # from QSwitchControl import SwitchControl
         # from PyQt5.QtWebEngineWidgets import QWebEngineView
         # from PyQtWebEngine import QWebEngineView
         # from openai import OpenAI
@@ -386,7 +358,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.on_layer_visibility_changed()
 
     def toggle_data_path_line_edit(self, checked):
-        """Enable or disable data_pathLineEdit based on the switch_control state."""
+        """Enable or disable data_pathLineEdit based on the ChatMode_Checkbox state."""
         self.data_pathLineEdit.setEnabled(not checked)
         self.loadData.setEnabled(not checked)
 
@@ -396,7 +368,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
 
     def clear_report(self):
-        if not self.switch_control.isChecked() and self.data_pathLineEdit.toPlainText().strip() and self.task_LineEdit.toPlainText().strip():
+        if not self.ChatMode_checkbox.isChecked() and self.data_pathLineEdit.toPlainText().strip() and self.task_LineEdit.toPlainText().strip():
             self.report_web_view.setHtml('')
             # self.refresh_report_Btn.clicked.connect(self.refresh_report)
         else:
@@ -567,7 +539,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     def load_data(self):
 
-        file_filter = "Vector files (*.shp *.csv *.xlsx *.gpkg);;Raster files (*.tif *.jpg)"
+        file_filter = "Data Files(*.shp *.csv *.gpkg *.tif *.jpg)"
         data_paths, _ = QFileDialog.getOpenFileNames(self, "Open File", "", file_filter)
         if data_paths:
             # Get the current content of the data_pathLineEdit
@@ -640,12 +612,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Now read the updated config file to refresh the API key
         self.read_updated_config()
 
-        if not self.switch_control.isChecked() and self.data_pathLineEdit.isEnabled() and not self.data_pathLineEdit.toPlainText().strip():
+        if not self.ChatMode_checkbox.isChecked() and self.data_pathLineEdit.isEnabled() and not self.data_pathLineEdit.toPlainText().strip():
             self.update_chatgpt_ans(f"AI: Please load the data to be used.", is_user=False)
             return  # Stop further execution if data path is required but empty
 
 
-        if self.switch_control.isChecked():  # Assuming SwitchControl behaves like a checkbox
+        if self.ChatMode_checkbox.isChecked():
             self.chatgpt_direct_answer(user_message)
         else:
             self.run_script()
@@ -683,7 +655,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def run_script(self):
         # self.update_OpenAI_key()
         # Retrieve the API key from the config
-        self.OpenAI_key = self.get_openai_key()  # This retrieves the latest key from the config
+        self.OpenAI_key = self.get_openai_key()
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
         script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
         self.OpenAI_key = self.get_openai_key()  # Retrieve the API key from the line edit
@@ -770,7 +742,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if message.strip():  # Check if message is not empty
             self.update_chatgpt_ans(f"User: {message}", is_user=True)
             self.update_output(f"User: {message}")
-            if self.switch_control.isChecked():
+            if self.ChatMode_checkbox.isChecked():
                 # Clear the input field after sending the message when switch is checked
                 self.task_LineEdit.clear()
 

@@ -336,10 +336,13 @@ operation_requirement = [
     "When loading a CSV layer as a layer, use this: `'f'file///{csv_path}?delimeter=,''`, assuming the csv is comma-separated, but use the csv_path directly for the Input parameter in join operations.",
     "If you are to use processing algorithm, you do not need to include the code to load a data",
     "For tasks that contains interrogative words such as ('how', 'what', 'why', 'when', 'where', 'which'), ensure that no layers are loaded into the QGIS, instead the result should be printed",    "If you are creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",# Always print out the result"
-    "If you are using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
+    "If you are using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `Buffer_layer = QgsVectorLayer(result['OUTPUT'], 'Buffered output', 'ogr')` for the case of a shapefile.",
+    "Similarly, if you used geopandas to generate a new layer, use `QgsVectorLayer` to load the feature as a new layer: For example `Buffer_layer = QgsVectorLayer(result['OUTPUT'], 'Buffered output', 'ogr')` for the case of a shapefile.",
+    "Whenever a new layer is being saved, ensure the code first checks if a file with the same name already exists in the output directory, and if it does, append a number to the filename to create a unique name, thereby avoiding any errors related to overwriting or saving the layer.",
+    "When naming any output layer, choose a name that is concise, descriptive, easy to read, and free of spaces.",
     "Ensure that temporary layer is not used as the output parameter"
 
-    # "When using the processing algorithm, make the output parameter a temporary layer by using `'OUTPUT':'memory:name_of_the_layer'` and load the output layer using `output_layer = result['OUTPUT']`.",
+    # "When using the processing algorithm, make the output parameter a temporary layer by using `'OUTPUT':'memory:name_of_the_layer'` and load the output layer using `Buffer_layer = result['OUTPUT']`.",
 
    #  "If using `QgsVectorLayerJoinInfo()` to create join information, always include the JoinLayer, and apply the join to the target layer using the following: `target_layer.addJoin(join_info)`"
    #  "Create a dictionary for fast lookups of CSV attributes, then Create a new layer to store the results with joined attributes.  Add all features to the new layer. The new layer must contain all the attributes of the each features. To ensure the joined attributes are included in the new layer, you must explicitly transfer the joined attributes to the new layer's attribute table. Load the new layer"
@@ -378,6 +381,9 @@ operation_code_review_requirement = ["Review the codes very carefully to ensure 
                                     "When creating a scatter plot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot, ensure the correct tool is used",
                                     "When creating density maps, do not use `matplotlib` to visualize the result, ensure the result is saved as 'tif' and loaded to QGIS",
                                     f"When using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
+                                     f"Similarly, if you used geopandas to generate a new layer, use `QgsVectorLayer` to load the feature as a new layer: For example `buffer_layer = QgsVectorLayer(result['OUTPUT'], 'Buffered output', 'ogr')` for the case of a shapefile.",
+                                    "Whenever a new layer is being saved, ensure the code first checks if a file with the same name already exists in the output directory, and if it does, append a number (e.g filename_1, filename_2, etc) to the filename to create a unique name, thereby avoiding any errors related to overwriting or saving the layer.",
+                                    "When naming any output layer, choose a name that is concise, descriptive, easy to read, and free of spaces.",
                                      "Ensure that temporary layer is not used as the output parameter"
                                      ]
 
@@ -412,7 +418,7 @@ debug_requirement = [
     "NOTE, when a one data path is provided, you DO NOT need to perform join.",
     "If you need to use any field from the input shapefile layer, first access the fields (example code: `fields = input_layer.fields()`), then select the appropriate field carefully from the list of fields in the layer.",
    "When loading a CSV layer as a layer, use this: `'f'file///{csv_path}?delimeter=,''`, assuming the csv is comma-separated, but use the csv_path directly for the Input parameter in join operations.",
-    # "Do not use `QgsVectorLayer to load the output of a Temporary layer. Use `output_layer = result['OUTPUT']`."
+    # "Do not use `QgsVectorLayer to load the output of a Temporary layer. Use `Buffer_layer = result['OUTPUT']`."
     # "Do not generate a layer for tasks that only require printing the answer, like questions of how, what, why, etc. e.g., for tasks like 'How many counties are there in PA?', 'What is the distance from A to B', etc.",
     "For tasks that contains interrogative words such as ('how', 'what', 'why', 'when', 'where', 'which'), ensure that no layers are loaded into the QGIS, instead the result should be printed",
     # "When creating plot (Scatter plot, bar plot, etc), save the plot as an HTML file."
@@ -422,7 +428,10 @@ debug_requirement = [
     "When printing the result of plots e.g barplot,scatterplot, boxplot etc, always print out the file path of the result only, ensure any description or comment is not added.",
     "When creating a scatter plot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot, ensure the correct tool is used",
     "When using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
-    "Ensure that temporary layer is not used as the output paarameter"
+    "Similarly, if you used geopandas to generate a new layer, use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
+    "Whenever a new layer is being saved, ensure the code first checks if a file with the same name already exists in the output directory, and if it does, append a number (e.g filename_1, filename_2, etc) to the filename to create a unique name, thereby avoiding any errors related to overwriting or saving the layer.",
+    "When naming any output layer, choose a name that is concise, descriptive, easy to read, and free of spaces.",
+    "Ensure that temporary layer is not used as the output parameter"
     # "If you performed join, always export the joined layer as a new shapefile and load the new shapefile. `QgsVectorFileWriter.writeAsVectorFormatV3()` is recommended to be used to export the joined layer. It is used in this format: `QgsVectorFileWriter.writeAsVectorFormatV3(layer, output, QgsProject.instance().transformContext(), options)`."
     # f"If you performed join, you can follow this tempelate to create your code: {codebase.attribute_join}"
 ]

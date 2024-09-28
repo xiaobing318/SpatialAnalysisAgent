@@ -5,11 +5,14 @@ full_description = """Returns the portion of a line (or curve) which falls betwe
 Z and M values are linearly interpolated from existing values.
 If a multipart geometry is encountered, only the first part is considered when calculating the substring.
 Allows features in-place modification of line features"""
-parameters = """INPUT: Input layer. Input line vector layer. Type: [vector: line]
-START_DISTANCE: Start distance. Distance along the input line to the start point ofthe output feature. Type: [number ]
-END_DISTANCE: End distance. Distance along the input line to the end point ofthe output feature. Type: [number ]
-OUTPUT: Substring. Specify the output line vector layer. One of: Create Temporary Layer ( TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… Append to Layer… The file encoding can also be changed here.. Type: [vector: line] Default: [Create temporary layer]"""
-outputs = "OUTPUT: Substring. The output line vector layer.. Type: [vector: line]"
+parameters = """
+INPUT: Input layer. Input line vector layer. Type: [vector: line] 
+START_DISTANCE: Start distance. Distance along the input line to the start point ofthe output feature. Type: [number ] 
+END_DISTANCE: End distance. Distance along the input line to the end point ofthe output feature. Type: [number ] 
+OUTPUT: Substring. Specify the output line vector layer. One of: Create Temporary Layer ( 
+TEMPORARY_OUTPUT ) Save to File… Save to Geopackage… Save to Database Table… Append to Layer… The file encoding can also be changed here.. Type: [vector: line] Default: [Create temporary layer] outputs = 
+OUTPUT: Substring. The output line vector layer.. Type: [vector: line]
+"""
 code_example = """
 from qgis.core import QgsVectorLayer, QgsProject
 import processing
@@ -36,4 +39,4 @@ def create_line_substrings():
     QgsProject.instance().addMapLayer(substring_layer)
 
 # Execute the function
-create_line_substrings()"
+create_line_substrings()"""

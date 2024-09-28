@@ -4,14 +4,18 @@ brief_description = """Performs nearest neighbor analysis for a point layer. The
 full_description = """Performs nearest neighbor analysis for a point layer. The output tells you how your data are distributed (clustered, randomly or distributed).
 Output is generated as an HTML file with the computed statistical values:
 Default menu: Vector ► Analysis Tools"""
-parameters = """INPUT: Input layer. Point vector layer to calculate the statistics on. Type: [vector: point]
-OUTPUT_HTML_FILE: Nearest neighbour Optional. Specification of the HTML file for the computed statistics.One of: Skip Output Save to a Temporary File Save to File…. Type: [html] Default: [Save to temporary file]"""
-outputs = "OUTPUT_HTML_FILE: Nearest neighbour. HTML file with the computed statistics. Type: [html]
-OBSERVED_MD: Observed mean distance. Observed mean distance. Type: [number]
-EXPECTED_MD: Expected mean distance. Expected mean distance. Type: [number]
-NN_INDEX: Nearest neighbour index. Nearest neighbour index. Type: [number]
-POINT_COUNT: Number of points. Number of points. Type: [number]
-Z_SCORE: Z-Score. Z-Score. Type: [number]"
+parameters = """
+INPUT: Input layer. Point vector layer to calculate the statistics on. Type: [vector: point] 
+OUTPUT_HTML_FILE: Nearest neighbour Optional. Specification of the 
+HTML file for the computed statistics.One of: Skip Output Save to a Temporary File Save to File…. Type: [html] Default: [Save to temporary file] outputs = 
+OUTPUT_HTML_FILE: Nearest neighbour. 
+HTML file with the computed statistics. Type: [html] 
+OBSERVED_MD: Observed mean distance. Observed mean distance. Type: [number] 
+EXPECTED_MD: Expected mean distance. Expected mean distance. Type: [number] 
+NN_INDEX: Nearest neighbour index. Nearest neighbour index. Type: [number] 
+POINT_COUNT: Number of points. Number of points. Type: [number] 
+Z_SCORE: Z-Score. Z-Score. Type: [number]
+"""
 code_example = """
 import processing
 from qgis.core import QgsVectorLayer, QgsProject

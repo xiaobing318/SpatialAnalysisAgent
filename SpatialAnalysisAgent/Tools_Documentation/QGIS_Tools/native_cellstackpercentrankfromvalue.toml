@@ -6,19 +6,25 @@ At each cell location, the specified value is ranked among the respective values
 There are two methods for percentile calculation:
 The linear interpolation methods return the unique percent rank for different values. Both interpolation methods follow their counterpart methods implemented by LibreOffice or Microsoft Excel.
 The output raster’s extent and resolution is defined by a reference raster. Input raster layers that do not match the cell size of the reference raster layer will be resampled using nearest neighbor resampling. NoData values in any of the input layers will result in a NoData cell output if the “Ignore NoData values” parameter is not set. The output raster data type will always be Float32 ."""
-parameters = """INPUT: Input layers. Raster layers to evaluate.If multiband rasters are used in the data raster stack, the algorithmwill always perform the analysis on the first band of the rasters. Type: [raster] [list]
-METHOD: Method. Method for percentile calculation: 0 — Inclusive linear interpolation (PERCENTRANK.INC) 1 — Exclusive linear interpolation (PERCENTRANK.EXC). Type: [enumeration] Default: 0
-VALUE: Value. Value to rank among the respective values in the stack of all overlaidand sorted cell values from the input rasters. Type: [number] Default: 10.0
-IGNORE_NODATA: Ignore NoData values. If unchecked, any NoData cells in the input layers will result in a NoDatacell in the output raster. Type: [boolean] Default: True
-REFERENCE_LAYER: Reference layer. The reference layer for the output layer creation(extent, CRS, pixel dimensions). Type: [raster]
-OUTPUT: Output layer. Specification of the output raster. One of: Save to a Temporary File Save to File…. Type: [same as input] Default: [Save to temporary file]
-OUTPUT_NODATA_VALUE: Output NoData value. Value to use for NoData in the output layer. Type: [number] Default: -9999.0"""
-outputs = "OUTPUT: Output layer. Output raster layer containing the result. Type: [raster]
-CRS_AUTHID: CRS authority identifier. The coordinate reference system of the output raster layer. Type: [string]
-EXTENT: Extent. The spatial extent of the output raster layer. Type: [string]
-WIDTH_IN_PIXELS: Width in pixels. The number of columns in the output raster layer. Type: [integer]
-HEIGHT_IN_PIXELS: Height in pixels. The number of rows in the output raster layer. Type: [integer]
-TOTAL_PIXEL_COUNT: Total pixel count. The count of pixels in the output raster layer. Type: [integer]"
+parameters = """
+INPUT: Input layers. Raster layers to evaluate.If multiband rasters are used in the data raster stack, the algorithmwill always perform the analysis on the first band of the rasters. Type: [raster] [list] 
+METHOD: Method. Method for percentile calculation: 0 — Inclusive linear interpolation 
+(PERCENTRANK.INC) 1 — Exclusive linear interpolation 
+(PERCENTRANK.EXC). Type: [enumeration] Default: 0 
+VALUE: Value. Value to rank among the respective values in the stack of all overlaidand sorted cell values from the input rasters. Type: [number] Default: 10.0 
+IGNORE_NODATA: Ignore NoData values. If unchecked, any NoData cells in the input layers will result in a NoDatacell in the output raster. Type: [boolean] Default: True 
+REFERENCE_LAYER: Reference layer. The reference layer for the output layer creation(extent, 
+CRS, pixel dimensions). Type: [raster] 
+OUTPUT: Output layer. Specification of the output raster. One of: Save to a Temporary File Save to File…. Type: [same as input] Default: [Save to temporary file] 
+OUTPUT_NODATA_VALUE: Output NoData value. Value to use for NoData in the output layer. Type: [number] Default: -9999.0 outputs = 
+OUTPUT: Output layer. Output raster layer containing the result. Type: [raster] 
+CRS_AUTHID: 
+CRS authority identifier. The coordinate reference system of the output raster layer. Type: [string] 
+EXTENT: Extent. The spatial extent of the output raster layer. Type: [string] 
+WIDTH_IN_PIXELS: Width in pixels. The number of columns in the output raster layer. Type: [integer] 
+HEIGHT_IN_PIXELS: Height in pixels. The number of rows in the output raster layer. Type: [integer] 
+TOTAL_PIXEL_COUNT: Total pixel count. The count of pixels in the output raster layer. Type: [integer]
+"""
 code_example = """
 import processing
 from qgis.core import QgsProject, QgsRasterLayer
@@ -47,4 +53,4 @@ def cell_stack_percent_rank():
     QgsProject.instance().addMapLayer(output_layer)
 
 # Execute the function
-cell_stack_percent_rank()"
+cell_stack_percent_rank()"""

@@ -9,17 +9,18 @@ This algorithm computes a new vector layer with the same features of the input l
 
 '''
 
-parameters ='''
-INPUT: Input layer
-FIELD_NAME: Field name
-FIELD_TYPE: Result field type. Available values: 0: Decimal (double), 1: Integer (32 bit), 2: Text (string), 3: Date, 4: Time, 5: Date & Time, 6: Boolean, 7: Binary Object (BLOB), 8: String List, 9: Integer List, 10: Decimal (double) List
-FIELD_LENGTH: Result field length
-FIELD_PRECISION: Result field precision
-FORMULA: Formula
-OUTPUT: Specify the output (buffer) layer. One of: Create Temporary Layer (TEMPORARY_OUTPUT); Save to File…; Save to Geopackage…; Save to Database Table…; Append to Layer…
-'''
-
-code_example = '''
+parameters = """
+INPUT: Input layer 
+FIELD_NAME: Field name 
+FIELD_TYPE: Result field type. Available values: 0: Decimal (double), 1: Integer (32 bit), 2: Text (string), 3: Date, 4: Time, 5: Date & Time, 6: Boolean, 7: Binary Object 
+(BLOB), 8: String List, 9: Integer List, 10: Decimal (double) List 
+FIELD_LENGTH: Result field length 
+FIELD_PRECISION: Result field precision 
+FORMULA: Formula 
+OUTPUT: Specify the output (buffer) layer. One of: Create Temporary Layer 
+(TEMPORARY_OUTPUT); Save to File…; Save to Geopackage…; Save to Database Table…; Append to Layer…
+"""
+code_example = """
 from qgis.core import QgsProject,QgsVectorLayer
 def fieldcalculator():
     # Paths to input layers
@@ -48,5 +49,4 @@ def fieldcalculator():
     # Load the selected features as a new layer
     output_layer = QgsVectorLayer(result['OUTPUT'], 'Output_layer', 'ogr')
     QgsProject.instance().addMapLayer(output_layer)
-fieldcalculator()
-'''
+fieldcalculator()"""

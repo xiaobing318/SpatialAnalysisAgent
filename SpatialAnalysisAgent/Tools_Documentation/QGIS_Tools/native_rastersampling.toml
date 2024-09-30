@@ -26,12 +26,12 @@ def raster_sampling():
     
     parameters = {
         'INPUT': input_vector_path,
-        'RASTER': input_raster_path,
+        'RASTERCOPY': input_raster_path,
         'COLUMN_PREFIX': 'SAMPLE_',
         'OUTPUT': output_path  # One of: ['TEMPORARY_OUTPUT', 'Save to File…', 'Save to Geopackage…', 'Save to Database Table…']
     }
 
-    result = processing.run(\"""native:rastersampling\", parameters)
+    result = processing.run("native:rastersampling", parameters)
   
     sampled_layer = QgsVectorLayer(result['OUTPUT'], 'Sampled Points', 'ogr')
     QgsProject.instance().addMapLayer(sampled_layer)

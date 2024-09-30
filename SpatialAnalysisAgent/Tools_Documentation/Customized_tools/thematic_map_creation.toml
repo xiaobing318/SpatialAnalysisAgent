@@ -11,11 +11,11 @@ parameters ='''
 '''
 code_example = '''
 #Importing necessary modules
-    from qgis.core import QgsVectorLayer, QgsProject, QgsVectorLayerJoinInfo, QgsGraduatedSymbolRenderer, QgsMapSettings, QgsSymbol
-    from qgis.PyQt.QtCore import QVariant, QSize
-    from qgis.PyQt.QtGui import QImage, QPainter, QColor
+from qgis.core import QgsVectorLayer, QgsProject, QgsVectorLayerJoinInfo, QgsGraduatedSymbolRenderer, QgsMapSettings, QgsSymbol
+from qgis.PyQt.QtCore import QVariant, QSize
+from qgis.PyQt.QtGui import QImage, QPainter, QColor
     
-    def Thematic_Map_Creation():
+def Thematic_Map_Creation():
     # Load the shapefile
     path_to_layer = 'D:\\Data\\Data.shp'
     layer = QgsVectorLayer(path_to_layer, "Population_Distribution", "ogr")

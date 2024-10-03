@@ -40,28 +40,27 @@ CodeSample_reply_example2 = """
 from qgis.core import QgsVectorLayer, QgsProject
 import processing
 
-def generate_centroids():
-    # Define input and output paths
-    input_path = 'D:/Data/Data.shp'
-    output_path = 'C:/output_path/output_layer.shp'
-  
-
-    # Load the shapefile as a vector layer
-    input_layer = QgsVectorLayer(input_path, 'Census Tracts', 'ogr')
-
-    # Run the Centroids algorithm
-    result = processing.run('native:centroids', {
-        'INPUT': input_layer,
-        'ALL_PARTS': False,  # Generates centroid for each feature (geom in multi-part geometries)
-        'OUTPUT': output_path
-    })
-
-    # Load the centroid layer to QGIS
-    centroids_layer = QgsVectorLayer(result['OUTPUT'], 'Centroids', 'ogr')
-    QgsProject.instance().addMapLayer(centroids_layer)
-
+def create_300m_buffer():
+    # Define the input and output paths
+    input_path = 'D:/input_layer.shp'
+    output_dir = 'C:/Users/Output'
+    output_file_name = "HW_Sites_Proj_buffered.shp"
+    output_path = f"{output_dir}/{output_file_name}"
+    # Load the input layer
+    input_layer = QgsVectorLayer(input_path, "HW_Sites_Proj", "ogr")
+    # Set buffer processing parameters
+    buffer_params = {
+        'input': input_path,
+        'distance': 300,
+        'output': output_path
+    }
+    # Run buffer (v.buffer is aliased as grass:v.buffer in QGIS processing)
+    result = processing.run("grass7:v.buffer", buffer_params)
+    # Load the resulting buffered layer
+    Buffer_layer = QgsVectorLayer(result['output'], 'Buffered_output', 'ogr')
+    QgsProject.instance().addMapLayer(Buffer_layer)
 # Execute the function
-generate_centroids()
+create_300m_buffer()
 ```
 """
 
@@ -69,8 +68,9 @@ generate_centroids()
 CodeSample_requirements = ["Only provide the code sample for the tool based on the parameters given",
                            "Follow the logical flow of the examples of other tools provided",
                            "Do not add any explanation",
+                           "Try as much as possible to make the code simple.",
+                           "Set the optional parameters empty",
                            "The parameter values are not set separately. The value to each parameter should be set directly within the parameters dictionary. BUT, Do not add any comment when defining a parameter",
-
                            "If a parameter has other values options, the options should be specified as a comment when defining the parameter.",
                            "The output_path should be use in the 'OUTPUT' parameter",
                            "Your reply should only be the python code sample for the tool"

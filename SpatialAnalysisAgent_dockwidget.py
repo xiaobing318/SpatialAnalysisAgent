@@ -546,10 +546,10 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             existing_paths = self.data_pathLineEdit.toPlainText()
 
             # Concatenate the new paths with the existing ones
-            new_paths = "; ".join(data_paths)
+            new_paths = f"\n ".join(data_paths)
             if existing_paths:
                 # If there are already existing paths, add a semicolon before appending the new paths
-                all_paths = existing_paths + "; " + new_paths
+                all_paths = f"{existing_paths}\n{new_paths}"
             else:
                 # If there are no existing paths, just use the new paths
                 all_paths = new_paths

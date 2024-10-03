@@ -7,46 +7,6 @@ import re
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 Tools_Documentation_dir = os.path.join(current_script_dir, 'Tools_Documentation')
 
-# def tool_documentation_collection(tool_ID, tool_dir=Tools_Documentation_dir):
-#     # Initialize the tool file path variable
-#     tool_file = None
-#
-#     # Walk through all subdirectories and files in the Tools_Documentation folder
-#     for root, dirs, files in os.walk(tool_dir):
-#         # Check if the tool file exists in any subdirectory
-#         for file in files:
-#             if file == f'{tool_ID}.toml':
-#                 tool_file = os.path.join(root, file)
-#                 break  # Stop once the file is found
-#
-#         if tool_file:  # Exit the loop early if the file was found
-#             break
-#
-#     if not tool_file:  # If the file is not found, return an empty string
-#         return ""
-#
-#     # # Check and attempt to fix the TOML file formatting issues before loading
-#     # if not check_and_fix_toml_file(tool_file):
-#     #     return f"Error: Could not load or fix file {tool_file}"
-#
-#     with open(tool_file, "rb") as f:
-#         tool = tomllib.load(f)
-#     tool_parameter_str = tool['parameters']
-#     tool_total_str = str(tool)
-#     tool_total_str_lines = tool_total_str.strip().split('\n')
-#
-#     # Load the (possibly corrected) TOML file
-#     with open(tool_file, "rb") as f:
-#         tool = tomllib.load(f)
-#
-#     # Process and output the sections dynamically
-#     output = ''
-#     for section, content in tool.items():
-#         # Automatically print section names in title case with content below it
-#         output += f"{section.replace('_', ' ').title()}:\n"
-#         output += f"{content.strip()}\n\n" if isinstance(content, str) else f"{content}\n\n"
-#
-#     return output
 
 
 def check_and_fix_toml_file(file_path):
@@ -425,6 +385,7 @@ def fix_section_content(content):
             fixed_lines.append(f'"""\n{"\n".join(section_content)}\n"""')
 
     return "\n".join(fixed_lines)
+
 
 
 

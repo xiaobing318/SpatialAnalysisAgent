@@ -116,8 +116,9 @@ def create_ToolSelect_prompt(task):
 def create_operation_prompt(task, data_path, selected_tools, documentation_str, workspace_directory):
     operation_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(constants.operation_requirement)])
+    data_path = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(data_path)])
     prompt = f"Your role: {constants.operation_role} \n" + \
-             f"Your mission: {constants.operation_task_prefix}: " + f"{task}" + "Using the following data paths: " + f"{data_path}" + "and this output directory:" + f"{workspace_directory}\n\n" + \
+             f"Your mission: {constants.operation_task_prefix}: " + f"{task}" + "Using the following data paths: " + f"{data_path}" + "\nAnd this output directory: " + f"{workspace_directory}\n\n" + \
              f"Selected tools: {selected_tools}\n" + \
              f"Documentation of the selected tools: \n{documentation_str}\n" + \
              f"requirements: \n{operation_requirement_str}\n" + \

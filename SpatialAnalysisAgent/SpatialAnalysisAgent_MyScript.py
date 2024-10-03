@@ -1,3 +1,5 @@
+
+
 import json
 #***************************************************************************
 ##Import package
@@ -89,7 +91,7 @@ model = ChatOpenAI(api_key=OpenAI_key, model=model_name, temperature=1)
 
 
 
-##*************************************** OPERATION IDENTIFICATION *******************************************************
+# ##*************************************** OPERATION IDENTIFICATION *******************************************************
 OperationIdentification_prompt_str = helper.create_OperationIdentification_promt(task=task)
 print(f"OperationIdentification PROMPT ----------{OperationIdentification_prompt_str}")
 
@@ -199,8 +201,7 @@ for selected_tool in selected_tools:
 # Step 3: Join all the collected documentation into a single string
 combined_documentation_str = '\n'.join(all_documentation)
 
-# Print or return the combined documentation
-print(combined_documentation_str)
+# print(combined_documentation_str)
 
 
 
@@ -214,11 +215,31 @@ print(combined_documentation_str)
 # combined_documentation_str = '\n'.join(all_documentation)
 # print(combined_documentation_str)
 
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+# parent_dir = os.path.dirname(current_script_dir)
+SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
+DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
+# sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
+if DataEye_path not in sys.path:
+    sys.path.append(DataEye_path)
 
 
-# Create and print the operation prompt string for each selected tool
-operation_prompt_str = helper.create_operation_prompt(task = task, data_path =data_path, workspace_directory =workspace_directory, selected_tools =selected_tools, documentation_str=combined_documentation_str)
-print(f"OPERATION PROMPT: {operation_prompt_str}")
+import data_eye
+DATA_LOCATIONS = data_path.split('\n')
+
+
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+# parent_dir = os.path.dirname(current_script_dir)
+SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
+DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
+# sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
+if DataEye_path not in sys.path:
+    sys.path.append(DataEye_path)
+
+attributes_json, DATA_LOCATIONS = data_eye.add_data_overview_to_data_location(task=task, data_location_list=DATA_LOCATIONS, model=r'gpt-4o-2024-08-06')
+print("DATA_LOCATIONS with data overviews:")
+print(DATA_LOCATIONS)
+
 
 # #%% --------------------------------------------------------SOLUTION GRAPH -----------------------------------------------
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -230,7 +251,7 @@ solution = Solution(
     task_explanation= LLM_reply_str,
     task_name = task_name,
     save_dir=save_dir,
-    data_path=data_path,
+    data_path=DATA_LOCATIONS,
     model=model_name,
 )
 
@@ -256,19 +277,11 @@ while os.path.exists(html_graph_path):
 nt.save_graph(html_graph_path)
 print(f"GRAPH_SAVED:{html_graph_path}")
 
-# #%%***************************************** #Get code for operation without Solution graph ************************
-# from IPython.display import clear_output
-# async def fetch_LLM_str(model, operation_prompt_str):
-#     chunks = []
-#
-#     async for chunk in model.astream(operation_prompt_str):
-#         # if not check_running():
-#         #     print("Task was interrupted")
-#         #     break
-#         chunks.append(chunk)
-#         print(chunk.content, end="", flush=True)
-#     return chunks
-# nest_asyncio.apply()
+#%%***************************************** #Get code for operation without Solution graph ************************
+# Create and print the operation prompt string for each selected tool
+operation_prompt_str = helper.create_operation_prompt(task = task, data_path =DATA_LOCATIONS, workspace_directory =workspace_directory, selected_tools =selected_tools, documentation_str=combined_documentation_str)
+print(f"OPERATION PROMPT: {operation_prompt_str}")
+
 Operation_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, operation_prompt_str))
 
 clear_output(wait=True)
@@ -281,7 +294,6 @@ print("\n ---------------------------EXTRACTED CODE:----------------------------
 print("```python")
 extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
-
 
 # #%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
 code_review_prompt_str = helper.code_review_prompt(extracted_code, data_path = data_path, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
@@ -345,68 +357,60 @@ print("-----Script completed-----")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# isReview = False
-# task_explanation = LLM_reply_str
-# operation_code = helper.get_code_for_operation(task_description = task_explanation, data_path=data_path,
-#                                                selected_tool= selected_tool, selected_tool_ID =selected_tool_ID, documentation_str = documentation_str, review= isReview)
-#
-# # operation_code = solution.get_code_for_operation(task_description = task_explanation, selected_tool= selected_tool, selected_tool_ID =selected_tool_ID, documentation_str = documentation_str)
+# import sys
+# import os
 #
 #
-# # display(Code(operation_code, language='python'))
-#
-# # reviewed_code = solution.ask_LLM_to_review_operation_code_generated(extracted_code=operation_code, selected_tool_ID=selected_tool_ID, documentation_str=documentation_str)
+# # current_script_dir = os.path.dirname(os.path.abspath(__file__))
 #
 #
-# # # from IPython.display import clear_output
-# # # async def fetch_download_str(model, operation_prompt_str):
-# # #     chunks = []
-# # #
-# # #     async for chunk in model.astream(operation_prompt_str):
-# # #         # if not check_running():
-# # #         #     print("Task was interrupted")
-# # #         #     break
-# # #         chunks.append(chunk)
-# # #         print(chunk.content, end="", flush=True)
-# # #     return chunks
-# # # nest_asyncio.apply()
-# # # chunks = asyncio.run(fetch_chunks(model, operation_prompt_str))
-# # #
-# # # clear_output(wait=True)
-# # # # clear_output(wait=False)
-# # # LLM_reply_str = helper.convert_chunks_to_str(chunks=chunks)
-# # # print(LLM_reply_str)
-# #
-# #
-# #
-# #************************************************************************************************************************
-# #Executing code
-# # code = helper.extract_code_from_str(LLM_reply_str, task)
-# # display(Code(code, language='python'))
-# #
-# #
-# # code = helper.execute_complete_program(code=code, try_cnt=5, task=task, model_name=model_name, documentation_str=documentation_str)
-# # display(Code(code, language='python'))
-# #
-# # # First, run the code and capture both the compiled code and the output buffer
-# # # code, output_capture = helper.execute_complete_program(code=code, try_cnt=5, task=task, model_name=model_name, documentation_str=documentation_str)
-# # # display(Code(code, language='python'))
-# # # Capture the output of the code execution
-# # output = helper.capture_print_output(code=code)
-# # # output = helper.capture_print_output(code=code)
-# # # # # display(Code(code, language='python'))
+#
+# current_script_dir = os.path.dirname(os.path.abspath(__file__))
+# # parent_dir = os.path.dirname(current_script_dir)
+# SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
+# DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
+# # sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
+# if DataEye_path not in sys.path:
+#     sys.path.append(DataEye_path)
+#
+# print(DataEye_path)
+#
+# import data_eye
+#
+# task_name ='School walkability'
+# TASK = r'''You need to compute the walkability scores for all schools in the Colubmia city. The steps are:
+# 1) extract the road network near a school within 1 km buffer zone.
+# 2) extract the sidewalks within 20 meters to the extracted road network in the step 1.
+# 3) the school walkability scores is the ratio of the extracted sidewalk length to the extracted road network length.
+# 4) Please draw a map for each school, using the school name and the walkability score as the map title, while showing the extracted sidewalks on a OpenStreetMap basemap.
+# '''
+#
+# DATA_LOCATIONS = [
+# r"D:/Case_Studies/Data/PovertyData/PovertyData.csv"
+#
+# ]
+# # "https://raw.githubusercontent.com/gladcolor/spatial_data/master/Demography/ACS2020_5year_county.csv."
+# # "D:\Case_Studies\Data\PA_School.gpkg"
+# # "D:\Case_Studies\Data\HW_Sites_EPSG4326.zip"
+#
+# model = r'gpt-4o-2024-08-06'
+#
+# # Get data overview (column names, data types, and map projection)
+#
+# data_locations_prompt = data_eye.get_prompt_to_pick_up_data_locations(task = TASK, data_locations = DATA_LOCATIONS)
+# # Reply = data_eye.add_data_overview_to_data_location(task = TASK, data_location_list=DATA_LOCATIONS)
+# attributes_json, DATA_LOCATIONS = data_eye.add_data_overview_to_data_location(task=TASK, data_location_list=DATA_LOCATIONS, model=model)
+# # print(DATA_LOCATIONS)
+# print(data_locations_prompt)
+# print(attributes_json)
+
+
+
+
+
+
+
+
+
 
 

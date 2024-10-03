@@ -2,6 +2,7 @@ import os
 import re
 import tomllib
 
+toml_dir = r"D:\Onedrive\OneDrive - The Pennsylvania State University\PhD Work\SpatialAnalysisAgent_Reasearch\Plugin\QGIS_toml2\TEST"
 
 #
 def check_toml_files_for_errors(directory):
@@ -178,5 +179,4 @@ def fix_problematic_files(problematic_files ):
             fix_toml_file(file)
     else:
         print("No problematic TOML files found.")
-
 

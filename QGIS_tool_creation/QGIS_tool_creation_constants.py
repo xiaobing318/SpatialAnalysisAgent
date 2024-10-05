@@ -3,8 +3,8 @@
 CodeSample_role = r''' You have excellent proficiency in writing pyqgis codes to perform QGIS operations. You are very familiar with QGIS Processing toolbox. 
 
 '''
-CodeSample_prefix = rf' I will provide you with examples of some code for QGIS processing tool algorithm. I want you to generate a python code sample too for the processing tool algorithm for these tool parameter: '
-
+# CodeSample_prefix = rf' I will provide you with examples of some code for QGIS processing tool algorithm. I want you to generate a python code sample too for the processing tool algorithm for these tool parameter: '
+CodeSample_prefix = rf' I will provide you with GRASS GIS processing tool algorithm information wich are the tool ID, the synopsis, the tool flags, tool parameters and other details of the tool. I want you to generate a python code sample for the processing tool algorithm using these datails'
 CodeSample_example1 = """ 
 ```python
 import processing
@@ -65,8 +65,9 @@ create_300m_buffer()
 """
 
 
-CodeSample_requirements = ["Only provide the code sample for the tool based on the parameters given",
-                           "Follow the logical flow of the examples of other tools provided",
+CodeSample_requirements = ["Only provide the code sample for the tool based on the details given parameters given",
+# "Only provide the code sample for the tool based on the details given parameters given",
+#                            "Follow the logical flow of the examples of other tools provided",
                            "Do not add any explanation",
                            "Try as much as possible to make the code simple.",
                            "Set the optional parameters empty",

@@ -480,8 +480,9 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if file_extension in ['.png', '.jpg', '.jpeg', '.gif']:  # Handle image files
             # Create a simple HTML file that embeds the image
             image_html_path = os.path.join(os.path.dirname(generated_report_path), 'image_report.html')
+            normalized_path = os.path.normpath(generated_report_path).replace('\\', '/')
             with open(image_html_path, 'w') as f:
-                f.write(f'<html><body><img src="{generated_report_path}" alt="Report Image" /></body></html>')
+                f.write(f'<html><body><img src="file:///{normalized_path}" alt="Report Image" /></body></html>')
 
             # Load the generated HTML file that contains the image
             self.report_web_view.load(QUrl.fromLocalFile(image_html_path))
@@ -686,6 +687,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.thread.output_line.connect(self.update_output)
         self.thread.graph_ready.connect(self.update_graph)
         self.thread.report_ready.connect(self.update_report)
+
         self.thread.chatgpt_update.connect(self.update_chatgpt_ans)
         self.thread.script_finished.connect(self.thread_finished)
         self.thread.start()
@@ -898,6 +900,7 @@ class ScriptThread(QThread):
     chatgpt_update = pyqtSignal(str)
     graph_ready = pyqtSignal(str)
     report_ready = pyqtSignal(str)
+
     script_finished = pyqtSignal(bool)
 
     def __init__(self, script_path, task, data_path, workspace_directory, OpenAI_key, model_name):
@@ -980,6 +983,15 @@ class ScriptThread(QThread):
                             if generated_output:
                                 self.report_ready.emit(generated_output)
                                 self.chatgpt_update.emit(f"AI: {generated_output}")  # Emit captured output
+                        elif "List of selected tool IDs:" in line:
+                            tool_IDs = line.split("List of selected tool IDs:")[1].strip()
+                            if tool_IDs:
+                                # self.tool_filename_ready.emit(tool_filename)  # Emit the tool filename
+                                # self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_filename}")
+                                self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_IDs}")
+                        # else:
+                        #     self.output_line.emit(line)
+
                 if captured_stderr:
                     for line in captured_stderr.splitlines(keepends=True):
                         if line.endswith('\n'):

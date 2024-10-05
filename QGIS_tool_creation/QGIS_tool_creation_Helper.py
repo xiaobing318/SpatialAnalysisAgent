@@ -20,15 +20,34 @@ def get_OpenAI_key():
     return OpenAI_key
 
 
-def create_CodeSample_prompt(tool_doc, algorithm_id):
+# def create_CodeSample_prompt(algorithm_id, tool_synopsis, tool_flags, tool_doc, tool_document):
+#     CodeSample_requirement_str = '\n'.join(
+#         [f"{idx + 1}. {line}" for idx, line in enumerate(const.CodeSample_requirements)])
+#
+#     prompt =f"Your role: {const.CodeSample_role} \n" + \
+#             f"Your mission: {const.CodeSample_prefix}: " + f"\n{tool_doc}\n\n" + \
+#             f"Requirements: \n{CodeSample_requirement_str} \n\n" + \
+#             f"The correct algorithm ID to be used is: {algorithm_id}\n\n" + \
+#             f"The tool synopsis: {tool_synopsis}\n\n" + \
+#             f"Tool flags: {tool_flags}\n\n" + f"Tool document: {tool_document}"
+#             # f"Some code examples. Example 1: {const.CodeSample_example1}\n " + " OR " + f"Example 2: {const.CodeSample_reply_example2}"
+#     return prompt
+
+
+def create_CodeSample_prompt(algorithm_id, tool_synopsis, tool_flags, tool_doc, tool_document):
     CodeSample_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(const.CodeSample_requirements)])
 
     prompt =f"Your role: {const.CodeSample_role} \n" + \
-            f"Your mission: {const.CodeSample_prefix}: " + f"\n{tool_doc}\n\n" + \
-            f"Requirements: \n{CodeSample_requirement_str} \n\n" + \
+            f"Your mission: {const.CodeSample_prefix}: \n\n" + \
             f"The correct algorithm ID to be used is: {algorithm_id}\n\n" + \
-            f"Some code examples. Example 1: {const.CodeSample_example1}\n " + " OR " + f"Example 2: {const.CodeSample_reply_example2}"
+            f"The tool synopsis: {tool_synopsis}\n\n" + \
+            f"Tool flags: {tool_flags}\n\n" +\
+            f"Tool document: {tool_doc}\n\n"+\
+            f"Description: {tool_document}\n\n" +\
+            f"Requirements: \n{CodeSample_requirement_str}"
+
+            # f"Some code examples. Example 1: {const.CodeSample_example1}\n " + " OR " + f"Example 2: {const.CodeSample_reply_example2}"
     return prompt
 
 

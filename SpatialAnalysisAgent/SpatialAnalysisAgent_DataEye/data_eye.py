@@ -3,6 +3,7 @@ import os
 import time
 import pandas as pd
 import geopandas as gpd
+import rasterio
 
 from pydantic import BaseModel
 from openai import OpenAI
@@ -42,16 +43,19 @@ def get_data_overview(data_location_dict):
     for data in data_locations:
         try:
             meta_str = ''
-            format = data['format']
+            format_ = data['format']
             data_path = data['location']
 
             # print("data_path:", data_path)
 
-            if (format == 'ESRI shapefile') or (format == 'GeoPackage'):
+            if format_ in ['ESRI shapefile', 'GeoPackage']:
                 meta_str = see_vector(data_path)
 
-            if (format == 'CSV'):
+            if format_ in ['CSV']:
                 meta_str = see_table(data_path)
+
+            if format_ in ["Tiff", "JPEG","PNG", "ERDAS IMG"]:
+                meta_str = see_raster(data_path)
 
             data['meta_str'] = meta_str
         except Exception as e:
@@ -75,7 +79,7 @@ def add_data_overview_to_data_location(task, data_location_list, model = r'gpt-4
 
     for idx, data in enumerate(attributes_json['data_locations']):
         meta_str = data['meta_str']
-        data_location_list[idx] += ". Data overview: " + meta_str
+        data_location_list[idx] += data_location_list[idx] + " Data overview: " + meta_str
         # data_location_list[idx] += data_location_list[idx] + " Data overview: " + meta_str
     return attributes_json, data_location_list
 
@@ -115,9 +119,37 @@ def see_vector(file_path):
 
     return meta_str
 
-def see_raster(file_path):
+def see_raster(file_path, statistics=False, approx=False):
+    with rasterio.open(file_path) as dataset:
+        raster_str = _get_raster_str(dataset, statistics=statistics, approx=approx)
 
-    return
+    return raster_str
+
+
+def _get_raster_str(dataset, statistics=False, approx=False):  # receive rasterio object
+    raster_dict = dataset.meta
+    raster_dict["band_count"] = raster_dict.pop("count")  # rename the key
+    raster_dict["bounds"] = dataset.bounds
+    if statistics:
+        band_stat_dict = {}
+        for i in range(1, raster_dict["band_count"] + 1):
+            # need time to do that
+            band_stat_dict[f"band_{i}"] = dataset.statistics(i, approx=approx)
+        raster_dict["statistics"] = band_stat_dict
+
+    resolution = (dataset.transform[0], dataset.transform[4])
+    raster_dict["resolution"] = resolution
+    # print("dataset.crs:", dataset.crs)
+
+    if dataset.crs.is_projected:
+        raster_dict["unit"] = dataset.crs.linear_units
+    else:
+        raster_dict["unit"] = "degree"
+    # print("dataset.crs:", dataset.crs)
+
+    raster_str = str(raster_dict)
+    return raster_str
+
 
 
 # beta vervsion of using structured output. # https://cookbook.openai.com/examples/structured_outputs_intro

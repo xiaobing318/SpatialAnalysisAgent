@@ -91,7 +91,7 @@ model = ChatOpenAI(api_key=OpenAI_key, model=model_name, temperature=1)
 
 
 
-# ##*************************************** OPERATION IDENTIFICATION *******************************************************
+# ##*************************************** OPERATION IDENTIFICATION ************************************************
 OperationIdentification_prompt_str = helper.create_OperationIdentification_promt(task=task)
 print(f"OperationIdentification PROMPT ----------{OperationIdentification_prompt_str}")
 
@@ -107,7 +107,7 @@ LLM_reply_str = helper.convert_chunks_to_str(chunks=chunks)
 # print("Select the QGIS tool: \n")
 print(LLM_reply_str)
 task_breakdown = LLM_reply_str
-##*************************************** TOOL SELECT *******************************************************
+##*************************************** TOOL SELECT ***************************************************************
 ToolSelect_prompt_str = helper.create_ToolSelect_prompt(task=task_breakdown)
 print(f"TOOL SELECT PROMPT ---------------------: {ToolSelect_prompt_str}")
 ToolSelect_chunks = asyncio.run(helper.fetch_chunks(model, ToolSelect_prompt_str))
@@ -116,6 +116,7 @@ clear_output(wait=True)
 # Selected_Tools_reply =helper.extract_selected_tools(chunks=ToolSelect_chunks)
 Selected_Tools_reply = helper.convert_chunks_to_str(chunks=ToolSelect_chunks)
 print(Selected_Tools_reply)
+
 
 #************************************************************************************************************************************************************
 Refined_Selected_Tools_reply = helper.extract_dictionary_from_response(response=Selected_Tools_reply)
@@ -137,6 +138,7 @@ except (SyntaxError, ValueError) as e:
 
 selected_tools = Selected_Tools_Dict['Selected tool']
 
+
 # print(f"\nSELECTED TOOLS: {selected_tools}\n")
 
 # # Check if the selected_tools is a string or a list
@@ -145,6 +147,7 @@ if isinstance(selected_tools, str):
 print(selected_tools)
 Tools_Documentation_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent', 'Tools_Documentation')
 # Iterate over each selected tool
+selected_tool_IDs_list = []
 all_documentation =[]
 for selected_tool in selected_tools:
 
@@ -155,11 +158,12 @@ for selected_tool in selected_tools:
         selected_tool_ID = constants.CustomTools_dict[selected_tool]['ID']
         # print(f"Selected a tool from the customized folder")
     else:
-        selected_tool_ID = "Unknown"
+        selected_tool_ID = selected_tool
+    selected_tool_IDs_list.append(selected_tool_ID)
     # print(f"SELECTED TOOLS ID: {selected_tool_ID}")
     selected_tool_file_ID = re.sub(r'[ :?\/]', '_', selected_tool_ID)
-    print(F"TOOL_ID: {selected_tool_ID}")
-    print(f"Selected tool filename: {selected_tool_file_ID}")
+    # print(F"TOOL_ID: {selected_tool_ID}")
+    # print(f"Selected tool filename: {selected_tool_file_ID}")
 
     selected_tool_file_path = None
     # Walk through all subdirectories and files in the given directory
@@ -174,9 +178,10 @@ for selected_tool in selected_tools:
         print(f"File {selected_tool_file_ID}.toml not found.")
         continue
 
-    # Print the tool information
-    print(f"TOOL_ID: {selected_tool_ID}")
-    print(f"Selected tool filename: {selected_tool_file_ID}")
+    if selected_tool_file_path:
+        # Print the tool information
+        print(f"TOOL_ID: {selected_tool_ID}")
+        print(f"Selected tool filename: {selected_tool_file_ID}")
 
     # Define the path to the file (you'll need to adjust this path as needed)
     # selected_file_path = os.path.join(Tools_Documentation_dir, f"{selected_tool_file_ID}.toml")
@@ -198,6 +203,8 @@ for selected_tool in selected_tools:
     # Append the retrieved documentation to the list
     all_documentation.append(documentation_str)
 
+# Print the list of all selected tool IDs after the loop is complete
+print(f"List of selected tool IDs: {selected_tool_IDs_list}")
 # Step 3: Join all the collected documentation into a single string
 combined_documentation_str = '\n'.join(all_documentation)
 
@@ -356,7 +363,7 @@ print("-----Script completed-----")
 
 
 
-
+# #%%
 # import sys
 # import os
 #
@@ -376,7 +383,7 @@ print("-----Script completed-----")
 # print(DataEye_path)
 #
 # import data_eye
-#
+# #%%%
 # task_name ='School walkability'
 # TASK = r'''You need to compute the walkability scores for all schools in the Colubmia city. The steps are:
 # 1) extract the road network near a school within 1 km buffer zone.
@@ -389,6 +396,8 @@ print("-----Script completed-----")
 # r"D:/Case_Studies/Data/PovertyData/PovertyData.csv"
 #
 # ]
+# # "https://github.com/gladcolor/spatial_data/raw/refs/heads/master/Everest_DOM.tif"
+# # r"D:/Case_Studies/Data/PovertyData/PovertyData.csv"
 # # "https://raw.githubusercontent.com/gladcolor/spatial_data/master/Demography/ACS2020_5year_county.csv."
 # # "D:\Case_Studies\Data\PA_School.gpkg"
 # # "D:\Case_Studies\Data\HW_Sites_EPSG4326.zip"

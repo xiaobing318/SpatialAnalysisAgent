@@ -5,14 +5,14 @@ synopsis = """v.in.lines
 v.in.lines --help
 v.in.lines[-z]input=nameoutput=name[separator=character]   [--overwrite]  [--help]  [--verbose]  [--quiet]  [--ui]"""
 parameters = """input=name[required]
-    Name of input file (or \"""-\" to read from stdin)
+    Name of input file (or to read from stdin)
 output=name[required]
     Name for output vector map
 separator=character
     Field separator
     Special characters: pipe, comma, space, tab, newline
-    Default:pipe"
-flags = """-z
+    Default:pipe"""
+flags = """ -z
     Create a 3D line from 3 column data
 --overwrite
     Allow output files to overwrite existing files

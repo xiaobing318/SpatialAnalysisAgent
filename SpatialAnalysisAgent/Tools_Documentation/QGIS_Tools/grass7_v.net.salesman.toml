@@ -38,7 +38,7 @@ turn_cat_layer=string
     Relevant only with -t flag
     Default:4
 sequence=name
-    Name for output file holding node sequence (\"""-\" for stdout)"
+    Name for output file holding node sequence (for stdout)"""
 flags = """-t
     Use turntable
 -g

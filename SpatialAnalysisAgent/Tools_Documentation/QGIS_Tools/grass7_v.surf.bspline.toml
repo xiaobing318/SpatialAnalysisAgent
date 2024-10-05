@@ -67,7 +67,7 @@ flags = """-c
 --quiet
     Quiet module output
 --ui
-    Force launching GUI dialog"
+    Force launching GUI dialog"""
 code_example = """
 from qgis.core import QgsProject, QgsVectorLayer
 import processing

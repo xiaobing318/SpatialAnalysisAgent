@@ -35,7 +35,7 @@ vertical_separator=character
 null_value=string
     String representing NULL value
 file=name
-    Name for output file (if omitted or \"""-\" output to stdout)"
+    Name for output file (if omitted or output to stdout)"""
 flags = """-r
     Print minimal region extent of selected vector features instead of attributes
 -c

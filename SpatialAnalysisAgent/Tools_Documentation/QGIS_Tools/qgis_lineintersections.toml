@@ -40,4 +40,3 @@ def line_intersections():
 line_intersections()"""
 
 
-processing.run("native:lineintersections", {'INPUT':'D:\\Case_Studies\\Data\\Nigeria\\Nigeria_Major_Roads.shp','INTERSECT':'D:\\Case_Studies\\Data\\Nigeria\\Nigeria_Railways.shp','INPUT_FIELDS':[],'INTERSECT_FIELDS':[],'INTERSECT_FIELDS_PREFIX':'','OUTPUT':'TEMPORARY_OUTPUT'})

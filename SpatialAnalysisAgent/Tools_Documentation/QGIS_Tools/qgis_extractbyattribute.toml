@@ -41,4 +41,4 @@ def select_by_attribute(input_layer_path):
 input_layer_path = "D:/Data/PrevalenceData.shp"  # path to the input shapefile
 output_layer_path ="D:/workspace_directory/output_layer.shp"
 extractbyattribute(input_layer_path)
-''
+'''

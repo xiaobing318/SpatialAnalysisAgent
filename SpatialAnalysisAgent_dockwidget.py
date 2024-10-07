@@ -88,6 +88,35 @@ class LibraryCheckThread(QThread):
         self.finished_checking.emit(missing_packages)
 
 
+class VersionCheckThread(QThread):
+    version_check_completed = pyqtSignal(bool)  # Emits True if update is needed
+
+    def run(self):
+        needs_update = self.check_openai_version()
+        self.version_check_completed.emit(needs_update)
+
+    def check_openai_version(self):
+        try:
+            import pkg_resources
+            import requests
+
+            # Get the installed version
+            installed_version = pkg_resources.get_distribution("openai").version
+
+            # Get the latest version from PyPI
+            response = requests.get("https://pypi.org/pypi/openai/json", timeout=5)
+            latest_version = response.json()["info"]["version"]
+
+            # Compare versions
+            if installed_version != latest_version:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(f"Error checking openai version: {e}")
+            return False
+
+
 class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     closingPlugin = pyqtSignal()
@@ -109,6 +138,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.library_check_thread = LibraryCheckThread(required_packages)
         self.library_check_thread.finished_checking.connect(self.handle_missing_libraries)
         self.library_check_thread.start()  # Start the background thread
+
+        # Start the OpenAI version check thread
+        self.version_check_thread = VersionCheckThread()
+        self.version_check_thread.version_check_completed.connect(self.handle_version_check)
+        self.version_check_thread.start()
+
 
         self.import_libraries()
 
@@ -285,6 +320,37 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # from openai import OpenAI
         # import nest_asyncio
         pass
+
+    def handle_version_check(self, needs_update):
+        if needs_update:
+            message = (
+                "A new version of the 'openai' package is available.\n"
+                "Would you like to update it now? This may require administrator privileges."
+            )
+            reply = QMessageBox.question(
+                self, 'Update Available', message,
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                self.update_openai_package()
+
+    def update_openai_package(self):
+        try:
+            import subprocess
+            import sys
+
+            # Run the pip install command to update the package
+            subprocess.check_call(['python3', "-m", "pip", "install", "--upgrade", "openai"])
+
+            QMessageBox.information(
+                self, 'Update Successful',
+                "The 'openai' package has been updated. Please restart the application."
+            )
+        except Exception as e:
+            QMessageBox.critical(
+                self, 'Update Failed',
+                f"Failed to update 'openai' package:\n{e}"
+            )
 
 
     def on_layer_visibility_changed(self):
@@ -964,6 +1030,9 @@ class ScriptThread(QThread):
                 sys_stdout_capture.seek(0)
                 sys_stderr_capture.seek(0)
 
+                capturing_output = False
+                captured_output_lines = []
+
                 if captured_stdout:
                     # self.output_line.emit(captured_stdout)
                     for line in captured_stdout.splitlines(keepends=True):
@@ -971,7 +1040,33 @@ class ScriptThread(QThread):
                             self.output_line.emit(line.rstrip())
                         else:
                             self.output_line.emit(line)
-                    for line in captured_stdout.splitlines():
+
+                        # # Detect the start of the "Captured Output:" block
+                        # if "Captured Output:" in line:
+                        #     capturing_output = True
+                        #
+                        #     # Start capturing from the line after "Captured Output:"
+                        #     captured_output_lines.append(line.split("Captured Output:")[1].strip())
+                        #
+                        # elif capturing_output:
+                        #     # Continue capturing until a condition to stop capturing is met (e.g., an empty line or another flag)
+                        #     if line.strip() == "":
+                        #         # Stop capturing when an empty line is encountered (indicating the end of the block)
+                        #         capturing_output = False
+                        #         # Emit the entire block of captured output
+                        #         full_generated_output = "\n".join(captured_output_lines)
+                        #         if full_generated_output:
+                        #             self.report_ready.emit(full_generated_output)
+                        #             self.chatgpt_update.emit(f"AI: {full_generated_output}")
+                        #         # Reset the captured output lines for the next block
+                        #         captured_output_lines = []
+                        #     else:
+                        #         # Continue capturing non-empty lines
+                        #         captured_output_lines.append(line.strip())
+
+
+
+                    # for line in captured_stdout.splitlines():
                         if "GRAPH_SAVED:" in line:
                             html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
                             self.graph_ready.emit(html_graph_path)
@@ -981,6 +1076,10 @@ class ScriptThread(QThread):
                             generated_output = line.split("Captured Output:")[1].strip()
                             # Check if generated output is not empty before emitting
                             if generated_output:
+                                # # Emit each line of the captured output
+                                # # for output_line in generated_output.splitlines():
+                                #     self.report_ready.emit(f"AI: {output_line}")
+                                #     self.chatgpt_update.emit(f"AI: {output_line}")
                                 self.report_ready.emit(generated_output)
                                 self.chatgpt_update.emit(f"AI: {generated_output}")  # Emit captured output
                         elif "List of selected tool IDs:" in line:

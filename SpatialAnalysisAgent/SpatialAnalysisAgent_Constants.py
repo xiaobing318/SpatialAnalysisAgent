@@ -42,7 +42,7 @@ tools_index, CustomTools_dict, tool_names_lists = codebase.index_tools(folder_pa
 OperationIdentification_role = r''' A professional Geo-information scientist with high proficiency in Geographic Information System (GIS) operations. You also have excellent proficiency in QGIS to perform GIS operations. You are very familiar with QGIS Processing toolbox. You have super proficency in python programming. 
 You are very good at providing explanation to a task and  identifying QGIS tools or other tools and functions that can be used to address a problem.
 '''
-OperationIdentification_task_prefix = rf' Provide a brief explanation on which tool that can be used to perform this task. Identify  if any of the available QGIS processing tool algorithms is suitable or there is need for new algorithm in order to perform this task:'
+OperationIdentification_task_prefix = rf' Provide a brief explanation on which tool that can be used to perform this task. Identify the most appropriate tools from QGIS processing tool algorithms or any other algorithm or python libraries in order to perform this task:'
 
 # other_tools = ['Thematic Map Creation',
 #                 'Land Use Land Cover (LULC)',
@@ -65,7 +65,9 @@ OperationIdentification_requirements = [
 
     # rf"When creating a thematic map, select the tool named 'Thematic Map Creation'. It is more easier. The tool 'Set style for vector layer' requires a style file, therefore it may not the suitable tool to use.",
     # f"If you need to create a thematic map, select the customized tool from {other_QGIS_operations} named 'Thematic Map Creation'",
-    f"Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task: {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
+    "Identify the most appropriate and the best tool for the task",
+    f"You can Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task: {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
+    "You are not limited to QGIS python functions, you can also use other python functions asuch as geoppandas, numpy, scipy etc.",
     # f"If your answer is 'Yes', then return the exact name of the tool as given in the list. But if your answer is 'No', return any other tool you think is most appropriate from the list in {other_tools} and return the exact name as listed in the list.  DO NOT select any existing QGIS tool for thematic map creation. E.g, do not select 'categorized renderer from styles'",
     "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
     "DO NOT provide Additional details of any tool",
@@ -311,7 +313,8 @@ operation_requirement = [
     "Think step by step",
     # "Pay close attention to the task. You may need to perform more than one operation. For example, you may need to perform aggregation first before performing select by attribute",
     "If you need to perform more than one operation, you must perform the operations step by step",
-    "You are not limited to QGIS python functions, you can also use other python functions asuch as geoppandas, numpy, scipy etc.",
+    "Use the provided selected tools provided",
+# "You are not limited to QGIS python functions, you can also use other python functions asuch as geoppandas, numpy, scipy etc.",
     "DO NOT include the QGIS initialization code in the script",
     f"When using QGIS processing algorithm, use `QgsVectorLayer` to load shapefiles. For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')`",
     # "Intending to use the QGIS processing tool to perform tasks",
@@ -339,6 +342,9 @@ operation_requirement = [
     # "NOTE: if using `plt.savefig()`, `plt.savefig()` does not support saving figures directly in HTML format. Therefore, save the plot in a supported format (e.g., PNG) and then embed it in an HTML file.",
     # "NOTE: When saving plot (Scatter plot, bar plot, etc), `plt.savefig()` does not support saving figures directly in HTML format. Therefore, use `mpld3` library, which allows exporting matplotlib plots to interactive HTML.",
     "When creating a scatterplot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot.",
+    "When using tool that is used to generate counts e.g 'Vector information(gdal:ogrinfo), Count points in polygon(native:countpointsinpolygon), etc., don't just print the file path (e.g the html path) but also ensure you print the count(e.g Number of conties)",
+    "NOTE: `vector_layer.featureCount()` can be use to generate the count of features",
+    "If you are printing any file path (e.g html, png, etc.), Do not include any additional information. just print the file path",
     "When loading a CSV layer as a layer, use this: `'f'file///{csv_path}?delimeter=,''`, assuming the csv is comma-separated, but use the csv_path directly for the Input parameter in join operations.",
     "If you are to use processing algorithm, you do not need to include the code to load a data",
     "For tasks that contains interrogative words such as ('how', 'what', 'why', 'when', 'where', 'which'), ensure that no layers are loaded into the QGIS, instead the result should be printed",    "If you are creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",# Always print out the result"
@@ -360,11 +366,12 @@ operation_requirement = [
 ]
 
 # ------------- OPERATION_CODE REVIEW------------------------------------------------------
-operation_code_review_role = r''' A professional Geo-information scientist and Python developer with over 20 years of experience in Geographic Information Science (GIS). You are highly knowledgeable about spatial data processing and coding, and you specialize in code review, particularly single functions. You are meticulous and enjoy identifying potential bugs and data misunderstandings in code.
+operation_code_review_role = r''' A professional Geo-information scientist and Python developer with over 20 years of experience in Geographic Information Science (GIS). You are highly knowledgeable about spatial data processing and coding, and you specialize in code review. You are meticulous and enjoy identifying potential bugs and data misunderstandings in code.
 '''
 
 operation_code_review_task_prefix = r'''Review the code of a function to determine whether it meets its associated requirements and documentation. If it does not, correct it and return the complete corrected code.'''
 operation_code_review_requirement = ["Review the codes very carefully to ensure it meets its requirement.",
+                                     "Ensure the selected tools provided are used",
                                     "Compare the code with the code example of any tool being used which is contained in the tool documentation (if provided), and ensure the parameters are set correctly.",
                                     "Ensure that QGIS initialization code are not included in the script.",
                                     "If you need to use `QColor` should be imported from `PyQt5.QtGui`",
@@ -388,6 +395,9 @@ operation_code_review_requirement = ["Review the codes very carefully to ensure 
                                     "When creating plots such as barplot, scatterplot etc., usually their result is a html or image file. Always save the file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource. ",# Always print out the result"
                                     "When creating charts or plots such as barchart, barplot, scatterplot etc., you should make use of `seaborn` by default except another method is specified",
                                     "When printing the result of plots e.g barplot,scatterplot, boxplot etc, always print out the file path of the result only, ensure any description or comment is not added.",
+                                    "When using tool that is used to generate counts e.g 'Vector information(gdal:ogrinfo), Count points in polygon(native:countpointsinpolygon), etc., don't just print the file path (e.g the html path) but also ensure you print the count(e.g Number of conties)",
+                                    "NOTE: `vector_layer.featureCount()` can be use to generate the count of features",
+                                     "If you are printing any file path (e.g html, png, etc.), Do not include any additional information. just print the file path",
                                     "Do not generate a layer for tasks that only require printing the answer, like questions of how, what, why, etc. e.g., for tasks like 'How many counties are there in PA?', 'What is the distance from A to B', etc.",
                                     "When creating a scatter plot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot, ensure the correct tool is used",
                                     "When creating density maps, do not use `matplotlib` to visualize the result, ensure the result is saved as 'tif' and loaded to QGIS",
@@ -413,6 +423,9 @@ debug_requirement = [
     "You must return the entire corrected program in only one Python code block(enclosed by ```python and ```); DO NOT return the revised part only.",
     # "Pay close attention to the task. You may need to perform more than one operation. For example, you may need to perform aggregation first before performing select by attribute",
     "If you need to perform more than one operation, you must perform the operations step by step",
+    "Ensure the selected tools provided are used",
+    "If the generated codes for the selected tools provided are not working you can use other python functions such as geopandas, numpy, scipy etc.",
+    # "You are not limited to QGIS python functions, you can also use other python functions asuch as geoppandas, numpy, scipy etc.",
     "When using `QgsVectorLayer`, it should always be imported from `qgis.core`.",
     f"When using QGIS processing algorithm, use `QgsVectorLayer` to load shapefiles. For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')`",
     "If you need to use `QColor` should be imported from `PyQt5.QtGui`",
@@ -440,6 +453,8 @@ debug_requirement = [
     "When creating plots such as barplot, scatterplot etc., usually their result is a html or image file. Always save the file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource. Always print out the file path of the result only without adding any comment. "# Always print out the result"
     "When printing the result of plots e.g barplot,scatterplot, boxplot etc, always print out the file path of the result only, ensure any description or comment is not added.",
     "When creating a scatter plot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot, ensure the correct tool is used",
+    "When using tool that is used to generate counts e.g 'Vector information(gdal:ogrinfo), Count points in polygon(native:countpointsinpolygon), etc., ensure you print the count",
+"NOTE: `vector_layer.featureCount()` can be use to generate the count of features",
     "When using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
     "Similarly, if you used geopandas to generate a new layer, use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
     "Whenever a new layer is being saved, ensure the code first checks if a file with the same name already exists in the output directory, and if it does, append a number (e.g filename_1, filename_2, etc) to the filename to create a unique name, thereby avoiding any errors related to overwriting or saving the layer.",

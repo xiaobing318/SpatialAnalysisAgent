@@ -88,24 +88,28 @@ def generate_task_name_with_gpt(task_description):
     return task_name
 
 
-def create_OperationIdentification_promt(task):
+def create_OperationIdentification_promt(task, data_path):
     OperationIdentification_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(constants.OperationIdentification_requirements)])
+    data_path = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(data_path)])
 
     prompt = f"Your role: {constants.OperationIdentification_role} \n" + \
              f"Your mission: {constants.OperationIdentification_task_prefix}: " + f"{task}\n\n" + \
+             f"Based on the provided data {data_path}\n" + \
              f"Requirements: \n{OperationIdentification_requirement_str} \n\n" + \
              f"Customized tools:\n{constants.tools_index}\n" + \
              f"Your reply examples, depending on the task. Example 1: {constants.OperationIdentification_reply_example_1}\n " + " OR " + f"Example 2: {constants.OperationIdentification_reply_example_2}\n" + " OR " + f"Example 3: {constants.OperationIdentification_reply_example_3}"
     return prompt
 
 
-def create_ToolSelect_prompt(task):
+def create_ToolSelect_prompt(task, data_path):
     ToolSelect_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(constants.ToolSelect_requirements)])
+    data_path_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(data_path)])
 
     prompt = f"Your role: {constants.ToolSelect_role} \n" + \
              f"Your mission: {constants.ToolSelect_prefix}: " + f"{task}\n\n" + \
+             f"Based on the provided data {data_path_str}\n" + \
              f"Requirements: \n{ToolSelect_requirement_str} \n\n" + \
              f"Customized tools:\n{constants.tools_index}\n" + \
              f"Example for your reply: {constants.ToolSelect_reply_example2}\n"
@@ -116,23 +120,24 @@ def create_ToolSelect_prompt(task):
 def create_operation_prompt(task, data_path, selected_tools, documentation_str, workspace_directory):
     operation_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(constants.operation_requirement)])
-    data_path = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(data_path)])
+    data_path_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(data_path)])
     prompt = f"Your role: {constants.operation_role} \n" + \
-             f"Your mission: {constants.operation_task_prefix}: " + f"{task}" + "Using the following data paths: " + f"{data_path}" + "\nAnd this output directory: " + f"{workspace_directory}\n\n" + \
-             f"Selected tools: {selected_tools}\n" + \
+             f"Your mission: {constants.operation_task_prefix}: " + f"{task}" + "Using the following data paths: " + f"{data_path_str}" + "\nAnd this output directory: " + f"{workspace_directory}\n\n" + \
+             f"Using the following Selected tool(s): {selected_tools}\n" + \
              f"Documentation of the selected tools: \n{documentation_str}\n" + \
              f"requirements: \n{operation_requirement_str}\n" + \
              f"Set: " + f"{workspace_directory}" + " as the output directory for any operation"
     return prompt
 
 
-def code_review_prompt(extracted_code, data_path, workspace_directory, documentation_str):
+def code_review_prompt(extracted_code, data_path, selected_tool_dict, workspace_directory, documentation_str):
     operation_code_review_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(constants.operation_code_review_requirement)])
     # print(f"Code passed to review: {extracted_code}")
     operation_code_review_prompt = f"Your role: {constants.operation_code_review_role} \n" + \
                                    f"Your mission: {constants.operation_code_review_task_prefix} \n\n" + \
                                    f"The code is: \n----------\n{extracted_code}\n----------\n\n" + \
+                                   f"Using the following selected tool(s):{selected_tool_dict}\n " + \
                                    f"The code examples in the Documentation: \n{documentation_str} can be used as an example while reviewing the {extracted_code} \n\n" + \
                                    f"The requirements for the code is: \n{operation_code_review_requirement_str}\n\n" + \
                                    f"Replace the data path in the code example with:{data_path}\n" + \
@@ -141,7 +146,7 @@ def code_review_prompt(extracted_code, data_path, workspace_directory, documenta
 
 
 # def get_code_for_operation(task_description, data_path, selected_tool, selected_tool_ID, documentation_str, review =True):
-def get_code_for_operation(task_description, data_path, selected_tool, selected_tool_ID, documentation_str,
+def get_code_for_operation(task_description, data_path, selected_tool, selected_tool_ID, selected_tool_dict, documentation_str,
                            review=True):
     operation_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(constants.operation_requirement)])
@@ -162,19 +167,20 @@ def get_code_for_operation(task_description, data_path, selected_tool, selected_
     # Debugging: Print the operation_code to ensure it was extracted correctly
     print(f"Extracted Operation Code: {extracted_code}")
     if review:
-        operation_code = ask_LLM_to_review_operation_code(extracted_code, selected_tool_ID, documentation_str)
+        operation_code = ask_LLM_to_review_operation_code(extracted_code, selected_tool_ID, selected_tool_dict, documentation_str)
         return operation_code
     else:
         return extracted_code
 
 
-def ask_LLM_to_review_operation_code(extracted_code, selected_tool_ID, documentation_str):
+def ask_LLM_to_review_operation_code(extracted_code, selected_tool_ID, selected_tool_dict, documentation_str):
     operation_code_review_requirement_str = '\n'.join(
         [f"{idx + 1}. {line}" for idx, line in enumerate(constants.operation_code_review_requirement)])
     print(f"Code passed to review: {extracted_code}")
     operation_code_review_prompt = f"Your role: {constants.operation_code_review_role} \n" + \
                                    f"Your task: {constants.operation_code_review_task_prefix} \n\n" + \
                                    f"The code is: \n----------\n{extracted_code}\n----------\n\n" + \
+                                    f"The selected tool(s) is: {selected_tool_dict}\n"+\
                                    f'{selected_tool_ID} Documentation: \n{documentation_str} \n\n' + \
                                    f"The requirements for the code is: \n{operation_code_review_requirement_str}"
 
@@ -210,6 +216,7 @@ def convert_chunks_to_str(chunks):
 
     return LLM_reply_str
 
+
 def extract_dictionary_from_response(response):
     dict_pattern = r"\{.*?\}"
     match = re.search(dict_pattern, response)
@@ -225,6 +232,7 @@ def extract_dictionary_from_response(response):
         print("No dictionary found in the response.")
 
     return dict_string
+
 
 def convert_chunks_to_code_str(chunks):
     LLM_reply_str = ""

@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
 
 task_name = helper.generate_task_name_with_gpt(task)
-
+DATA_LOCATIONS = data_path.split('\n')
 # Define a global check_running function that references the flag
 def check_running():
     global _is_running
@@ -92,7 +92,7 @@ model = ChatOpenAI(api_key=OpenAI_key, model=model_name, temperature=1)
 
 
 # ##*************************************** OPERATION IDENTIFICATION ************************************************
-OperationIdentification_prompt_str = helper.create_OperationIdentification_promt(task=task)
+OperationIdentification_prompt_str = helper.create_OperationIdentification_promt(task=task , data_path= DATA_LOCATIONS)
 print(f"OperationIdentification PROMPT ----------{OperationIdentification_prompt_str}")
 
 from IPython.display import clear_output
@@ -108,7 +108,7 @@ LLM_reply_str = helper.convert_chunks_to_str(chunks=chunks)
 print(LLM_reply_str)
 task_breakdown = LLM_reply_str
 ##*************************************** TOOL SELECT ***************************************************************
-ToolSelect_prompt_str = helper.create_ToolSelect_prompt(task=task_breakdown)
+ToolSelect_prompt_str = helper.create_ToolSelect_prompt(task=task_breakdown, data_path=DATA_LOCATIONS)
 print(f"TOOL SELECT PROMPT ---------------------: {ToolSelect_prompt_str}")
 ToolSelect_chunks = asyncio.run(helper.fetch_chunks(model, ToolSelect_prompt_str))
 
@@ -148,6 +148,7 @@ print(selected_tools)
 Tools_Documentation_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent', 'Tools_Documentation')
 # Iterate over each selected tool
 selected_tool_IDs_list = []
+SelectedTools = {}
 all_documentation =[]
 for selected_tool in selected_tools:
 
@@ -159,6 +160,10 @@ for selected_tool in selected_tools:
         # print(f"Selected a tool from the customized folder")
     else:
         selected_tool_ID = selected_tool
+
+    # Add the selected tool and its ID to the SelectedTools dictionary
+    SelectedTools[selected_tool] = selected_tool_ID
+
     selected_tool_IDs_list.append(selected_tool_ID)
     # print(f"SELECTED TOOLS ID: {selected_tool_ID}")
     selected_tool_file_ID = re.sub(r'[ :?\/]', '_', selected_tool_ID)
@@ -232,17 +237,17 @@ if DataEye_path not in sys.path:
 
 
 import data_eye
-DATA_LOCATIONS = data_path.split('\n')
+
 
 
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 # parent_dir = os.path.dirname(current_script_dir)
 SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
-DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
+DataEye_path = os.path.join(SpatialAnalysisAgent_dir)
 # sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
 if DataEye_path not in sys.path:
     sys.path.append(DataEye_path)
-
+#
 attributes_json, DATA_LOCATIONS = data_eye.add_data_overview_to_data_location(task=task, data_location_list=DATA_LOCATIONS, model=r'gpt-4o-2024-08-06')
 print("DATA_LOCATIONS with data overviews:")
 print(DATA_LOCATIONS)
@@ -286,7 +291,7 @@ print(f"GRAPH_SAVED:{html_graph_path}")
 
 #%%***************************************** #Get code for operation without Solution graph ************************
 # Create and print the operation prompt string for each selected tool
-operation_prompt_str = helper.create_operation_prompt(task = task, data_path =DATA_LOCATIONS, workspace_directory =workspace_directory, selected_tools =selected_tools, documentation_str=combined_documentation_str)
+operation_prompt_str = helper.create_operation_prompt(task = task, data_path =DATA_LOCATIONS, workspace_directory =workspace_directory, selected_tools =SelectedTools, documentation_str=combined_documentation_str)
 print(f"OPERATION PROMPT: {operation_prompt_str}")
 
 Operation_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, operation_prompt_str))
@@ -303,8 +308,7 @@ extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
 
 # #%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
-code_review_prompt_str = helper.code_review_prompt(extracted_code, data_path = data_path, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
-
+code_review_prompt_str = helper.code_review_prompt(extracted_code = extracted_code, data_path = DATA_LOCATIONS, selected_tool_dict= SelectedTools, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
 # print(code_review_prompt_str)
 code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
 clear_output(wait=True)
@@ -340,15 +344,17 @@ code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=3, ta
 
 
 # Display the captured output (like the file path) in your GUI or terminal
-print(f"Captured Output: {output}")
+for line in output.splitlines():
+    print(f"Captured Output: {line}")
+
 
 print("-----Script completed-----")
-
-
-# # Display the captured output (like the file path) in your GUI or terminal
-# print(f"Captured Output: {output}")
 #
-# print("-----Script completed-----")
+#
+# # # Display the captured output (like the file path) in your GUI or terminal
+# # print(f"Captured Output: {output}")
+# #
+# # print("-----Script completed-----")
 
 
 
@@ -362,7 +368,7 @@ print("-----Script completed-----")
 
 
 
-
+#
 # #%%
 # import sys
 # import os
@@ -383,7 +389,7 @@ print("-----Script completed-----")
 # print(DataEye_path)
 #
 # import data_eye
-# #%%%
+# # #%%%
 # task_name ='School walkability'
 # TASK = r'''You need to compute the walkability scores for all schools in the Colubmia city. The steps are:
 # 1) extract the road network near a school within 1 km buffer zone.
@@ -402,7 +408,7 @@ print("-----Script completed-----")
 # # "D:\Case_Studies\Data\PA_School.gpkg"
 # # "D:\Case_Studies\Data\HW_Sites_EPSG4326.zip"
 #
-# model = r'gpt-4o-2024-08-06'
+# model = r'gpt-4o'
 #
 # # Get data overview (column names, data types, and map projection)
 #

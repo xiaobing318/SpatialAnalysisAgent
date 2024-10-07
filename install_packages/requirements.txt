@@ -10,4 +10,5 @@ regex:regex
 langchain_openai:langchain_openai
 toml:toml
 seaborn:seaborn
+pydantic:pydantic
 

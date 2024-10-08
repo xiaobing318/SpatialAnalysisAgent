@@ -7,7 +7,7 @@ The Spatial Analysis Agent is a plugin integration of an autonomous GIS agent fo
 - Click on ```...``` to select the directory of the downloaded zip file and ```Install plugin```
 
 # User Manual
-The User Manual is available [here](https://github.com/Teakinboyewa/SpatialAnalysisAgent/blob/master/User%20Manual.md)
+The User Manual is available [here](https://github.com/Teakinboyewa/SpatialAnalysisAgent/blob/master/User_Manual.md)
 
 # Plugin Interface
 

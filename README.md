@@ -18,7 +18,7 @@ The User Manual is available [here](https://github.com/Teakinboyewa/SpatialAnaly
 Note: API keys input here will only be stored locally on the user's computer ('plugin_dir/SpatialAnalysisAgent/config.ini').  
 
 # Usage
-Find some usage example on the Data Request [Examples](https://github.com/Teakinboyewa/AutonomousGIS_GeodataRetrieverAgent/blob/master/Data%20request%20examples.md) page
+Find some case studies on the [Case Studies](https://github.com/Teakinboyewa/SpatialAnalysisAgent/blob/master/Case_Studies.md) page
 
 
 # Installing required libraries

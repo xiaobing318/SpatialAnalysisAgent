@@ -9,7 +9,7 @@
 - Launch QGIS software and navigate to ```Plugin >  Manage and install Plugins.. > Install from ZIP```
 - Click on ```...``` to select the directory of the downloaded zip file and ```Install plugin```
 
-![Install_Plugin1.png](Docs%2Installation_page.png) 
+![Installation_page.png](Doc%2FInstallation_page.png)
 
 - Click ```Yes``` to install all missing dependencies.
   

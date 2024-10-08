@@ -49,14 +49,15 @@
 
 - Once the plugin is loaded, a dialog indicating any missing dependencies will appear. Ensure you install all the dependencies by clicking the Yes button.
 
-![Missing dependencies.png](Doc%2FMissing%20dependencies.png)![Missing dependencies.png]()
+![Missing dependencies.png](Doc%2FMissing%20dependencies.png)
 
 - After the installation of the missing dependencies, restart the QGIS software.
 
 # How to Use the Plugin
 ## Plugin interface
 
-![Plugin Interface.png](Doc%2FPlugin%20Interface.png)![Plugin Interface.png](Docs%2FPlugin%20Interface.png)
+
+![Plugin Interface.png](Doc%2FPlugin%20Interface.png)
 
 - The plugin interface consists of five tabs - ```Request Page```, ```Reports```, ```Solution Graph```, ```Settings```, and ```Help```
 - ```Data Request Page```:  is the main tab where user can make a request. This consists of the ```Code panel``` which displays the AI-generated codes, ```Information Panel``` which displays the agent running information, ```Message panel``` which enables the users to enter the task they want to perform, and the ```Data directories``` which contain the data path of all the data loaded into QGIS.
@@ -65,7 +66,7 @@
 -  ```Settings```: This tab enable users to set the OpenAI API keys (Find more details about [OpenAI API key](https://platform.openai.com/account/api-keys)), select the model (e.g, gpt-4). Users can check the "Chat Mode" box to switch to chat with AI. Also, the ```Settings``` tab allow users to set the workspace directory, i.e where results will be saved on their computer. A default directory is set by default after the installation of the plugin. Additionally, users can add tool documentation file to either their local machine or to the Plugin's GitHub repository ([find out more](https://github.com/Teakinboyewa/SpatialAnalysisAgent/blob/master/SpatialAnalysisAgent/Tools_Documentation/Tools_documentationREADME.MD)).
 Note: API keys input here will only be stored locally on the user's computer ('plugin_dir/SpatialAnalysisAgent/config.ini'). 
 
-![Settings.png](Doc%2FSettings.png)![PluginSetting.png](Docs%2FPluginSetting.png)
+![Settings.png](Doc%2FSettings.png)
 
 - ```Help```: This contains guide on how to use the Co-Pilot
 

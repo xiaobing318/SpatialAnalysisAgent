@@ -17,5 +17,7 @@ Case: Calculate the ruggedness index for Penssylvania, then summarize the rugged
 
 ## Level 3: End-to-End Problem Solving
 
+Case: "Can you please generate a HTML report to show the building area for each building? You can look at the columns information, if no building area exists, please calculate yourself. Also make sure to use map projection when calculating area."
 
+![Case1.png](Doc%2FCase%20Studies%2FCase%203%2FCase1.png)
 

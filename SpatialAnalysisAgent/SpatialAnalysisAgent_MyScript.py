@@ -79,11 +79,6 @@ if not check_running():
     print("AI: Script interrupted")
     sys.exit()
 
-# save_dir = os.path.join(os.getcwd(), task_name)
-# os.makedirs(save_dir, exist_ok=True)
-#
-# script_directory = os.path.dirname(os.path.abspath(__file__))
-# save_dir = os.path.join(script_directory, "Solution", task_name)
 
 # model_name = r'gpt-4o'
 OpenAI_key = helper.load_OpenAI_key()
@@ -128,18 +123,8 @@ try:
 except (SyntaxError, ValueError) as e:
     print("Error parsing the dictionary:", e)
 
-
-# import json
-# # select_operation = json.loads(Selected_Tools_reply)
-# # print(select_operation)
-# selection_operation1 = helper.parse_llm_reply(Selected_Tools_reply)
-# selection_operation = json.loads(selection_operation1)
-# Selected_Tools_Dict = ast.literal_eval(Selected_Tools_reply)
-
 selected_tools = Selected_Tools_Dict['Selected tool']
 
-
-# print(f"\nSELECTED TOOLS: {selected_tools}\n")
 
 # # Check if the selected_tools is a string or a list
 if isinstance(selected_tools, str):
@@ -222,10 +207,7 @@ DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataE
 if DataEye_path not in sys.path:
     sys.path.append(DataEye_path)
 
-
 import data_eye
-
-
 
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 # parent_dir = os.path.dirname(current_script_dir)
@@ -307,24 +289,6 @@ print("```python")
 reviewed_code = helper.extract_code_from_str(review_str_LLM_reply_str, task_explanation)
 print("```")
 
-# print(operation_prompt_str)
-
-# print(review_str_LLM_reply_str)
-
-
-
-# operation_prompt_str = helper.create_operation_prompt(task, data_path, selected_tool, selected_tool_ID,
-#                                                           documentation_str)
-# chunks = asyncio.run(fetch_chunks(model, operation_prompt_str))
-#
-
-
-
-#
-# reviewed_code = solution.ask_LLM_to_review_operation_code_generated(extracted_code=operation_code, selected_tool_ID=selected_tool_ID, documentation_str=documentation_str)
-# #
-#
-
 #%% EXECUTION OF THE CODE
 code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=3, task=task, model_name=model_name, documentation_str=combined_documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
 # display(Code(code, language='python'))
@@ -336,12 +300,6 @@ for line in output.splitlines():
 
 
 print("-----Script completed-----")
-#
-#
-# # # Display the captured output (like the file path) in your GUI or terminal
-# # print(f"Captured Output: {output}")
-# #
-# # print("-----Script completed-----")
 
 
 
@@ -353,58 +311,6 @@ print("-----Script completed-----")
 
 
 
-
-
-#
-# #%%
-# import sys
-# import os
-#
-#
-# # current_script_dir = os.path.dirname(os.path.abspath(__file__))
-#
-#
-#
-# current_script_dir = os.path.dirname(os.path.abspath(__file__))
-# # parent_dir = os.path.dirname(current_script_dir)
-# SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
-# DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
-# # sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
-# if DataEye_path not in sys.path:
-#     sys.path.append(DataEye_path)
-#
-# print(DataEye_path)
-#
-# import data_eye
-# # #%%%
-# task_name ='School walkability'
-# TASK = r'''You need to compute the walkability scores for all schools in the Colubmia city. The steps are:
-# 1) extract the road network near a school within 1 km buffer zone.
-# 2) extract the sidewalks within 20 meters to the extracted road network in the step 1.
-# 3) the school walkability scores is the ratio of the extracted sidewalk length to the extracted road network length.
-# 4) Please draw a map for each school, using the school name and the walkability score as the map title, while showing the extracted sidewalks on a OpenStreetMap basemap.
-# '''
-#
-# DATA_LOCATIONS = [
-# r"D:/Case_Studies/Data/PovertyData/PovertyData.csv"
-#
-# ]
-# # "https://github.com/gladcolor/spatial_data/raw/refs/heads/master/Everest_DOM.tif"
-# # r"D:/Case_Studies/Data/PovertyData/PovertyData.csv"
-# # "https://raw.githubusercontent.com/gladcolor/spatial_data/master/Demography/ACS2020_5year_county.csv."
-# # "D:\Case_Studies\Data\PA_School.gpkg"
-# # "D:\Case_Studies\Data\HW_Sites_EPSG4326.zip"
-#
-# model = r'gpt-4o'
-#
-# # Get data overview (column names, data types, and map projection)
-#
-# data_locations_prompt = data_eye.get_prompt_to_pick_up_data_locations(task = TASK, data_locations = DATA_LOCATIONS)
-# # Reply = data_eye.add_data_overview_to_data_location(task = TASK, data_location_list=DATA_LOCATIONS)
-# attributes_json, DATA_LOCATIONS = data_eye.add_data_overview_to_data_location(task=TASK, data_location_list=DATA_LOCATIONS, model=model)
-# # print(DATA_LOCATIONS)
-# print(data_locations_prompt)
-# print(attributes_json)
 
 
 

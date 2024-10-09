@@ -905,9 +905,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SpatialAnalysisAgent",
                                                    "Tools_Documentation","Customized_Tools")
 
-            # # current_script_dir = os.path.dirname(os.path.abspath(__file__))
-            # # script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
-            # destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"SpatialAnalysisAgent", "Tools_Documentation")
+
 
                 # Ensure the destination directory exists; if not, create it
                 if not os.path.exists(destination_dir):
@@ -1041,30 +1039,6 @@ class ScriptThread(QThread):
                         else:
                             self.output_line.emit(line)
 
-                        # # Detect the start of the "Captured Output:" block
-                        # if "Captured Output:" in line:
-                        #     capturing_output = True
-                        #
-                        #     # Start capturing from the line after "Captured Output:"
-                        #     captured_output_lines.append(line.split("Captured Output:")[1].strip())
-                        #
-                        # elif capturing_output:
-                        #     # Continue capturing until a condition to stop capturing is met (e.g., an empty line or another flag)
-                        #     if line.strip() == "":
-                        #         # Stop capturing when an empty line is encountered (indicating the end of the block)
-                        #         capturing_output = False
-                        #         # Emit the entire block of captured output
-                        #         full_generated_output = "\n".join(captured_output_lines)
-                        #         if full_generated_output:
-                        #             self.report_ready.emit(full_generated_output)
-                        #             self.chatgpt_update.emit(f"AI: {full_generated_output}")
-                        #         # Reset the captured output lines for the next block
-                        #         captured_output_lines = []
-                        #     else:
-                        #         # Continue capturing non-empty lines
-                        #         captured_output_lines.append(line.strip())
-
-
 
                     # for line in captured_stdout.splitlines():
                         if "GRAPH_SAVED:" in line:
@@ -1076,10 +1050,6 @@ class ScriptThread(QThread):
                             generated_output = line.split("Captured Output:")[1].strip()
                             # Check if generated output is not empty before emitting
                             if generated_output:
-                                # # Emit each line of the captured output
-                                # # for output_line in generated_output.splitlines():
-                                #     self.report_ready.emit(f"AI: {output_line}")
-                                #     self.chatgpt_update.emit(f"AI: {output_line}")
                                 self.report_ready.emit(generated_output)
                                 self.chatgpt_update.emit(f"AI: {generated_output}")  # Emit captured output
                         elif "List of selected tool IDs:" in line:
@@ -1398,12 +1368,6 @@ class ContributionDialog(QDialog):
         else:
             print(f"Failed to upload/update file: {response.json()}")
             raise Exception(f"GitHub upload/update failed: {response.json()}")
-
-        # if response.status_code == 201:
-        #     print("File successfully uploaded to the forked GitHub repository.")
-        # else:
-        #     print(f"Failed to upload file: {response.json()}")
-        #     raise Exception(f"GitHub upload failed: {response.json()}")
 
     def prompt_pull_request(self, username):
         pr_url = f"https://github.com/{username}/SpatialAnalysisAgent/compare"

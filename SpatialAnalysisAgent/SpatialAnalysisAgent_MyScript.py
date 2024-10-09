@@ -213,19 +213,6 @@ print(f"List of selected tool IDs: {selected_tool_IDs_list}")
 # Step 3: Join all the collected documentation into a single string
 combined_documentation_str = '\n'.join(all_documentation)
 
-# print(combined_documentation_str)
-
-
-
-#
-#     # documentation_list = documentation.get(f"{selected_tool_ID}", [])
-#     # documentation_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(documentation_list)])
-#     documentation_str = ToolsDocumentation.tool_documentation_collection(tool_ID=selected_tool_file_ID)
-#     all_documentation.append(documentation_str)
-#     # print(documentation_str)
-# # Join all the collected documentation into a single string
-# combined_documentation_str = '\n'.join(all_documentation)
-# print(combined_documentation_str)
 
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 # parent_dir = os.path.dirname(current_script_dir)

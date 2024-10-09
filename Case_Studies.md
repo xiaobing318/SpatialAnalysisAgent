@@ -8,12 +8,20 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ## Level 1: Tool Selection Capability
 
 ## Level 2: Code Generation Accuracy
-Case: Calculate the ruggedness index for Penssylvania, then summarize the ruggedness index value for each Counties
+Case: "Calculate the ruggedness index for Penssylvania, then summarize the ruggedness index value for each counties"
 
 ![Ruggedness.png](Doc%2FCase%20Studies%2FRuggedness%2FRuggedness.png)
 
 ![Codes2.png](Doc%2FCase%20Studies%2FRuggedness%2FCodes2.png)
 
+
+Case: "Create barchart showing obesity prevalence in the United States. Ensure all labels are clear"
+
+![Obesity Barchart Map.png](Doc%2FCase%20Studies%2FCase%203%2FObesity%20Barchart%2FObesity%20Barchart%20Map.png)
+
+![Obesity Barchart.png](Doc%2FCase%20Studies%2FCase%203%2FObesity%20Barchart%2FObesity%20Barchart.png)
+
+![Code.png](Doc%2FCase%20Studies%2FCase%203%2FObesity%20Barchart%2FCode.png)
 
 ## Level 3: End-to-End Problem Solving
 

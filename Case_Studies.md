@@ -6,6 +6,15 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 3. End-to-End Problem Solving: Evaluates the agent's ability to select the appropriate tool, generate the correct code, and successfully execute the complete operation.
 
 ## Level 1: Tool Selection Capability
+### Case: Add new fields for x and y to the fast food restaurants layer, then extract the elevation values from the DEM layer and save the results in a new layer.
+
+![FastFoodElevation.png](Doc%2FCase%20Studies%2FLevel%201%2FPA%20DEM%20and%20Fast%20foods%2FFastFoodElevation.png)
+
+### Case: Perform the following task: 1) Reproject this road vector layer to NAD27/ UTM Zone 10 . 2) Create a new field that contains the length of the road features. Let the name of the field be "Length". 3) Extract roads that have length shorter than 100-meters.
+
+![RoadNetwork.png](Doc%2FCase%20Studies%2FLevel%201%2FRoadNetwork%2FRoadNetwork.png)
+
+
 
 ## Level 2: Code Generation Accuracy
 ### Case: "Calculate the ruggedness index for Penssylvania, then summarize the ruggedness index value for each counties"

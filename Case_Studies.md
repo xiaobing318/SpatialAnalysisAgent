@@ -23,6 +23,10 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 
 ![Code.png](Doc%2FCase%20Studies%2FCase%203%2FObesity%20Barchart%2FCode.png)
 
+
+### Case: Perform the following tasks: 1) Count the fast food restaurants in each county and store the result in a new field named "Count". 2) Calculate the fast food accessibility score for each county as (Count / Population) * 1,000 and store the result in a new field named "Score". 3) Create a thematic map showing the fast food accessibility score for each county. 
+
+
 ## Level 3: End-to-End Problem Solving
 
 ### Case: "Can you please generate a HTML report to show the building area for each building? You can look at the columns information, if no building area exists, please calculate yourself. Also make sure to use map projection when calculating area."

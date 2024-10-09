@@ -28,10 +28,20 @@ Find some case studies on the [Case Studies](https://github.com/Teakinboyewa/Spa
 # Installing required libraries
 ## Required python libraries
 - ```openai```
-- ```QSwitchControl```
+- ```langchain_openai```
 - ```nest-asyncio```
+- ```networkx```
+- ```pyvis```
+- ```geopandas```
+- ```IPython```
+- ```iface ```
+- ```jsonpickle ```
+- ```regex```
+- ```toml```
+- ```seaborn```
+- ```pydantic```
 
-**Note:** You may need to install some other python libraries that may not be present in your QGIS environment. Follow the steps below to install the libraries mentioned or others
+**Note:** All the required python libraries are expected to be installed automatically. However, if any of these python libraries failed to install automatically, you may install them manually by following the steps below to install the libraries.
 
 ### Libraries installation guide
 Using 'openai' as an example, follow these steps to install any python library:

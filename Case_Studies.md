@@ -10,7 +10,9 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ## Level 2: Code Generation Accuracy
 Case: Calculate the ruggedness index for Penssylvania, then summarize the ruggedness index value for each Counties
 
+![Ruggedness.png](Doc%2FCase%20Studies%2FRuggedness%2FRuggedness.png)
 
+![Codes2.png](Doc%2FCase%20Studies%2FRuggedness%2FCodes2.png)
 
 
 ## Level 3: End-to-End Problem Solving

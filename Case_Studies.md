@@ -36,3 +36,6 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 
 ![Case1.png](Doc%2FCase%20Studies%2FCase%203%2FCase1.png)
 
+### Case: "What kind of analysis can I do for the DEM data?"
+
+

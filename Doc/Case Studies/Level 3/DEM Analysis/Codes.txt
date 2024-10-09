@@ -1,0 +1,82 @@
+import os
+import processing
+from qgis.core import QgsRasterLayer, QgsVectorLayer
+
+def analyze_dem_data():
+    # Define the input/output paths
+    input_dem_path = 'C:/Users/tea5209/OneDrive - The Pennsylvania State University/PhD Work/SpatialAnalysisAgent_Reasearch/GIS Copilot/Case_Studies/Data/Pennsylvania/PA_DEM.tif'
+    output_directory = 'C:/Users/tea5209/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/SpatialAnalysisAgent-master/Default_workspace'
+
+    # Check and prepare output paths to avoid overwriting
+    def prepare_output_path(filename):
+        base_name, ext = os.path.splitext(filename)
+        counter = 1
+        new_filename = f"{base_name}{ext}"
+        while os.path.exists(os.path.join(output_directory, new_filename)):
+            new_filename = f"{base_name}_{counter}{ext}"
+            counter += 1
+        return os.path.join(output_directory, new_filename)
+
+    # Slope Analysis
+    slope_output_path = prepare_output_path("Slope_Output.tif")
+    slope_params = {
+        'INPUT': input_dem_path,
+        'OUTPUT': slope_output_path
+    }
+    slope_result = processing.run("native:slope", slope_params)
+    slope_layer = QgsRasterLayer(slope_result['OUTPUT'], 'Slope Output')
+
+    # Aspect Analysis
+    aspect_output_path = prepare_output_path("Aspect_Output.tif")
+    aspect_params = {
+        'INPUT': input_dem_path,
+        'OUTPUT': aspect_output_path
+    }
+    aspect_result = processing.run("native:aspect", aspect_params)
+    aspect_layer = QgsRasterLayer(aspect_result['OUTPUT'], 'Aspect Output')
+
+    # Hillshade Analysis
+    hillshade_output_path = prepare_output_path("Hillshade_Output.tif")
+    hillshade_params = {
+        'INPUT': input_dem_path,
+        'OUTPUT': hillshade_output_path
+    }
+    hillshade_result = processing.run("native:hillshade", hillshade_params)
+    hillshade_layer = QgsRasterLayer(hillshade_result['OUTPUT'], 'Hillshade Output')
+
+    # Contour Analysis
+    contour_output_path = prepare_output_path("Contour_Output.shp")
+    contour_params = {
+        'INPUT': input_dem_path,
+        'BAND': 1,
+        'INTERVAL': 10.0,
+        'FIELD_NAME': 'ELEV',  # Added the field name.
+        'OUTPUT': contour_output_path
+    }
+    contour_result = processing.run("gdal:contour", contour_params)
+    contour_layer = QgsVectorLayer(contour_result['OUTPUT'], 'Contour Output', 'ogr')
+
+    # Topographic Position Index (TPI) Analysis
+    tpi_output_path = prepare_output_path("TPI_Output.tif")
+    tpi_params = {
+        'INPUT': input_dem_path,
+        'BAND': 1,
+        'COMPUTE_EDGES': False,
+        'OUTPUT': tpi_output_path
+    }
+    tpi_result = processing.run("gdal:tpitopographicpositionindex", tpi_params)
+    tpi_layer = QgsRasterLayer(tpi_result['OUTPUT'], 'TPI Output')
+
+    # Terrain Ruggedness Index (TRI) Analysis
+    tri_output_path = prepare_output_path("TRI_Output.tif")
+    tri_params = {
+        'INPUT': input_dem_path,
+        'BAND': 1,
+        'COMPUTE_EDGES': False,
+        'OUTPUT': tri_output_path
+    }
+    tri_result = processing.run("gdal:triterrainruggednessindex", tri_params)
+    tri_layer = QgsRasterLayer(tri_result['OUTPUT'], 'TRI Output')
+
+# Execute the function
+analyze_dem_data(

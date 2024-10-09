@@ -75,7 +75,13 @@ Note: API keys input here will only be stored locally on the user's computer ('p
 
 # Adding a new tool documentation
 
-
+This plugin includes comprehensive documentation for over 600 QGIS native tools, as well as GDAL and GRASS GIS tools. To enhance the functionality and performance of the plugin, users have the option to create and integrate customized tools. For more information on how to add custom tool documentation, [click here](https://github.com/Teakinboyewa/SpatialAnalysisAgent/blob/master/SpatialAnalysisAgent/Tools_Documentation/Tools_documentationREADME.MD).
 
 # Case studies
+The case studies demonstrate the capabilities of the Spatial Analysis Agent across three categories:
+
+1. Tool Selection Capability: Showcases the agent's ability to identify and recommend the appropriate tool(s) for specific operations.
+2. Code Generation Accuracy: Demonstrates the agent's proficiency in generating executable code to perform various spatial analysis tasks.
+3. End-to-End Problem Solving: Evaluates the agent's ability to select the appropriate tool, generate the correct code, and successfully execute the complete operation.
+Explore the detailed case studies on the [Case Study page](https://github.com/Teakinboyewa/SpatialAnalysisAgent/blob/master/Case_Studies.md).
 

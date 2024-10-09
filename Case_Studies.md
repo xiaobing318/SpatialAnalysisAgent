@@ -10,18 +10,18 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ## Level 2: Code Generation Accuracy
 ### Case: "Calculate the ruggedness index for Penssylvania, then summarize the ruggedness index value for each counties"
 
-![Ruggedness.png](Doc%2FCase%20Studies%2FRuggedness%2FRuggedness.png)
+![Ruggedness.png](Doc%2FCase%20Studies%2FLevel%202%2FRuggedness%2FRuggedness.png)
 
-![Codes2.png](Doc%2FCase%20Studies%2FRuggedness%2FCodes2.png)
+![Codes2.png](Doc%2FCase%20Studies%2FLevel%202%2FRuggedness%2FCodes2.png)
 
 
 ### Case: "Create barchart showing obesity prevalence in the United States. Ensure all labels are clear"
 
-![Obesity Barchart Map.png](Doc%2FCase%20Studies%2FCase%203%2FObesity%20Barchart%2FObesity%20Barchart%20Map.png)
+![Obesity Barchart Map.png](Doc%2FCase%20Studies%2FLevel%202%2FObesity%20Barchart%2FObesity%20Barchart%20Map.png)
 
-![Obesity Barchart.png](Doc%2FCase%20Studies%2FCase%203%2FObesity%20Barchart%2FObesity%20Barchart.png)
+![Obesity Barchart.png](Doc%2FCase%20Studies%2FLevel%202%2FObesity%20Barchart%2FObesity%20Barchart.png)
 
-![Code.png](Doc%2FCase%20Studies%2FCase%203%2FObesity%20Barchart%2FCode.png)
+![Code.png](Doc%2FCase%20Studies%2FLevel%202%2FObesity%20Barchart%2FCode.png)
 
 
 ### Case: Perform the following tasks: 1) Count the fast food restaurants in each county and store the result in a new field named "Count". 2) Calculate the fast food accessibility score for each county as (Count / Population) * 1,000 and store the result in a new field named "Score". 3) Create a thematic map showing the fast food accessibility score for each county. 
@@ -34,7 +34,7 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 
 ### Case: "Can you please generate a HTML report to show the building area for each building? You can look at the columns information, if no building area exists, please calculate yourself. Also make sure to use map projection when calculating area."
 
-![Case1.png](Doc%2FCase%20Studies%2FCase%203%2FCase1.png)
+![Case1.png](Doc%2FCase%20Studies%2FLevel%203%2FCase1.png)
 
 ### Case: "What kind of analysis can I do for the DEM data?"
 ![DEM Analysis Outputs2.png](Doc%2FCase%20Studies%2FLevel%203%2FDEM%20Analysis%2FDEM%20Analysis%20Outputs2.png)

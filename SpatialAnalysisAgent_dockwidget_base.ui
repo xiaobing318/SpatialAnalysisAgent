@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
+    <width>630</width>
     <height>658</height>
    </rect>
   </property>
@@ -60,7 +60,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -87,21 +87,12 @@ color: #000000; /* black text */
            </widget>
           </item>
           <item>
-           <widget class="QPlainTextEdit" name="chatgpt_ans">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
+           <widget class="QTextBrowser" name="chatgpt_ans_textBrowser">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
               <height>250</height>
              </size>
-            </property>
-            <property name="mouseTracking">
-             <bool>true</bool>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color: #f0f0f0;
@@ -110,6 +101,15 @@ border: 2px solid #55aaff; /* light blue border */
 border-radius: 10px; /* rounded corners */
 color: #000000; /* black text */
 padding: 5px; /* padding inside the text edit */</string>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextEditable|Qt::TextEditorInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+            <property name="openExternalLinks">
+             <bool>false</bool>
+            </property>
+            <property name="openLinks">
+             <bool>false</bool>
             </property>
            </widget>
           </item>

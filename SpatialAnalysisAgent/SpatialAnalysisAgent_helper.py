@@ -94,8 +94,7 @@ def create_OperationIdentification_promt(task, data_path):
     data_path = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(data_path)])
 
     prompt = f"Your role: {constants.OperationIdentification_role} \n" + \
-             f"Your mission: {constants.OperationIdentification_task_prefix}: " + f"{task}\n\n" + \
-             f"Based on the provided data {data_path}\n" + \
+             f"Your mission: {constants.OperationIdentification_task_prefix}: " + f"{task}" + f"and based on the properties of the data provided. The details of the data are below: " + f"\n{data_path}\n" + \
              f"Requirements: \n{OperationIdentification_requirement_str} \n\n" + \
              f"Customized tools:\n{constants.tools_index}\n" + \
              f"Your reply examples, depending on the task. Example 1: {constants.OperationIdentification_reply_example_1}\n " + " OR " + f"Example 2: {constants.OperationIdentification_reply_example_2}\n" + " OR " + f"Example 3: {constants.OperationIdentification_reply_example_3}"
@@ -137,10 +136,10 @@ def code_review_prompt(extracted_code, data_path, selected_tool_dict, workspace_
     operation_code_review_prompt = f"Your role: {constants.operation_code_review_role} \n" + \
                                    f"Your mission: {constants.operation_code_review_task_prefix} \n\n" + \
                                    f"The code is: \n----------\n{extracted_code}\n----------\n\n" + \
+                                   f"The properties of the data are given below:\n{data_path}\n" + \
                                    f"Using the following selected tool(s):{selected_tool_dict}\n " + \
                                    f"The code examples in the Documentation: \n{documentation_str} can be used as an example while reviewing the {extracted_code} \n\n" + \
                                    f"The requirements for the code is: \n{operation_code_review_requirement_str}\n\n" + \
-                                   f"Replace the data path in the code example with:{data_path}\n" + \
                                    f"Output directory that should be used:{workspace_directory}"
     return operation_code_review_prompt
 
@@ -544,7 +543,7 @@ def execute_complete_program(code: str, try_cnt: int, task: str, model_name: str
                 print(f"Failed to execute and debug the code within {try_cnt} times.")
                 return code, output_capture.getvalue()
 
-            debug_prompt = get_debug_prompt(exception=err, code=code, task=task, documentation_str=documentation_str)
+            debug_prompt = get_debug_prompt(exception=err, code=code, task=task, data_path= data_path, documentation_str=documentation_str)
             print("Sending error information to LLM for debugging...")
             response = get_LLM_reply(prompt=debug_prompt,
                                      system_role=constants.debug_role,
@@ -666,7 +665,7 @@ def review_operation_code(extracted_code, data_path, workspace_directory, docume
 #         return ""
 
 
-def get_debug_prompt(exception, code, task, documentation_str):
+def get_debug_prompt(exception, code, task, data_path, documentation_str):
     etype, exc, tb = sys.exc_info()
     exttb = traceback.extract_tb(tb)  # Do not quite understand this part.
     # https://stackoverflow.com/questions/39625465/how-do-i-retain-source-lines-in-tracebacks-when-running-dynamically-compiled-cod/39626362#39626362
@@ -694,6 +693,7 @@ def get_debug_prompt(exception, code, task, documentation_str):
 
     debug_prompt = f"Your role: {constants.debug_role} \n" + \
                    f"Your task: {constants.debug_task_prefix} \n\n" + \
+                   f"The properties of the data are given below:\n{data_path}\n" + \
                    f"Requirement: \n {debug_requirement_str} \n\n" + \
                    f"Your reply examples: {constants.OperationIdentification_reply_example_1} + ' or ' + '{constants.OperationIdentification_reply_example_2}'. \n\n " + \
                    f"The given code is used for this task: {task} \n\n" + \

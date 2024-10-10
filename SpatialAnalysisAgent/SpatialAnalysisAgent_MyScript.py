@@ -67,7 +67,34 @@ if __name__ == "__main__":
 
 
 task_name = helper.generate_task_name_with_gpt(task)
-DATA_LOCATIONS = data_path.split('\n')
+
+data_path_str = data_path.split('\n')
+
+
+
+
+
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+# parent_dir = os.path.dirname(current_script_dir)
+SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
+DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
+# sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
+if DataEye_path not in sys.path:
+    sys.path.append(DataEye_path)
+
+import data_eye
+
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+# parent_dir = os.path.dirname(current_script_dir)
+SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
+DataEye_path = os.path.join(SpatialAnalysisAgent_dir)
+# sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
+if DataEye_path not in sys.path:
+    sys.path.append(DataEye_path)
+
+attributes_json, DATA_LOCATIONS = data_eye.add_data_overview_to_data_location(task=task, data_location_list=data_path_str, model=r'gpt-4o-2024-08-06')
+print("DATA_LOCATIONS with data overviews:")
+print(DATA_LOCATIONS)
 # Define a global check_running function that references the flag
 def check_running():
     global _is_running
@@ -199,27 +226,27 @@ print(f"List of selected tool IDs: {selected_tool_IDs_list}")
 combined_documentation_str = '\n'.join(all_documentation)
 
 
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-# parent_dir = os.path.dirname(current_script_dir)
-SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
-DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
-# sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
-if DataEye_path not in sys.path:
-    sys.path.append(DataEye_path)
-
-import data_eye
-
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-# parent_dir = os.path.dirname(current_script_dir)
-SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
-DataEye_path = os.path.join(SpatialAnalysisAgent_dir)
-# sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
-if DataEye_path not in sys.path:
-    sys.path.append(DataEye_path)
+# current_script_dir = os.path.dirname(os.path.abspath(__file__))
+# # parent_dir = os.path.dirname(current_script_dir)
+# SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
+# DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
+# # sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
+# if DataEye_path not in sys.path:
+#     sys.path.append(DataEye_path)
 #
-attributes_json, DATA_LOCATIONS = data_eye.add_data_overview_to_data_location(task=task, data_location_list=DATA_LOCATIONS, model=r'gpt-4o-2024-08-06')
-print("DATA_LOCATIONS with data overviews:")
-print(DATA_LOCATIONS)
+# import data_eye
+#
+# current_script_dir = os.path.dirname(os.path.abspath(__file__))
+# # parent_dir = os.path.dirname(current_script_dir)
+# SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
+# DataEye_path = os.path.join(SpatialAnalysisAgent_dir)
+# # sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
+# if DataEye_path not in sys.path:
+#     sys.path.append(DataEye_path)
+# #
+# attributes_json, DATA_LOCATIONS = data_eye.add_data_overview_to_data_location(task=task, data_location_list=DATA_LOCATIONS, model=r'gpt-4o-2024-08-06')
+# print("DATA_LOCATIONS with data overviews:")
+# print(DATA_LOCATIONS)
 
 
 # #%% --------------------------------------------------------SOLUTION GRAPH -----------------------------------------------

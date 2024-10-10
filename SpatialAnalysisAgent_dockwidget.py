@@ -27,10 +27,7 @@ import importlib
 import os
 import shutil
 import sys
-
-
-
-
+import urllib
 
 import requests
 from qgis.PyQt import QtGui, QtWidgets, uic
@@ -61,7 +58,8 @@ import traceback
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QGridLayout, QWidget, QTextEdit, QPushButton, \
     QLabel, QLineEdit, QMenu, QAction, QCompleter
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QTextCursor, QTextCharFormat, QFont, QColor, QPainter, QBrush, QSyntaxHighlighter
+from PyQt5.QtGui import QTextCursor, QTextCharFormat, QFont, QColor, QPainter, QBrush, QSyntaxHighlighter, \
+    QDesktopServices
 import asyncio
 from qgis.gui import QgsMapCanvas, QgsLayerTreeView, QgsLayerTreeMapCanvasBridge, QgsAttributeDialog
 from qgis.core import QgsProject, QgsLayerTreeModel, QgsLayerTreeNode, QgsRectangle
@@ -143,6 +141,10 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.version_check_thread = VersionCheckThread()
         self.version_check_thread.version_check_completed.connect(self.handle_version_check)
         self.version_check_thread.start()
+
+        self.chatgpt_ans_textBrowser.setOpenExternalLinks(False)
+        self.chatgpt_ans_textBrowser.setOpenLinks(False)
+        self.chatgpt_ans_textBrowser.anchorClicked.connect(self.open_link)
 
 
         self.import_libraries()
@@ -263,7 +265,22 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self.contribution_dialog.exec_()
 
-
+    def open_link(self, url):
+        if url.scheme() == 'file':
+            file_path = url.toLocalFile()
+            # Prompt the user for confirmation
+            reply = QMessageBox.question(
+                self, 'Open File',
+                f'Do you want to open the file:\n{file_path}?',
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                QDesktopServices.openUrl(url)
+        else:
+            # For other URLs, open directly
+            QDesktopServices.openUrl(url)
+        # # url is a QUrl object
+        # QDesktopServices.openUrl(url)
 
     # def open_upload_dialog(self):
     #     """ Open the custom dialog for uploading TOML files """
@@ -566,9 +583,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Clear the web view content
         self.web_view.setHtml("<html><body><h1>Solution Graph Cleared</h1></body></html>")
 
-    # def refresh_report(self):
-    #     self.report_web_view.setHtml("<html><body><h1>Reports Cleared</h1></body></html>")
-
 
     def set_initial_extent(self):
         project = QgsProject.instance()
@@ -667,7 +681,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         user_message =self.task_LineEdit.toPlainText().strip()
 
         if not user_message:
-            self.update_chatgpt_ans(f"AI: Please enter a task in the task field.", is_user=False)
+            self.update_chatgpt_ans_textBrowser(f"AI: Please enter a task in the task field.", is_user=False)
             return  # Stop further execution if the task is empty
         # print("Sending message:", self.task_LineEdit.toPlainText())  # Debugging statement
         # Emit the user's message in chatgpt_ans first
@@ -680,7 +694,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.read_updated_config()
 
         if not self.ChatMode_checkbox.isChecked() and self.data_pathLineEdit.isEnabled() and not self.data_pathLineEdit.toPlainText().strip():
-            self.update_chatgpt_ans(f"AI: Please load the data to be used.", is_user=False)
+            self.update_chatgpt_ans_textBrowser(f"AI: Please load the data to be used.", is_user=False)
             return  # Stop further execution if data path is required but empty
 
 
@@ -708,7 +722,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.gpt_thread = GPTRequestThread(user_message, self.OpenAI_key, self.model_name, self.conversation_history)  # your-api-key-here
         # self.gpt_thread = GPTRequestThread(user_message, "AAzz", self.conversation_history)#your-api-key-here
         self.gpt_thread.output_line.connect(self.update_output)
-        self.gpt_thread.finished_signal.connect(lambda:self.update_chatgpt_ans("AI: Done", is_user=False))
+        self.gpt_thread.finished_signal.connect(lambda:self.update_chatgpt_ans_textBrowser("AI: Done", is_user=False))
 
         self.gpt_thread.start()
 
@@ -727,7 +741,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
         self.OpenAI_key = self.get_openai_key()  # Retrieve the API key from the line edit
         if not self.OpenAI_key:
-            self.update_chatgpt_ans(f"AI: Please enter a valid OpenAI API key.", is_user=False)
+            self.update_chatgpt_ans_textBrowser(f"AI: Please enter a valid OpenAI API key.", is_user=False)
             return
         self.model_name = self.modelNameComboBox.currentText()
 
@@ -754,7 +768,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.thread.graph_ready.connect(self.update_graph)
         self.thread.report_ready.connect(self.update_report)
 
-        self.thread.chatgpt_update.connect(self.update_chatgpt_ans)
+        self.thread.chatgpt_update.connect(self.update_chatgpt_ans_textBrowser)
         self.thread.script_finished.connect(self.thread_finished)
         self.thread.start()
 
@@ -766,20 +780,20 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.loadData.setEnabled(False)
 
 
-    def update_chatgpt_ans(self, message, is_user=False):
+    def update_chatgpt_ans_textBrowser(self, message, is_user=False):
         # Append new message to conversation history
         self.conversation_history.append((message, is_user))
-        self.chatgpt_ans.clear()
+        self.chatgpt_ans_textBrowser.clear()
         for msg, user in self.conversation_history:
             self.append_text_with_format(msg, user)
             # self.chatgpt_ans.append(msg)
-        self.chatgpt_ans.repaint()
-        self.chatgpt_ans.verticalScrollBar().setValue(self.chatgpt_ans.verticalScrollBar().maximum())
+        self.chatgpt_ans_textBrowser.repaint()
+        self.chatgpt_ans_textBrowser.verticalScrollBar().setValue(self.chatgpt_ans_textBrowser.verticalScrollBar().maximum())
 
     def stop_script(self):
         if self.thread:
             self.thread.terminate()
-            self.update_chatgpt_ans(f"SpatialAnalysisAgent: Script terminated")
+            self.update_chatgpt_ans_textBrowser(f"SpatialAnalysisAgent: Script terminated")
             # print("Script terminated")
             # Re-enable the send_button
         self.run_button.setEnabled(True)
@@ -790,8 +804,38 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
 
     def append_text_with_format(self, text, is_user=True):
-        cursor = self.chatgpt_ans.textCursor()
+        # Regular expression to detect URLs and file paths
+        # This pattern now includes spaces within the file paths
+        url_pattern = re.compile(
+            r'((?:https?://|file:///)[^\s]+)'  # URLs starting with http://, https://, or file:///
+            r'|'
+            r'((?:[A-Za-z]:)?[\\/][^\n]+)'  # Windows or Unix file paths, allowing spaces
+        )
+
+        def replace_urls(match):
+            url = match.group(0)
+            if url.startswith(('http://', 'https://', 'file:///')):
+                # URL is already in correct format
+                return f'<a href="{url}">{url}</a>'
+            else:
+                # It's a local file path; convert it to a file URL
+                # Normalize the path separators
+                file_path = os.path.normpath(url).replace('\\', '/')
+                # Handle spaces and special characters
+                file_url = 'file:///' + urllib.parse.quote(file_path)
+                display_path = url  # Keep the original path for display
+                return f'<a href="{file_url}">{display_path}</a>'
+
+        # Process the text to replace URLs and file paths with HTML links
+        text = url_pattern.sub(replace_urls, text)
+
+
+
+
+        cursor = self.chatgpt_ans_textBrowser.textCursor()
         cursor.movePosition(QTextCursor.End)
+
+
 
         if is_user:
             html = f'<div style="text-align: left; padding: 10px; margin: 5px; border: 2px solid blue; border-radius: 10px;">{text}</div>'
@@ -802,13 +846,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         cursor.insertHtml('<br>')  # Add a line break between messages
         # self.task_LineEdit.clear()
 
-        self.chatgpt_ans.setTextCursor(cursor)
+        self.chatgpt_ans_textBrowser.setTextCursor(cursor)
 
     @pyqtSlot(str)
     def append_message(self, message):
         # message = self.task_LineEdit.toPlainText()
         if message.strip():  # Check if message is not empty
-            self.update_chatgpt_ans(f"User: {message}", is_user=True)
+            self.update_chatgpt_ans_textBrowser(f"User: {message}", is_user=True)
             self.update_output(f"User: {message}")
             if self.ChatMode_checkbox.isChecked():
                 # Clear the input field after sending the message when switch is checked
@@ -821,6 +865,64 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def update_output(self, line):
 
         clean_line = self.strip_ansi_sequences(line)
+
+        # for line in captured_stdout.splitlines():
+        if "GRAPH_SAVED:" in line:
+            html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
+            self.update_graph(html_graph_path)
+            self.update_chatgpt_ans_textBrowser("AI: Graph is ready.")  # Emit the message to chatgpt_ans
+
+        elif "Captured Output:" in line:  # Check for "Captured Output" flag
+            generated_output = line.split("Captured Output:")[1].strip()
+            # Check if generated output is not empty before emitting
+            if generated_output:
+                self.update_report(generated_output)
+                self.update_chatgpt_ans_textBrowser(f"AI: {generated_output}")  # Emit captured output
+        elif "List of selected tool IDs:" in line:
+            tool_IDs = line.split("List of selected tool IDs:")[1].strip()
+            if tool_IDs:
+                # self.tool_filename_ready.emit(tool_filename)  # Emit the tool filename
+                # self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_filename}")
+                self.update_chatgpt_ans_textBrowser(f"AI: Selected tool(s): {tool_IDs}")
+
+
+        # # Handle special markers or messages
+        # if "GRAPH_SAVED:" in clean_line:
+        #     html_graph_path = clean_line.split("GRAPH_SAVED:")[1].strip()
+        #     self.graph_ready.emit(html_graph_path)
+        #     self.chatgpt_update.emit("AI: Graph is ready.")
+        #
+        # elif "Captured Output:" in clean_line:
+        #     generated_output = clean_line.split("Captured Output:")[1].strip()
+        #     if generated_output:
+        #         self.report_ready.emit(generated_output)
+        #         self.chatgpt_update.emit(f"AI: {generated_output}")
+        #
+        # elif "List of selected tool IDs:" in clean_line:
+        #     tool_IDs = clean_line.split("List of selected tool IDs:")[1].strip()
+        #     if tool_IDs:
+        #         self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_IDs}")
+        #
+        # else:
+        #     # Append the clean line to the output_text_edit
+        #     self.output_text_edit.insertPlainText(clean_line)
+        #     if not clean_line.endswith('\n'):
+        #         self.output_text_edit.insertPlainText('\n')
+        #     self.output_text_edit.moveCursor(QTextCursor.End)
+        #     self.output_text_edit.repaint()
+        #     self.output_text_edit.verticalScrollBar().setValue(self.output_text_edit.verticalScrollBar().maximum())
+        #
+        # # Check for script completion message
+        # if "-----Script completed-----" in clean_line:
+        #     self.update_chatgpt_ans(f"AI: Done")
+        #     self.run_button.setEnabled(True)
+        #     self.clear_textboxesBtn.setEnabled(True)
+        #     self.task_LineEdit.setEnabled(True)
+        #     self.data_pathLineEdit.setEnabled(True)
+        #     self.loadData.setEnabled(True)
+
+
+
         if "```python" in clean_line or "```" in clean_line:
             self.output_text_edit.insertPlainText(line)
         else:
@@ -837,7 +939,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Check if the line contains the completion message
         if "-----Script completed-----" in clean_line:
-            self.update_chatgpt_ans(f"AI: Done")
+            self.update_chatgpt_ans_textBrowser(f"AI: Done")
             self.run_button.setEnabled(True)
             self.clear_textboxesBtn.setEnabled(True)
             self.task_LineEdit.setEnabled(True)
@@ -850,12 +952,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         if success:
             # self.output_text_edit.append("The script ran successfully.")
-            self.output_text_edit.insertPlainText("The script ran successfully.")
-            self.update_chatgpt_ans(f"SpatialAnalysisAgent: Done")
+            self.output_text_edit.insertPlainText("The script ran successfully2.")
+            self.update_chatgpt_ans_textBrowser(f"SpatialAnalysisAgent: Done")
         else:
             # self.output_text_edit.append("The script finished with errors.")
             self.output_text_edit.insertPlainText("The script finished with errors.")
-            self.update_chatgpt_ans(f"SpatialAnalysisAgent: The script finished with errors.")
+            self.update_chatgpt_ans_textBrowser(f"SpatialAnalysisAgent: The script finished with errors.")
 
         # Ensure the thread is stopped and cleaned up
         self.thread.quit()  # This will stop the event loop in the thread
@@ -872,7 +974,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def clear_textboxes(self):
         self.output_text_edit.clear()
         self.task_LineEdit.clear()
-        self.chatgpt_ans.clear()
+        self.chatgpt_ans_textBrowser.clear()
         # self.output_text_edit_2.clear()
         # Clear conversation history to ensure no previous responses are carried forward
         self.conversation_history = []
@@ -964,7 +1066,6 @@ class ScriptThread(QThread):
     chatgpt_update = pyqtSignal(str)
     graph_ready = pyqtSignal(str)
     report_ready = pyqtSignal(str)
-
     script_finished = pyqtSignal(bool)
 
     def __init__(self, script_path, task, data_path, workspace_directory, OpenAI_key, model_name):
@@ -975,16 +1076,13 @@ class ScriptThread(QThread):
         self.workspace_directory = workspace_directory
         self.OpenAI_key = OpenAI_key
         self.model_name = model_name
-
-
         self._is_running = True  # Flag to control the running state
 
     def run(self):
+        original_stdout = sys.stdout
+        original_stderr = sys.stderr
 
         try:
-            # Update the config file with the API keys
-            # self.update_config_file()
-
             # Ensure that the updated configuration is read by reloading the config
             config_path = os.path.join(os.path.dirname(self.script_path), 'SpatialAnalysisAgent', 'config.ini')
             config = configparser.ConfigParser()
@@ -1006,121 +1104,153 @@ class ScriptThread(QThread):
                 'output_signal': self.chatgpt_update,  # Pass the chatgpt_update signal
             }
 
-            # Redirect stdout and stderr to capture the output
-            original_stdout = sys.stdout
-            original_stderr = sys.stderr
-            sys_stdout_capture = StringIO()
-            sys_stderr_capture = StringIO()
-            sys.stdout = sys_stdout_capture
-            sys.stderr = sys_stderr_capture
+            # Override print function to flush outputs
+            def print_flush(*args, **kwargs):
+                print(*args, **kwargs, flush=True)
 
+            local_vars['print'] = print_flush
 
-            # Regular expression pattern to detect file paths
-            path_pattern = r'[a-zA-Z]:[\\/][\S]+(?:\.html|\.png|\.jpg|\.pdf|\.txt|\.csv)'  # Add other extensions as needed
+            # Redirect stdout and stderr
+            stream_redirector = StreamRedirector()
+            stream_redirector.output_written.connect(self.output_line.emit)
 
-            def emit_output():
-                sys_stdout_capture.flush()
-                sys_stderr_capture.flush()
-                captured_stdout = sys_stdout_capture.getvalue()
-                captured_stderr = sys_stderr_capture.getvalue()
-                sys_stdout_capture.truncate(0)
-                sys_stderr_capture.truncate(0)
-                sys_stdout_capture.seek(0)
-                sys_stderr_capture.seek(0)
-
-                capturing_output = False
-                captured_output_lines = []
-
-                if captured_stdout:
-                    # self.output_line.emit(captured_stdout)
-                    for line in captured_stdout.splitlines(keepends=True):
-                        if line.endswith('\n'):
-                            self.output_line.emit(line.rstrip())
-                        else:
-                            self.output_line.emit(line)
-
-
-                    # for line in captured_stdout.splitlines():
-                        if "GRAPH_SAVED:" in line:
-                            html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
-                            self.graph_ready.emit(html_graph_path)
-                            self.chatgpt_update.emit("AI: Graph is ready.")  # Emit the message to chatgpt_ans
-
-                        elif "Captured Output:" in line:  # Check for "Captured Output" flag
-                            generated_output = line.split("Captured Output:")[1].strip()
-                            # Check if generated output is not empty before emitting
-                            if generated_output:
-                                self.report_ready.emit(generated_output)
-                                self.chatgpt_update.emit(f"AI: {generated_output}")  # Emit captured output
-                        elif "List of selected tool IDs:" in line:
-                            tool_IDs = line.split("List of selected tool IDs:")[1].strip()
-                            if tool_IDs:
-                                # self.tool_filename_ready.emit(tool_filename)  # Emit the tool filename
-                                # self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_filename}")
-                                self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_IDs}")
-                        # else:
-                        #     self.output_line.emit(line)
-
-                if captured_stderr:
-                    for line in captured_stderr.splitlines(keepends=True):
-                        if line.endswith('\n'):
-                            self.output_line.emit(f"Error: {line.rstrip()}")
-                        else:
-                            # handle the case where the line doesn't end with a newline
-                            self.output_line.emit(f"Error: {line}")
+            sys.stdout = stream_redirector
+            sys.stderr = stream_redirector
+            # # Redirect stdout and stderr to capture the output
+            # original_stdout = sys.stdout
+            # original_stderr = sys.stderr
+            # sys_stdout_capture = StringIO()
+            # sys_stderr_capture = StringIO()
+            # sys.stdout = sys_stdout_capture
+            # sys.stderr = sys_stderr_capture
 
             # Execute the script using exec
             exec_globals = globals()
             # exec_locals = locals()
             exec_locals = local_vars
 
-            # This will allow for real-time capturing and emitting of output
-            import threading
-            stop_thread = threading.Event()
+            exec(script_content, exec_globals, exec_locals)
 
-            def monitor_output():
-                while not stop_thread.is_set():
-                    emit_output()
-                    time.sleep(0.1)  # Adjust sleep time as needed
-
-            monitor_thread = threading.Thread(target=monitor_output)
-            monitor_thread.start()
-
-            try:
-                exec(script_content, exec_globals, exec_locals)
-                while self._is_running:
-                    time.sleep(0.1)
-                    if not self._is_running:
-                        break
-            finally:
-                stop_thread.set()
-                monitor_thread.join()
-
-            # Emit any remaining output
-            emit_output()
-
-            # Restore original stdout and stderr
-            sys.stdout = original_stdout
-            sys.stderr = original_stderr
+            # # Emit any remaining output
+            # self.emit_captured_output(sys_stdout_capture, sys_stderr_capture)
+            #
+            # # Restore stdout and stderr
+            # sys.stdout = original_stdout
+            # sys.stderr = original_stderr
 
             # Emit success signal
             self.script_finished.emit(True)
 
-
         except Exception as e:
-            # Print traceback error to the text_edit
+            # Handle exceptions
             traceback_str = traceback.format_exc()
-            self.output_line.emit(f"Error: {e}\n{traceback_str}")  # Emit any exceptions to the UI
-            self.chatgpt_update.emit(f"AI: An error occured: {str(e)}\n{traceback_str}")
-            self.script_finished.emit(False)  # Signal failure
+            self.output_line.emit(f"Error: {e}\n{traceback_str}")
+            self.chatgpt_update.emit(f"AI: An error occurred: {str(e)}\n{traceback_str}")
+            self.script_finished.emit(False)
+        finally:
+            sys.stdout = original_stdout
+            sys.stderr = original_stderr
+
+    def emit_captured_output(self, stdout_capture, stderr_capture):
+        stdout_capture.flush()
+        stderr_capture.flush()
+        captured_stdout = stdout_capture.getvalue()
+        captured_stderr = stderr_capture.getvalue()
+        stdout_capture.truncate(0)
+        stderr_capture.truncate(0)
+        stdout_capture.seek(0)
+        stderr_capture.seek(0)
+
+        capturing_output = False
+        captured_output_lines = []
+
+        if captured_stdout:
+            # self.output_line.emit(captured_stdout)
+            for line in captured_stdout.splitlines(keepends=True):
+                if line.endswith('\n'):
+                    self.output_line.emit(line.rstrip())
+                else:
+                    self.output_line.emit(line)
+
+
+            # for line in captured_stdout.splitlines():
+                if "GRAPH_SAVED:" in line:
+                    html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
+                    self.update_graph(html_graph_path)
+                    self.chatgpt_update.emit("AI: Graph is ready.")  # Emit the message to chatgpt_ans
+
+                elif "Captured Output:" in line:  # Check for "Captured Output" flag
+                    generated_output = line.split("Captured Output:")[1].strip()
+                    # Check if generated output is not empty before emitting
+                    if generated_output:
+                        self.update_report(generated_output)
+                        self.chatgpt_update.emit(f"AI: {generated_output}")  # Emit captured output
+                elif "List of selected tool IDs:" in line:
+                    tool_IDs = line.split("List of selected tool IDs:")[1].strip()
+                    if tool_IDs:
+                        # self.tool_filename_ready.emit(tool_filename)  # Emit the tool filename
+                        # self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_filename}")
+                        self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_IDs}")
+                # else:
+                #     self.output_line.emit(line)
+
+        if captured_stderr:
+            for line in captured_stderr.splitlines(keepends=True):
+                if line.endswith('\n'):
+                    self.output_line.emit(f"Error: {line.rstrip()}")
+                else:
+                    # handle the case where the line doesn't end with a newline
+                    self.output_line.emit(f"Error: {line}")
+
+
+
+            # # This will allow for real-time capturing and emitting of output
+            # import threading
+            # stop_thread = threading.Event()
+
+            # def monitor_output():
+            #     while not stop_thread.is_set():
+            #         emit_output()
+            #         time.sleep(0.1)  # Adjust sleep time as needed
+            #
+            # monitor_thread = threading.Thread(target=monitor_output)
+            # monitor_thread.start()
+
+        #     try:
+        #         exec(script_content, exec_globals, exec_locals)
+        #         while self._is_running:
+        #             time.sleep(0.1)
+        #             if not self._is_running:
+        #                 break
+        #     finally:
+        #         stop_thread.set()
+        #         monitor_thread.join()
+        #
+        #     # Emit any remaining output
+        #     emit_output()
+        #
+        #     # Restore original stdout and stderr
+        #     sys.stdout = original_stdout
+        #     sys.stderr = original_stderr
+        #
+        #     # Emit success signal
+        #     self.script_finished.emit(True)
+        #
+        #
+        # except Exception as e:
+        #     # Print traceback error to the text_edit
+        #     traceback_str = traceback.format_exc()
+        #     self.output_line.emit(f"Error: {e}\n{traceback_str}")  # Emit any exceptions to the UI
+        #     self.chatgpt_update.emit(f"AI: An error occured: {str(e)}\n{traceback_str}")
+        #     self.script_finished.emit(False)  # Signal failure
 
 
     def stop(self):
         self._is_running = False
 
 
-    def isRunning(self):
-        return self._is_running
+    # def isRunning(self):
+    #     return self._is_running
 
     def check_running(self):
         return self._is_running
@@ -1407,3 +1537,21 @@ class ContributionDialog(QDialog):
 
 
 
+class StreamRedirector(QObject):
+    output_written = pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+        self.buffer = ''
+
+    def write(self, text):
+        if text:
+            self.buffer += text
+            while '\n' in self.buffer:
+                line, self.buffer = self.buffer.split('\n', 1)
+                self.output_written.emit(line)
+
+    def flush(self):
+        if self.buffer:
+            self.output_written.emit(self.buffer)
+            self.buffer = ''

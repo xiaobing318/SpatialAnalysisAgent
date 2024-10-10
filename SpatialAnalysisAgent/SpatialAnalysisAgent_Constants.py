@@ -66,6 +66,7 @@ OperationIdentification_requirements = [
     # rf"When creating a thematic map, select the tool named 'Thematic Map Creation'. It is more easier. The tool 'Set style for vector layer' requires a style file, therefore it may not the suitable tool to use.",
     # f"If you need to create a thematic map, select the customized tool from {other_QGIS_operations} named 'Thematic Map Creation'",
     "Identify the most appropriate and the best tool for the task",
+    "The identification of the most appropriate tool should be guided by the properties of the data provided",
     f"You can Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task: {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
     "You are not limited to QGIS python functions, you can also use other python functions asuch as geoppandas, numpy, scipy etc.",
     # f"If your answer is 'Yes', then return the exact name of the tool as given in the list. But if your answer is 'No', return any other tool you think is most appropriate from the list in {other_tools} and return the exact name as listed in the list.  DO NOT select any existing QGIS tool for thematic map creation. E.g, do not select 'categorized renderer from styles'",

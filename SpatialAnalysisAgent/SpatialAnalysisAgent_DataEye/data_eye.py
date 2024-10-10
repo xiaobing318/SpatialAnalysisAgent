@@ -4,14 +4,10 @@ import time
 import pandas as pd
 import geopandas as gpd
 import rasterio
-
 from pydantic import BaseModel
 from openai import OpenAI
-
 import configparser
 import json
-
-
 
 DataEye_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data_eye_constants')
 if DataEye_path not in sys.path:
@@ -26,13 +22,6 @@ config_path = os.path.join(parent_dir, 'config.ini')
 config = configparser.ConfigParser()
 config.read(config_path)
 OpenAI_key = config.get('API_Key', 'OpenAI_key')
-
-# SpatialAnalysisAgent_dir = os.path.abspath(os.path.join('..', 'SpatialAnalysisAgent'))
-# if SpatialAnalysisAgent_dir not in sys.path:
-#     sys.path.append(SpatialAnalysisAgent_dir)
-
-
-
 
 
 client = OpenAI(api_key=OpenAI_key)
@@ -76,13 +65,11 @@ def add_data_overview_to_data_location(task, data_location_list, model = r'gpt-4
     get_data_overview(attributes_json)
 
 
-
     for idx, data in enumerate(attributes_json['data_locations']):
         meta_str = data['meta_str']
         data_location_list[idx] += data_location_list[idx] + " Data overview: " + meta_str
         # data_location_list[idx] += data_location_list[idx] + " Data overview: " + meta_str
     return attributes_json, data_location_list
-
 
 def get_prompt_to_pick_up_data_locations(task, data_locations):
     data_locations_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(data_locations)])

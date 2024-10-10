@@ -48,3 +48,6 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ### Case: "What kind of analysis can I do for the DEM data?"
 ![DEM Analysis Outputs2.png](Doc%2FCase%20Studies%2FLevel%203%2FDEM%20Analysis%2FDEM%20Analysis%20Outputs2.png)
 
+### Calculate the correlation coefficients between obesity rates and supermarket visit rates for each states in the USA. Let the result be in html format
+
+![Correlation coefficient case report.png](Doc%2FCase%20Studies%2FLevel%203%2FCorrelation%20Coefficient%2FCorrelation%20coefficient%20case%20report.png)

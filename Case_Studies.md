@@ -76,3 +76,7 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 
 ![Pop change.png](Doc%2FCase%20Studies%2FLevel%201%2FData%20processing%2FPop%20change.png)
 ![Pop change_barplot.png](Doc%2FCase%20Studies%2FLevel%201%2FData%20processing%2FPop%20change_barplot.png)
+
+
+### Case: Generate contour lines based on the DEM using interval of 2. Add the evelation as an attribute to the contour line layer.
+

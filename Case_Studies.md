@@ -39,6 +39,12 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 
 ![3sD9wcDDey.png](Doc%2FCase%20Studies%2FLevel%202%2FObesity%20Score%20and%20fast%20food%2F3sD9wcDDey.png)
 
+### Case: Perform the following task: 1) Clip the DEM to PA Boundaries and load the clipped DEM. 2) Generate the zonal statistics for every county in PA, focusing on average elevation. 3) Create a choropleth map showing the average elevation of each county in PA, using a red color gradient to represent elevation differences. Load the Choropleth map
+![Elevation Choropleth.png](Doc%2FCase%20Studies%2FLevel%202%2FElevation%20Choropleth%2FElevation%20Choropleth.png)
+
+![Elevation_ChoroplethCodes.png](Doc%2FCase%20Studies%2FLevel%202%2FElevation%20Choropleth%2FElevation_ChoroplethCodes.png)
+
+
 ## Level 3: End-to-End Problem Solving
 
 ### Case: "Can you please generate a HTML report to show the building area for each building? You can look at the columns information, if no building area exists, please calculate yourself. Also make sure to use map projection when calculating area."
@@ -51,3 +57,7 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ### Calculate the correlation coefficients between obesity rates and supermarket visit rates for each states in the USA. Let the result be in html format
 
 ![Correlation coefficient case report.png](Doc%2FCase%20Studies%2FLevel%203%2FCorrelation%20Coefficient%2FCorrelation%20coefficient%20case%20report.png)
+
+### Case: Apply an affine transformation to the vector layer to scale by a factor of 2 and rotate 30 degrees.
+
+![Affine transformation.png](Doc%2FCase%20Studies%2FLevel%202%2FAffine%20Transformation%2FAffine%20transformation.png)

@@ -14,7 +14,9 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 
 ![RoadNetwork.png](Doc%2FCase%20Studies%2FLevel%201%2FRoadNetwork%2FRoadNetwork.png)
 
+### Case: Can you please delete all the empty columns?
 
+![Delete empty fields.png](Doc%2FCase%20Studies%2FLevel%201%2FData%20processing%2FDelete%20empty%20fields.png)
 
 ## Level 2: Code Generation Accuracy
 ### Case: "Calculate the ruggedness index for Penssylvania, then summarize the ruggedness index value for each counties"
@@ -69,3 +71,8 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ### Case: Can you please create 20 random points in the DEM extend, and extract the elevation value for each point?
 
 ![Random Points.png](Doc%2FCase%20Studies%2FLevel%203%2FRandom%20Points.png)
+
+### Case: Could you please show me the change in population from year 2000 to year 2008 for each counties in South Carolina?
+
+![Pop change.png](Doc%2FCase%20Studies%2FLevel%201%2FData%20processing%2FPop%20change.png)
+![Pop change_barplot.png](Doc%2FCase%20Studies%2FLevel%201%2FData%20processing%2FPop%20change_barplot.png)

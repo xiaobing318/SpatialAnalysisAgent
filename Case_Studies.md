@@ -61,3 +61,11 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ### Case: Apply an affine transformation to the vector layer to scale by a factor of 2 and rotate 30 degrees.
 
 ![Affine transformation.png](Doc%2FCase%20Studies%2FLevel%202%2FAffine%20Transformation%2FAffine%20transformation.png)
+
+### Case: Can you please select the residential area and calculate the total area covered by the residential area in square kilometers
+
+![Selection of Land use.png](Doc%2FCase%20Studies%2FLevel%203%2FSelection%20of%20Land%20use.png)
+
+### Case: Can you please create 20 random points in the DEM extend, and extract the elevation value for each point?
+
+![Random Points.png](Doc%2FCase%20Studies%2FLevel%203%2FRandom%20Points.png)

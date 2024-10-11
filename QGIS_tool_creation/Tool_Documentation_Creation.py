@@ -666,8 +666,10 @@ def format_first_parameters_in_all_toml_files_in_folder(folder_path):
 
 
 #CHECK IF ANY ERROR EXIST
-check_toml_files_for_errors(toml_directory)
-error_folder = r"D:\Onedrive\OneDrive - The Pennsylvania State University\PhD Work\SpatialAnalysisAgent_Reasearch\Plugin\GRASS_toml_withHTML_MD\NOT GOOD"
+error_folder = r"C:\Users\AKINBOYEWA TEMITOPE\Downloads\landsat_toar"
+check_toml_files_for_errors(error_folder)
+# error_folder = r"D:\Onedrive\OneDrive - The Pennsylvania State University\PhD Work\SpatialAnalysisAgent_Reasearch\Plugin\GRASS_toml_withHTML_MD\NOT GOOD"
+
 # check_toml_files_for_errors_and_move(toml_directory, error_folder)
 
 # escape_backslashes_and_fix_newlines_in_toml_folder(toml_directory)

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>630</width>
-    <height>658</height>
+    <width>705</width>
+    <height>789</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -77,6 +77,15 @@
               <height>0</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <family>MS Shell Dlg 2</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="mouseTracking">
+             <bool>true</bool>
+            </property>
             <property name="styleSheet">
              <string notr="true">
 border: 0.5px solid #000000; /* light blue border */
@@ -93,6 +102,17 @@ color: #000000; /* black text */
               <width>16777215</width>
               <height>250</height>
              </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>MS Shell Dlg 2</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color: #f0f0f0;
@@ -300,7 +320,7 @@ padding: 5px; /* padding inside the text edit */
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Solution Graph</string>
+        <string>Geoprocessing Workflow</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">

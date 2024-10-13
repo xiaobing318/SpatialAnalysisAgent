@@ -47,7 +47,8 @@ from PyQt5.QtWebKitWidgets import QWebView
 from qgis.PyQt.QtCore import Qt, QCoreApplication
 from qgis._core import QgsVectorLayer, QgsRasterLayer
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
-from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QWidget, QSizeGrip, QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QWidget, QSizeGrip, QMessageBox, \
+    QInputDialog, QTextBrowser
 from PyQt5.QtCore import QThread, pyqtSignal, QUrl, QObject, pyqtSlot, QPropertyAnimation, QPoint, QRect, QSettings
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QDialog, QHBoxLayout
@@ -114,7 +115,6 @@ class VersionCheckThread(QThread):
             print(f"Error checking openai version: {e}")
             return False
 
-
 class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     closingPlugin = pyqtSignal()
@@ -141,6 +141,30 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.version_check_thread = VersionCheckThread()
         self.version_check_thread.version_check_completed.connect(self.handle_version_check)
         self.version_check_thread.start()
+
+        # # Replace chatgpt_ans_textBrowser with ZoomableTextBrowser
+        # self.chatgpt_ans_textBrowser = self.findChild(QTextBrowser, 'chatgpt_ans_textBrowser')
+        # parent_layout = self.chatgpt_ans_textBrowser.parent().layout()
+        # if parent_layout is not None:
+        #     # Find the position of the existing widget in the layout
+        #     index = parent_layout.indexOf(self.chatgpt_ans_textBrowser)
+        #     if index >= 0:
+        #         # Get the position of the widget in the grid layout
+        #         position = parent_layout.getItemPosition(index)
+        #         row, column, rowSpan, columnSpan = position
+        #         # Remove the existing widget
+        #         parent_layout.removeWidget(self.chatgpt_ans_textBrowser)
+        #         self.chatgpt_ans_textBrowser.deleteLater()
+        #         # Create a new ZoomableTextBrowser
+        #         self.chatgpt_ans_textBrowser = ZoomableTextBrowser(self)
+        #         self.chatgpt_ans_textBrowser.setObjectName("chatgpt_ans_textBrowser")
+        #         # Add the new widget to the layout at the same position
+        #         parent_layout.addWidget(self.chatgpt_ans_textBrowser, row, column, rowSpan, columnSpan)
+        #     else:
+        #         print("Widget not found in the layout.")
+        # else:
+        #     # Handle the case where parent_layout is None
+        #     print("Parent layout is None. Cannot replace the widget.")
 
         self.chatgpt_ans_textBrowser.setOpenExternalLinks(False)
         self.chatgpt_ans_textBrowser.setOpenLinks(False)
@@ -793,7 +817,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def stop_script(self):
         if self.thread:
             self.thread.terminate()
-            self.update_chatgpt_ans_textBrowser(f"SpatialAnalysisAgent: Script terminated")
+            self.update_chatgpt_ans_textBrowser(f"AI: Script terminated")
             # print("Script terminated")
             # Re-enable the send_button
         self.run_button.setEnabled(True)
@@ -870,7 +894,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if "GRAPH_SAVED:" in line:
             html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
             self.update_graph(html_graph_path)
-            self.update_chatgpt_ans_textBrowser("AI: Graph is ready.")  # Emit the message to chatgpt_ans
+            self.update_chatgpt_ans_textBrowser("AI: Geoprocessing workflow is ready.")  # Emit the message to chatgpt_ans
 
         elif "Captured Output:" in line:  # Check for "Captured Output" flag
             generated_output = line.split("Captured Output:")[1].strip()
@@ -939,7 +963,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Check if the line contains the completion message
         if "-----Script completed-----" in clean_line:
-            self.update_chatgpt_ans_textBrowser(f"AI: Done")
+            # self.update_chatgpt_ans_textBrowser(f"AI: Done")
             self.run_button.setEnabled(True)
             self.clear_textboxesBtn.setEnabled(True)
             self.task_LineEdit.setEnabled(True)
@@ -952,12 +976,16 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         if success:
             # self.output_text_edit.append("The script ran successfully.")
-            self.output_text_edit.insertPlainText("The script ran successfully2.")
-            self.update_chatgpt_ans_textBrowser(f"SpatialAnalysisAgent: Done")
+            # self.output_text_edit.insertPlainText("The script ran successfully2.")
+            self.update_chatgpt_ans_textBrowser(f"AI: Done")
+
         else:
             # self.output_text_edit.append("The script finished with errors.")
             self.output_text_edit.insertPlainText("The script finished with errors.")
-            self.update_chatgpt_ans_textBrowser(f"SpatialAnalysisAgent: The script finished with errors.")
+            self.update_chatgpt_ans_textBrowser(f"AI: The script finished with errors.")
+
+
+
 
         # Ensure the thread is stopped and cleaned up
         self.thread.quit()  # This will stop the event loop in the thread
@@ -968,7 +996,8 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.task_LineEdit.setEnabled(True)
         self.data_pathLineEdit.setEnabled(True)
         self.loadData.setEnabled(True)
-
+        self.clear_textboxesBtn.setEnabled(True)
+        self.update_chatgpt_ans_textBrowser("--------------------------------------------------------------")
 
 
     def clear_textboxes(self):
@@ -1177,7 +1206,7 @@ class ScriptThread(QThread):
                 if "GRAPH_SAVED:" in line:
                     html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
                     self.update_graph(html_graph_path)
-                    self.chatgpt_update.emit("AI: Graph is ready.")  # Emit the message to chatgpt_ans
+                    self.chatgpt_update.emit("AI: Geoprocessing Workflow is ready.")  # Emit the message to chatgpt_ans
 
                 elif "Captured Output:" in line:  # Check for "Captured Output" flag
                     generated_output = line.split("Captured Output:")[1].strip()
@@ -1555,3 +1584,4 @@ class StreamRedirector(QObject):
         if self.buffer:
             self.output_written.emit(self.buffer)
             self.buffer = ''
+

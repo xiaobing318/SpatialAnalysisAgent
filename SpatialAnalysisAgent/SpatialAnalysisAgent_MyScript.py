@@ -1,11 +1,10 @@
-
-
-import json
 #***************************************************************************
 ##Import package
 import os
 import re
 import sys
+import json
+import time
 from io import StringIO
 import requests
 import networkx as nx
@@ -67,18 +66,12 @@ if __name__ == "__main__":
 
 
 task_name = helper.generate_task_name_with_gpt(task)
-
 data_path_str = data_path.split('\n')
 
-
-
-
-
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
-# parent_dir = os.path.dirname(current_script_dir)
 SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
 DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
-# sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
+
 if DataEye_path not in sys.path:
     sys.path.append(DataEye_path)
 
@@ -226,29 +219,6 @@ print(f"List of selected tool IDs: {selected_tool_IDs_list}")
 combined_documentation_str = '\n'.join(all_documentation)
 
 
-# current_script_dir = os.path.dirname(os.path.abspath(__file__))
-# # parent_dir = os.path.dirname(current_script_dir)
-# SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
-# DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataEye')
-# # sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
-# if DataEye_path not in sys.path:
-#     sys.path.append(DataEye_path)
-#
-# import data_eye
-#
-# current_script_dir = os.path.dirname(os.path.abspath(__file__))
-# # parent_dir = os.path.dirname(current_script_dir)
-# SpatialAnalysisAgent_dir = os.path.join(current_script_dir, 'SpatialAnalysisAgent')
-# DataEye_path = os.path.join(SpatialAnalysisAgent_dir)
-# # sys.path.append(os.path.append('SpatialAnalysisAgent_DataEye'))
-# if DataEye_path not in sys.path:
-#     sys.path.append(DataEye_path)
-# #
-# attributes_json, DATA_LOCATIONS = data_eye.add_data_overview_to_data_location(task=task, data_location_list=DATA_LOCATIONS, model=r'gpt-4o-2024-08-06')
-# print("DATA_LOCATIONS with data overviews:")
-# print(DATA_LOCATIONS)
-
-
 # #%% --------------------------------------------------------SOLUTION GRAPH -----------------------------------------------
 script_directory = os.path.dirname(os.path.abspath(__file__))
 save_dir = os.path.join(script_directory, "graphs")
@@ -309,9 +279,18 @@ code_review_prompt_str = helper.code_review_prompt(extracted_code = extracted_co
 code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
 clear_output(wait=True)
 review_str_LLM_reply_str = helper.convert_chunks_to_code_str(chunks=code_review_prompt_str_chunks)
+
+# Print the message and apply a waiting time with progress dots
+print("-------LLM is reviewing the generated code--------", end="")
+for i in range(3):
+    sys.stdout.flush()
+    time.sleep(5)  # Adjust the number of seconds as needed
+print()  # Move to the next line
+
+
 #EXTRACTING REVIEW_CODE
 print("\n\n")
-print(f"---------------------------FINAL REVIEWED CODE----------------------------------- \n\n")
+print(f"---------------------------FINAL REVIEWED CODE-----------------------------------")
 print("```python")
 reviewed_code = helper.extract_code_from_str(review_str_LLM_reply_str, task_explanation)
 print("```")

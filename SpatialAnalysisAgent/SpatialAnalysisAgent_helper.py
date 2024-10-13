@@ -579,7 +579,8 @@ def review_operation_code(extracted_code, data_path, workspace_directory, docume
     clear_output(wait=True)
     review_str_LLM_reply_str = convert_chunks_to_code_str(chunks=code_review_prompt_str_chunks)
     # EXTRACTING REVIEW_CODE
-    print("\n\n")
+
+    print("\n")
     print(f"--------------------------FINAL_CODE--------------------------------------------: \n\n")
     print("```python")
     reviewed_code = extract_code_from_str(LLM_reply_str=review_str_LLM_reply_str, verbose=True)

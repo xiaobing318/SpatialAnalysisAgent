@@ -5,15 +5,15 @@
 [general]
 name=AutonomousGIS-SpatialAnalysisAgent
 qgisMinimumVersion=3.0
-description=A plugin integration between QGIS and Large Language Model (LLM) for Spatial Analysis
+description=The Spatial Analysis Agent is a user-friendly plugin that serves as a "Copilot" in QGIS software. This Copilot allows users to perform geospatial analysis directly within QGIS using natural language queries, making it accessible for both experts and beginners. The plugin leverages the full potential of over 600 QGIS processing tools, and other external tools such as Python libraries (e.g., Geopandas, seaborn, etc.). Whether working with vector data, raster analysis, the Spatial Analysis Agent offers a flexible, AI-driven approach to enhance and automate GIS workflows.
 version=0.1
-author=GIBD
+author=Temitope Akinboyewa, Zhenlong Li, Huan Ning, and M. Naser Lessani
 email=teakinboyewa@gmail.com
 
-about=A plugin integration between QGIS and Large Language Model (LLM) for Spatial Analysis
+about=The Spatial Analysis Agent is a user-friendly plugin that serves as a "Copilot" in QGIS software.
 
-tracker=http://bugs
-repository=http://repo
+tracker=https://github.com/Teakinboyewa/SpatialAnalysisAgent/issues
+repository=https://github.com/Teakinboyewa/SpatialAnalysisAgent
 # End of mandatory metadata
 
 # Recommended items:
@@ -25,7 +25,7 @@ hasProcessingProvider=no
 # Tags are comma separated with spaces allowed
 tags=python
 
-homepage=http://homepage
+homepage=https://github.com/Teakinboyewa/SpatialAnalysisAgent
 category=Plugins
 icon=icon.png
 # experimental flag

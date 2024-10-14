@@ -6,7 +6,7 @@ def apply_affine_transformation():
     # Define input and output paths
     input_path = 'D:/Case_Studies/Data/Penn_State_Buildings.shp'
     output_directory = r'C:\Users\AKINBOYEWA TEMITOPE\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\SpatialAnalysisAgent-master\Default_workspace'
-    output_filename = 'Penn_State_Buildings_Transformed.shp'
+    output_filename = 'Output.shp'
     output_path = os.path.join(output_directory, output_filename)
 
     # Check if the output file already exists, and if so, append a number to the filename

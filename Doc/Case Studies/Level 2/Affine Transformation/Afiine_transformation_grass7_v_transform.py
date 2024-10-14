@@ -8,9 +8,9 @@ def apply_affine_transformation():
     output_dir = 'C:/Users/AKINBOYEWA TEMITOPE/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/SpatialAnalysisAgent-master/Default_workspace'
     
     # Create a unique output file name based on its presence in the directory
-    output_file_name = "PennStateBuildings_Transformed.shp"
+    output_file_name = "Output.shp"
     output_path = os.path.join(output_dir, output_file_name)
-    base_name = "PennStateBuildings_Transformed"
+    base_name = "Output"
     extension = ".shp"
     
     index = 1

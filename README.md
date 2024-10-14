@@ -24,6 +24,10 @@ Note: API keys input here will only be stored locally on the user's computer ('p
 # Usage
 
 
+https://github.com/user-attachments/assets/4b23eba4-3e99-47ec-85d6-6efb7ebb6b20
+
+
+
 Find some case studies on the [Case Studies](https://github.com/Teakinboyewa/SpatialAnalysisAgent/blob/master/Case_Studies.md) page
 
 

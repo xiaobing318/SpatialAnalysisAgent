@@ -23,7 +23,6 @@ Note: API keys input here will only be stored locally on the user's computer ('p
 
 # Usage
 
-[Contour creation Example.mp4](Doc%2FCase%20Studies%2FVideo%20Examples%2FContour%20creation%20Example.mp4)
 
 Find some case studies on the [Case Studies](https://github.com/Teakinboyewa/SpatialAnalysisAgent/blob/master/Case_Studies.md) page
 

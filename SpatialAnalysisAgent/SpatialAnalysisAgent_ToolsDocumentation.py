@@ -104,9 +104,15 @@ def fix_section_content(content):
                 # For parameters section, apply the special line break logic
                 if current_section == 'parameters':
                     # Ensure that the opening triple quotes are on the same line as 'parameters ='
-                    fixed_lines.append(f'{add_line_breaks_to_parameters("\n".join(section_content))}\n"""')
+
+                    # fixed_lines.append(f'{add_line_breaks_to_parameters("\n".join(section_content))}\n"""')
+                    fixed_lines.append(add_line_breaks_to_parameters("\n".join(section_content)) + '\n"""')
+                    # processed_line = add_line_breaks_to_parameters("\n".join(section_content))
+                    # fixed_lines.append(f'{processed_line}\n"""')
+
                 else:
-                    fixed_lines.append(f'"""\n{"\n".join(section_content)}\n"""')
+                    fixed_lines.append('"""\n' + "\n".join(section_content) + '\n"""')
+                    # fixed_lines.append(f'"""\n{"\n".join(section_content)}\n"""')
                 section_content = []
             current_section = None
 
@@ -152,8 +158,10 @@ def fix_section_content(content):
     return "\n".join(fixed_lines)
 
 
+
+
 # Usage example
-# documentation_str = tool_documentation_collection(tool_ID="native_fieldcalculator")
+# documentation_str = tool_documentation_collection(tool_ID="native_fieldcalculator2")
 # print(documentation_str)
 
 
@@ -386,48 +394,5 @@ def fix_section_content(content):
 
     return "\n".join(fixed_lines)
 
-
-
-
-
-# #***********************************************************************
-# # import sqlite3
-# #
-# # # Connect to the SQLite database
-# # def connect_to_database(db_path):
-# #     try:
-# #         conn = sqlite3.connect(db_path)
-# #         return conn
-# #     except sqlite3.Error as e:
-# #         print(f"Error connecting to database: {e}")
-# #         return None
-# #
-# #
-# # # Fetch all documentation records
-# # def fetch_all_documentation(conn):
-# #     cursor = conn.cursor()
-# #     cursor.execute("SELECT * FROM documentation")
-# #
-# #     rows = cursor.fetchall()
-# #
-# #     for row in rows:
-# #         print(f"ID: {row[0]}, Tool Name: {row[1]}, Tool ID: {row[2]}")
-# #         print(f"Brief Description: {row[3]}")
-# #         print(f"Parameters: {row[4]}")
-# #         print(f"Code Example: {row[5]}")
-# #         print(f"Last Modified: {row[6]}")
-# #         print("-" * 50)
-# #
-# # # Close the connection
-# # def close_connection(conn):
-# #     if conn:
-# #         conn.close()
-# #
-# #
-# # # Main logic
-# # db_path = 'path_to_your_database.db'
-# # conn = connect_to_database(db_path)
-# #
-# # if conn:
-# #     fetch_all_documentation(conn)
-# #     close_connection(conn)
+path = r"D:\Onedrive\OneDrive - The Pennsylvania State University\PhD Work\SpatialAnalysisAgent_Reasearch\Manuscript\New folder\3d_tessellate.toml"
+fix_toml_file(path)

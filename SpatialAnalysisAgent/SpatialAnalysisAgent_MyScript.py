@@ -284,7 +284,7 @@ review_str_LLM_reply_str = helper.convert_chunks_to_code_str(chunks=code_review_
 print("-------LLM is reviewing the generated code--------", end="")
 for i in range(3):
     sys.stdout.flush()
-    time.sleep(5)  # Adjust the number of seconds as needed
+    time.sleep(3)  # Adjust the number of seconds as needed
 print()  # Move to the next line
 
 

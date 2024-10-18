@@ -281,10 +281,10 @@ clear_output(wait=True)
 review_str_LLM_reply_str = helper.convert_chunks_to_code_str(chunks=code_review_prompt_str_chunks)
 
 # Print the message and apply a waiting time with progress dots
-print("-------LLM is reviewing the generated code--------", end="")
-for i in range(3):
+print("-------AI is reviewing the generated code--------", end="")
+for i in range(1):
     sys.stdout.flush()
-    time.sleep(3)  # Adjust the number of seconds as needed
+    time.sleep(2)  # Adjust the number of seconds as needed
 print()  # Move to the next line
 
 

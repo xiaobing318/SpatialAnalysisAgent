@@ -25,7 +25,7 @@ def Thematic_Map_Creation():
     symbol = QgsSymbol.defaultSymbol(layer.geometryType())
     renderer = QgsGraduatedSymbolRenderer('', [])
     renderer.setClassAttribute('Population')
-    renderer.setMode(QgsGraduatedSymbolRenderer.Quantile)
+    renderer.setMode(QgsGraduatedSymbolRenderer.Quantile) #Use the quantile classificatiom method by default unless specified
     renderer.updateClasses(layer, 5)
     
     # Set the color ramp (green gradient)

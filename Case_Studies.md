@@ -46,6 +46,9 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 
 ![Elevation_ChoroplethCodes.png](Doc%2FCase%20Studies%2FLevel%202%2FElevation%20Choropleth%2FElevation_ChoroplethCodes.png)
 
+### Case 2.4: Please highlight the largest county and the smalest county in South Carolina.
+![County Selection](Doc/Case%20Studies/Level%202/CountySelection.png)
+
 
 ## Level 3: End-to-End Problem Solving
 

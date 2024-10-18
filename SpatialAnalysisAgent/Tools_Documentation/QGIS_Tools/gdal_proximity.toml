@@ -23,7 +23,7 @@ import processing
 
 def generate_proximity_map():
     # Define input and output paths
-    input_path = 'D:/Data/InputElevation.tif'
+    input_path = 'D:/Data/InputElevation.tif' # Input must be a raster ( so if the inputh is vector, you need to rasterize the vector layer)
     output_path = 'C:/output_path/proximity_map.tif'
 
     # Load the raster as a raster layer
@@ -31,7 +31,7 @@ def generate_proximity_map():
 
     # Run the Proximity algorithm
     result = processing.run('gdal:proximity', {
-        'INPUT': input_layer,
+        'INPUT': input_layer, # Input must be a raster ( so if the inputh is vector, you need to rasterize the vector layer)
         'BAND': 1,
         'VALUES': '',  # Optional
         'UNITS': 1,  # 0 — Georeferenced coordinates, 1 — Pixel coordinates

@@ -353,8 +353,8 @@ operation_requirement = [
     "Similarly, if you used geopandas to generate a new layer, use `QgsVectorLayer` to load the feature as a new layer: For example `Buffer_layer = QgsVectorLayer(result['OUTPUT'], 'Buffered output', 'ogr')` for the case of a shapefile.",
     "Whenever a new layer is being saved, ensure the code first checks if a file with the same name already exists in the output directory, and if it does, append a number to the filename to create a unique name, thereby avoiding any errors related to overwriting or saving the layer.",
     "When naming any output layer, choose a name that is concise, descriptive, easy to read, and free of spaces.",
-    "Ensure that temporary layer is not used as the output parameter"
-
+    "Ensure that temporary layer is not used as the output parameter",
+    "When performing multi-step tasks that involve creating intermediary layers, ensure there is a waiting period before proceeding to the next step. This allows enough time for the intermediary layers to be fully created, preventing errors such as 'data not found.'"
     # "When using the processing algorithm, make the output parameter a temporary layer by using `'OUTPUT':'memory:name_of_the_layer'` and load the output layer using `Buffer_layer = result['OUTPUT']`.",
 
    #  "If using `QgsVectorLayerJoinInfo()` to create join information, always include the JoinLayer, and apply the join to the target layer using the following: `target_layer.addJoin(join_info)`"
@@ -406,7 +406,8 @@ operation_code_review_requirement = ["Review the codes very carefully to ensure 
                                     f"Similarly, if you used geopandas to generate a new layer, use `QgsVectorLayer` to load the feature as a new layer: For example `buffer_layer = QgsVectorLayer(result['OUTPUT'], 'Buffered output', 'ogr')` for the case of a shapefile.",
                                     "Whenever a new layer is being saved, ensure the code first checks if a file with the same name already exists in the output directory, and if it does, append a number (e.g filename_1, filename_2, etc) to the filename to create a unique name, thereby avoiding any errors related to overwriting or saving the layer.",
                                     "When naming any output layer, choose a name that is concise, descriptive, easy to read, and free of spaces.",
-                                     "Ensure that temporary layer is not used as the output parameter"
+                                     "Ensure that temporary layer is not used as the output parameter",
+                                    "When performing multi-step tasks that involve creating intermediary layers, ensure there is a waiting period before proceeding to the next step. This allows enough time for the intermediary layers to be fully created, preventing errors such as 'data not found.'"
                                      ]
 
 

@@ -77,8 +77,8 @@ OperationIdentification_requirements = [
     # f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
     # f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation E.g, do not select 'categorized renderer from styles'",
 # f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
-# f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
-f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, E.g, do not select 'categorized renderer from styles'",
+f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
+# f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, E.g, do not select 'categorized renderer from styles'",
     "If creating charts or plots such as barchart, barplot, scatterplot etc., you should make use of `seaborn` by default except another method is specified",
     # f"If a task involve the creation of density map, DO NOT select any existing QGIS tool for density map creation, rather select density map  depending on the method to be used. E.g 'Density map (Kernel Density Estimation)' for density map creation using kernel density estimation:{tools_list}.",
     f"If a task involve the use of kernel density map estimation, DO NOT select any existing QGIS tool for density map creation, rather select Density map (Kernel Density Estimation) listed in the 'Customized tools' provided",#{other_tools}.",
@@ -362,7 +362,8 @@ operation_requirement = [
     "Ensure that temporary layer is not used as the output parameter",
     "When using `gdal:proximity`, ensure all shapefiles are rasterized before using them",
     "When performing multi-step tasks that involve creating intermediary layers, ensure there is a waiting period before proceeding to the next step. This allows enough time for the intermediary layers to be fully created, preventing errors such as 'data not found.'",
-    "Implement locking mechanisms when reading/writing GPKG files."
+
+    "When adding a new field to the a shapefile, it should be noted that the maximum character for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation"
     # "When using the processing algorithm, make the output parameter a temporary layer by using `'OUTPUT':'memory:name_of_the_layer'` and load the output layer using `Buffer_layer = result['OUTPUT']`.",
 
    #  "If using `QgsVectorLayerJoinInfo()` to create join information, always include the JoinLayer, and apply the join to the target layer using the following: `target_layer.addJoin(join_info)`"
@@ -417,7 +418,8 @@ operation_code_review_requirement = ["Review the codes very carefully to ensure 
                                      "Ensure that temporary layer is not used as the output parameter",
                                     "When using `gdal:proximity`, ensure all shapefiles are rasterized before using them",
                                     "When performing multi-step tasks that involve creating intermediary layers, ensure there is a waiting period before proceeding to the next step. This allows enough time for the intermediary layers to be fully created, preventing errors such as 'data not found.'",
-                                     "Implement locking mechanisms when reading/writing GPKG files."
+
+"When adding a new field to the a shapefile, it should be noted that the maximum character for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation."
                                      ]
 
 

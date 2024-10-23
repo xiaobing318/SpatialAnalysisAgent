@@ -296,7 +296,7 @@ reviewed_code = helper.extract_code_from_str(review_str_LLM_reply_str, task_expl
 print("```")
 
 #%% EXECUTION OF THE CODE
-code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=3, task=task, model_name=model_name, documentation_str=combined_documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
+code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=5, task=task, model_name=model_name, documentation_str=combined_documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
 # display(Code(code, language='python'))
 
 

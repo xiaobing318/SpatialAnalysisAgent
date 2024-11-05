@@ -1,4 +1,3 @@
-![iconCopy.png](iconCopy.png)
 # SpatialAnalysisAgent  
 The Spatial Analysis Agent is a user-friendly plugin that serves as a "Copilot" in QGIS software. This Copilot allows users to perform geospatial analysis directly within QGIS using natural language queries, making it accessible for both experts and beginners.
 

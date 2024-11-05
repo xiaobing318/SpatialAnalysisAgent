@@ -142,30 +142,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.version_check_thread.version_check_completed.connect(self.handle_version_check)
         self.version_check_thread.start()
 
-        # # Replace chatgpt_ans_textBrowser with ZoomableTextBrowser
-        # self.chatgpt_ans_textBrowser = self.findChild(QTextBrowser, 'chatgpt_ans_textBrowser')
-        # parent_layout = self.chatgpt_ans_textBrowser.parent().layout()
-        # if parent_layout is not None:
-        #     # Find the position of the existing widget in the layout
-        #     index = parent_layout.indexOf(self.chatgpt_ans_textBrowser)
-        #     if index >= 0:
-        #         # Get the position of the widget in the grid layout
-        #         position = parent_layout.getItemPosition(index)
-        #         row, column, rowSpan, columnSpan = position
-        #         # Remove the existing widget
-        #         parent_layout.removeWidget(self.chatgpt_ans_textBrowser)
-        #         self.chatgpt_ans_textBrowser.deleteLater()
-        #         # Create a new ZoomableTextBrowser
-        #         self.chatgpt_ans_textBrowser = ZoomableTextBrowser(self)
-        #         self.chatgpt_ans_textBrowser.setObjectName("chatgpt_ans_textBrowser")
-        #         # Add the new widget to the layout at the same position
-        #         parent_layout.addWidget(self.chatgpt_ans_textBrowser, row, column, rowSpan, columnSpan)
-        #     else:
-        #         print("Widget not found in the layout.")
-        # else:
-        #     # Handle the case where parent_layout is None
-        #     print("Parent layout is None. Cannot replace the widget.")
-
         self.chatgpt_ans_textBrowser.setOpenExternalLinks(False)
         self.chatgpt_ans_textBrowser.setOpenLinks(False)
         self.chatgpt_ans_textBrowser.anchorClicked.connect(self.open_link)
@@ -210,9 +186,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.data_path_completer = QCompleter(self.data_path_history, self)
         self.data_path_completer.setCaseSensitivity(Qt.CaseInsensitive)
         # self.data_pathLineEdit.setCompleter(self.data_path_completer)
-
-
-
 
         # Connect the ChatMode_checkbox to the slot function
         self.ChatMode_checkbox.toggled.connect(self.toggle_data_path_line_edit)
@@ -306,10 +279,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # # url is a QUrl object
         # QDesktopServices.openUrl(url)
 
-    # def open_upload_dialog(self):
-    #     """ Open the custom dialog for uploading TOML files """
-    #     dialog = UploadTomlDialog(self)
-    #     dialog.exec_()  # Show the dialog
 
     def create_default_workspace(self, workspace_dir):
         """Create the Default_workspace directory if it doesn't exist."""
@@ -355,11 +324,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """Dynamically import the third-party libraries after ensuring they're installed."""
 
         """Dynamically import the third-party libraries after ensuring they're installed."""
-        # global SwitchControl, QWebEngineView, OpenAI, nest_asyncio
-        # from PyQt5.QtWebEngineWidgets import QWebEngineView
-        # from PyQtWebEngine import QWebEngineView
-        # from openai import OpenAI
-        # import nest_asyncio
+
         pass
 
     def handle_version_check(self, needs_update):
@@ -853,9 +818,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Process the text to replace URLs and file paths with HTML links
         text = url_pattern.sub(replace_urls, text)
 
-
-
-
         cursor = self.chatgpt_ans_textBrowser.textCursor()
         cursor.movePosition(QTextCursor.End)
 
@@ -908,42 +870,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 # self.tool_filename_ready.emit(tool_filename)  # Emit the tool filename
                 # self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_filename}")
                 self.update_chatgpt_ans_textBrowser(f"AI: Selected tool(s): {tool_IDs}")
-
-
-        # # Handle special markers or messages
-        # if "GRAPH_SAVED:" in clean_line:
-        #     html_graph_path = clean_line.split("GRAPH_SAVED:")[1].strip()
-        #     self.graph_ready.emit(html_graph_path)
-        #     self.chatgpt_update.emit("AI: Graph is ready.")
-        #
-        # elif "Captured Output:" in clean_line:
-        #     generated_output = clean_line.split("Captured Output:")[1].strip()
-        #     if generated_output:
-        #         self.report_ready.emit(generated_output)
-        #         self.chatgpt_update.emit(f"AI: {generated_output}")
-        #
-        # elif "List of selected tool IDs:" in clean_line:
-        #     tool_IDs = clean_line.split("List of selected tool IDs:")[1].strip()
-        #     if tool_IDs:
-        #         self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_IDs}")
-        #
-        # else:
-        #     # Append the clean line to the output_text_edit
-        #     self.output_text_edit.insertPlainText(clean_line)
-        #     if not clean_line.endswith('\n'):
-        #         self.output_text_edit.insertPlainText('\n')
-        #     self.output_text_edit.moveCursor(QTextCursor.End)
-        #     self.output_text_edit.repaint()
-        #     self.output_text_edit.verticalScrollBar().setValue(self.output_text_edit.verticalScrollBar().maximum())
-        #
-        # # Check for script completion message
-        # if "-----Script completed-----" in clean_line:
-        #     self.update_chatgpt_ans(f"AI: Done")
-        #     self.run_button.setEnabled(True)
-        #     self.clear_textboxesBtn.setEnabled(True)
-        #     self.task_LineEdit.setEnabled(True)
-        #     self.data_pathLineEdit.setEnabled(True)
-        #     self.loadData.setEnabled(True)
 
 
 
@@ -1145,13 +1071,7 @@ class ScriptThread(QThread):
 
             sys.stdout = stream_redirector
             sys.stderr = stream_redirector
-            # # Redirect stdout and stderr to capture the output
-            # original_stdout = sys.stdout
-            # original_stderr = sys.stderr
-            # sys_stdout_capture = StringIO()
-            # sys_stderr_capture = StringIO()
-            # sys.stdout = sys_stdout_capture
-            # sys.stderr = sys_stderr_capture
+
 
             # Execute the script using exec
             exec_globals = globals()
@@ -1160,14 +1080,6 @@ class ScriptThread(QThread):
 
             exec(script_content, exec_globals, exec_locals)
 
-            # # Emit any remaining output
-            # self.emit_captured_output(sys_stdout_capture, sys_stderr_capture)
-            #
-            # # Restore stdout and stderr
-            # sys.stdout = original_stdout
-            # sys.stderr = original_stderr
-
-            # Emit success signal
             self.script_finished.emit(True)
 
         except Exception as e:
@@ -1230,49 +1142,6 @@ class ScriptThread(QThread):
                 else:
                     # handle the case where the line doesn't end with a newline
                     self.output_line.emit(f"Error: {line}")
-
-
-
-            # # This will allow for real-time capturing and emitting of output
-            # import threading
-            # stop_thread = threading.Event()
-
-            # def monitor_output():
-            #     while not stop_thread.is_set():
-            #         emit_output()
-            #         time.sleep(0.1)  # Adjust sleep time as needed
-            #
-            # monitor_thread = threading.Thread(target=monitor_output)
-            # monitor_thread.start()
-
-        #     try:
-        #         exec(script_content, exec_globals, exec_locals)
-        #         while self._is_running:
-        #             time.sleep(0.1)
-        #             if not self._is_running:
-        #                 break
-        #     finally:
-        #         stop_thread.set()
-        #         monitor_thread.join()
-        #
-        #     # Emit any remaining output
-        #     emit_output()
-        #
-        #     # Restore original stdout and stderr
-        #     sys.stdout = original_stdout
-        #     sys.stderr = original_stderr
-        #
-        #     # Emit success signal
-        #     self.script_finished.emit(True)
-        #
-        #
-        # except Exception as e:
-        #     # Print traceback error to the text_edit
-        #     traceback_str = traceback.format_exc()
-        #     self.output_line.emit(f"Error: {e}\n{traceback_str}")  # Emit any exceptions to the UI
-        #     self.chatgpt_update.emit(f"AI: An error occured: {str(e)}\n{traceback_str}")
-        #     self.script_finished.emit(False)  # Signal failure
-
 
     def stop(self):
         self._is_running = False
@@ -1563,7 +1432,6 @@ class ContributionDialog(QDialog):
                 self.prompt_pull_request(username)
             else:
                 QMessageBox.warning(self, "Error", "GitHub username is required.")
-
 
 
 class StreamRedirector(QObject):

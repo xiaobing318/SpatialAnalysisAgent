@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>801</width>
-    <height>789</height>
+    <width>793</width>
+    <height>770</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -116,7 +116,7 @@ color: #000000; /* black text */
             <property name="font">
              <font>
               <family>MS Shell Dlg 2</family>
-              <pointsize>12</pointsize>
+              <pointsize>11</pointsize>
               <weight>50</weight>
               <bold>false</bold>
              </font>
@@ -160,7 +160,7 @@ padding: 5px; /* padding inside the text edit */</string>
             <property name="font">
              <font>
               <family>Nirmala UI</family>
-              <pointsize>13</pointsize>
+              <pointsize>11</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -207,7 +207,7 @@ padding: 5px; /* padding inside the text edit */
             </property>
             <property name="font">
              <font>
-              <pointsize>9</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -238,7 +238,7 @@ color: #000000; /* black text */
             </property>
             <property name="font">
              <font>
-              <pointsize>9</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -260,7 +260,7 @@ color: #000000; /* black text */
             </property>
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <pointsize>11</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -304,7 +304,7 @@ padding: 5px; /* padding inside the text edit */
             </property>
             <property name="font">
              <font>
-              <pointsize>9</pointsize>
+              <pointsize>10</pointsize>
               <weight>50</weight>
               <bold>false</bold>
              </font>
@@ -324,7 +324,7 @@ padding: 5px; /* padding inside the text edit */
             </property>
             <property name="font">
              <font>
-              <pointsize>9</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">

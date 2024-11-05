@@ -44,20 +44,6 @@ You are very good at providing explanation to a task and  identifying QGIS tools
 '''
 OperationIdentification_task_prefix = rf' Provide a brief explanation on which tool that can be used to perform this task. Identify the most appropriate tools from QGIS processing tool algorithms or any other algorithm or python libraries in order to perform this task:'
 
-# other_tools = ['Thematic Map Creation',
-#                 'Land Use Land Cover (LULC)',
-#                 'Density map (Kernel Density Estimation)',
-#                 'Inverse Distance Weighted interpolation',
-#                 'scatterplot'
-#                 ]
-
-# other_tools_dict = {
-#     "Thematic Map Creation": {"ID": "thematic_map_creation"},
-#     "Land Use Land Cover (LULC)":{"ID":"lulc"},
-#     "scatterplot":{"ID":"scatter_plot"},
-#     "Density map (Kernel Density Estimation)":{"ID":"densitymap_kerneldensityestimation"},
-#     "Inverse Distance Weighted interpolation":{"ID":"idw_interpolation"}
-# }
 
 
 OperationIdentification_requirements = [
@@ -74,16 +60,12 @@ OperationIdentification_requirements = [
     "DO NOT provide Additional details of any tool",
     f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool name that you think is most appropriate based on the descriptions of tools listed in the 'Customized tool' ptovided and if you cannot find other tools, provide any other tools that is suitable",#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
     #f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from {tools_list} . E.g, do not select 'categorized renderer from styles'",
-    # f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
-    # f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation E.g, do not select 'categorized renderer from styles'",
-# f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
-f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
-# f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, E.g, do not select 'categorized renderer from styles'",
+    f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
     "If creating charts or plots such as barchart, barplot, scatterplot etc., you should make use of `seaborn` by default except another method is specified",
     # f"If a task involve the creation of density map, DO NOT select any existing QGIS tool for density map creation, rather select density map  depending on the method to be used. E.g 'Density map (Kernel Density Estimation)' for density map creation using kernel density estimation:{tools_list}.",
     f"If a task involve the use of kernel density map estimation, DO NOT select any existing QGIS tool for density map creation, rather select Density map (Kernel Density Estimation) listed in the 'Customized tools' provided",#{other_tools}.",
     # f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from ({tools_list})"
-"When using `gdal:proximity`, ensure all shapefiles are rasterized before using them",
+    "When using `gdal:proximity`, ensure all shapefiles are rasterized before using them",
     f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from other tools contained in the 'Customized tools' provided"
     # f"If a task involve the creation of density map using kernel density estimation method, NOTE: 'Density map (Kernel Density Estimation)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}",
     # f"If a task involve the creation of density map using inverse distance weighting , NOTE: 'Density map (idw)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}"
@@ -98,94 +80,6 @@ OperationIdentification_reply_example_2 = "To create a thematic map there is no 
 OperationIdentification_reply_example_3 = "To extract the counties with Median household income below 50,000 in Pennsylvania, the tool suitable for this operation is found in the QGIS processing tools. The steps to be followed are Use the 'Extract by attribute' tool to select counties where the 'Median_hou' field is below 50,000. Then, use the 'Extract by attribute' tool again to select counties where the 'STATEFP' field is 42, which corresponds to Pennsylvania. If multiple conditions can be combined, then the 'Select by expression' tool will achieve this in one step using an expression."
 
 
-
-
-
-
-# #*********************************************************************************************************************************************************************
-# #---------------------------------Tool selection------------------------------------------------------------------------------------------------------------
-# ToolSelect_role = r''' A professional Geo-information scientist with high proficiency in Geographic Information System (GIS) operations. You also have excellent proficiency in QGIS to perform GIS operations. You are very familiar with QGIS Processing toolbox. You have super proficency in python programming.
-# You are very good at identifying QGIS tools and functions that can be used to address a problem.
-# '''
-# ToolSelect_prefix = rf' I will provide you with the explanation of a task. Identify the suitable QGIS processing tool algorithms or other suitable tool that can be used to accomplish this task explanation: '
-#
-# ToolSelect_reply_example1 = """ {'Selected tool': "Select by attribute"}"""
-# ToolSelect_reply_example2 = """ {'Selected tool': ["Select by expression", "Select by location"]}"""
-#
-#
-#
-# ToolSelect_requirements = ["Think step by step and skip any step that is not applicable for the task at hand",
-#                         f"Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task, {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
-#                         # f"If your answer is 'Yes', then return the exact name of the tool as given in the list. But if your answer is 'No', return any other tools you think is most appropriate from the list of tools in {other_tools} and return the exact name as listed in the list. NOTE: the name should be assigned to 'Selected tool'. DO NOT select any existing QGIS tool for thematic map creation. E.g, do not select 'categorized renderer from styles'",
-#                         # f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from {other_tools} . E.g, do not select 'categorized renderer from styles'",
-#                         f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool name that you think is most appropriate based on the descriptions of tools listed in the 'Customized tools' provided. And if you cannot still find suitable tool just provide any suitable tools based on your knowledge.",#other tools, provide any other tools that is suitable"#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
-#                         f"If a task involve the creation of density map, DO NOT select any existing QGIS tool for density map creation, rather select density map  depending on the method to be used. E.g 'Density map (Kernel Density Estimation)' for density map creation using kernel density estimation as listed in the 'Customized tools' provided",#{other_tools}.",
-#                         f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from other tools contained in the 'Customized tools' provided",#the Other tools ({tools_list})"
-#                         # f"If a task involve the creation of density map, NOTE: 'Density map (Kernel Density Estimation)' is to be used for kernel density estimation method and 'Density map (idw)' is to be used for inverse distance weighted method. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}",
-#                         # f"If a task involve the creation of density map using kernel density estimation method, NOTE: 'Density map (Kernel Density Estimation)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}",
-#                         # f"If a task involve the creation of density map using inverse distance weighting , NOTE: 'Density map (idw)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}",
-#                         f"If you need to perform more than one operation, the tools should be in a list and name the list 'Selected tool'. For example; {ToolSelect_reply_example2}",
-#                         "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
-#                         "DO NOT provide Additional details of any tool",
-#                         "DO NOT include ' ```json' and ' ``` ' in your reply"
-#                         # f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool you think is most appropriate from the list in {other_tools}" ,#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
-#                         # f"Your response should be strictly in the format example: {ToolSelect_reply_example2}.Do not add any other explanation or comments."
-#
-# ]
-#
-#
-#
-# # other_QGIS_operations = ['Thematic Map Creation',
-# #                          'Land Use Land Cover (LULC)',
-# #                          'scatterplot',
-# #                          'Others']
-#
-#
-# # OperationIdentification_requirements = [
-# #     "Think step by step and skip any step that is not applicable for the task at hand",
-# #
-# #     # rf"When creating a thematic map, select the tool named 'Thematic Map Creation'. It is more easier. The tool 'Set style for vector layer' requires a style file, therefore it may not the suitable tool to use.",
-# #     # f"If you need to create a thematic map, select the customized tool from {other_QGIS_operations} named 'Thematic Map Creation'",
-# #     f"Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task by saying either 'Yes' or 'No', {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
-# #     f"If your answer is 'Yes', then return the exact name of the tool as given in the list. But if your answer is 'No', return any QGIS operation you think is most appropriate from the list in {other_QGIS_operations} and return the exact name as listed in the list. NOTE: the name should be assigned to 'Selected tool', while 'Yes' should be assigned to 'Customized'. DO NOT select any existing QGIS tool for thematic map creation. E.g, do not select 'categorized renderer from styles'",
-# #     "If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from {other_QGIS_operations} . E.g, do not select 'categorized renderer from styles'",
-# #     # "Pay close attention to the task. You may need to perform more than one operation. For example, you may need to perform aggregation first before performing select by attribute",
-# #
-# # #     "When performing the Inverse Distance Weighted (IDW) interpolation , the suitable tool to be used is the 'IDW interpolation' ('qgis:idwinterpolation')",
-# # #     "When generating a Triangulated Irregular Network (TIN) interpolation map, DO NOT use the 'TIN Mesh creation tool', use 'TIN interpolation' instead",
-# #     "If you need to perform more than one operation, put the explanation in a single reply while you make a list of the tools (if more than 1) and assign them to 'Selected tool'",
-# #     "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
-# #     "DO NOT provide Additional details of any tool",
-# #     f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool you think is most appropriate from the list in {other_QGIS_operations}" ,#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
-# #
-# # ]
-# #
-# # OperationIdentification_reply_example_1 = """{
-# # "Explanation": "To select the tracts with population above 3000, the tool suitable for the operation is found in the qgis processing tools and the name is  'Extract by attribute' tool. This tool create a new vector layer that only contains matching features from an input layer",
-# # "Selected tool": "Extract by attribute",
-# # "QGIS Processing toolbox" : "Yes",
-# # "Customized": "No"
-# # }"""
-# # OperationIdentification_reply_example_2 = """{
-# # "Explanation": "To create a thematic map there is no suitable tool within the qgis processing tool. Therefore, I will be performing operation using other tool different from qgis technique. I will be using 'Thematic map creation' operation to perform this task. This operation enables rendering a map using a specified attribute",
-# # "Selected tool": "Thematic map creation",
-# # "QGIS Processing toolbox" :"No",
-# # "Customized": "Yes"
-# #  }"""
-# #
-# # OperationIdentification_reply_example_3 = """{
-# # "Explanation": "To extract the counties with Median household income below 50,000 in Pennsylvania, the tool suitable for this operation is found in the QGIS processing tools. The steps to be followed are Use the 'Extract by attribute' tool to select counties where the 'Median_hou' field is below 50,000. Then, use the 'Extract by attribute' tool again to select counties where the 'STATEFP' field is 42, which corresponds to Pennsylvania. If multiple conditions can be combined, then the 'Select by expression' tool will achieve this in one step using an expression.",
-# #  "Selected tool": ["Extract by attribute", "Extract by expression"]
-# #  "QGIS Processing toolbox" :"Yes",
-# #  "Customized": "No"
-# #  }"""
-# #
-# # other_QGIS_operations_dict = {
-# #     "Thematic Map Creation": {"ID": "Thematic_Map_Creation"},
-# #     "Land Use Land Cover (LULC)":{"ID":"LULC"},
-# #     "scatterplot":{"ID":"ScatterPlot"},
-# #     "Others": {"ID": "Others"}
-# # }
 
 
 #*********************************************************************************************************************************************************************
@@ -205,12 +99,13 @@ ToolSelect_requirements = [
                         f"DO NOT make fake tool. If you cannot find any qgis tool that match, return any tool name that you think is most appropriate based on the descriptions of tools listed in the 'Customized tools' provided. And if you cannot still find suitable tool just use the name of the tool or python library mentioned in the explanation provided",#other tools, provide any other tools that is suitable"#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
                         f"If a task involve the use of kernel density map estimation, DO NOT select any existing QGIS tool for density map creation, rather select Density map (Kernel Density Estimation) listed in the 'Customized tools' provided",#{other_tools}.",
                         f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from other tools contained in the 'Customized tools' provided",#the Other tools ({tools_list})"
+                        f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
                         f"For a single tool, your response should be in form of this example: {ToolSelect_reply_example1}",
                         "When creating charts or plots such as barchart, barplot, scatterplot etc., you should make use of `seaborn` by default except another method is specified",
                         f"If the tools mentioned in the explanation is more than one, then the tools should be in the list 'Selected tool'. For example; {ToolSelect_reply_example2}",
                         "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
                         "DO NOT provide Additional details of any tool",
-"When using `gdal:proximity`, ensure all shapefiles are rasterized before using them",
+                        "When using `gdal:proximity`, ensure all shapefiles are rasterized before using them",
                         "Do NOT provide any explanation for your response",
                         "DO NOT include ' ```json' and ' ``` ' in your reply"
                         # f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool you think is most appropriate from the list in {other_tools}" ,#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
@@ -333,11 +228,12 @@ operation_requirement = [
     # "NOTE: `QgsVectorJoinInfo` may not always be available or accessible in recent QGIS installations, thus use `QgsVectorLayerJoinInfo` instead",
     "Put your reply into a Python code block (enclosed by python and ), NO explanation or conversation outside the code block.",
     "If you need to use `QgsVectorLayer`, it should always be imported from qgis.core.",
-    # "The output should not be saved but should be loaded as a virtual layer within the QGIS",
+
     # "Display Output in QGIS",
     "DO NOT add validity check and DO NOT raise any exception.",
     "DO NOT raise exceptions messages.",
-    "When performing any operation such as buffering, clipping, intersecting, layer extraction, etc., which generate new layers, that generates an output layer , include the code to load the resulting output layer into QGIS",
+    # "When performing any operation such as buffering, clipping, intersecting, layer extraction, etc., which generate new layers, that generates an output layer , include the code to load the resulting output layer into QGIS",
+    "When performing any operation that generates an output vector or raster layer , include the code to load the resulting output layer into QGIS",
     "When performing any operation such as counting of features, generating plots (scatter plot, bar plot), etc., which do not require creation of new layers, do not include load the resulting output layer into QGIS rather print the result",
     "If you need to use any field from the input shapefile layer, first access the fields (example code: `fields = input_layer.fields()`), then select the appropriate field carefully from the list of fields in the layer.",
     "If you need to load a raster layer, use this format `output_layer = QgsRasterLayer(output_path, 'Slope Output')`",
@@ -364,15 +260,7 @@ operation_requirement = [
     "When performing multi-step tasks that involve creating intermediary layers, ensure there is a waiting period before proceeding to the next step. This allows enough time for the intermediary layers to be fully created, preventing errors such as 'data not found.'",
 
     "When adding a new field to the a shapefile, it should be noted that the maximum character for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation"
-    # "When using the processing algorithm, make the output parameter a temporary layer by using `'OUTPUT':'memory:name_of_the_layer'` and load the output layer using `Buffer_layer = result['OUTPUT']`.",
 
-   #  "If using `QgsVectorLayerJoinInfo()` to create join information, always include the JoinLayer, and apply the join to the target layer using the following: `target_layer.addJoin(join_info)`"
-   #  "Create a dictionary for fast lookups of CSV attributes, then Create a new layer to store the results with joined attributes.  Add all features to the new layer. The new layer must contain all the attributes of the each features. To ensure the joined attributes are included in the new layer, you must explicitly transfer the joined attributes to the new layer's attribute table. Load the new layer"
-   # "Use the setter methods to set the join information (e.g. `join_info = QgsVectorLayerJoinInfo() join_info.setJoinFieldName('GEOID')` ; `join_info.setJoinLayer(join_layer)`"
-   #  "Disable the prefix in field names and keep the original field names.",
-    # "When accessing a field name from a joined layers, DO NOT include the layer name to any field name when you are trying to access any field (e.g `tract_Population` should not represent the field name `Population` of tracts)."
-    # "If you performed join, always export the joined layer as a new shapefile and load the new shapefile. `QgsVectorFileWriter.writeAsVectorFormatV3()` is recommended to be used to export the joined layer. It is used in this format: `QgsVectorFileWriter.writeAsVectorFormatV3(layer, output, QgsProject.instance().transformContext(), options)`."
-    # f"If you performed join, you can follow this tempelate to create your code: {codebase.attribute_join}"
 ]
 
 # ------------- OPERATION_CODE REVIEW------------------------------------------------------
@@ -390,7 +278,8 @@ operation_code_review_requirement = ["Review the codes very carefully to ensure 
                                      "The python code is only in a function named in with the operation name e.g 'perform_idw_interpolation()'. The last line is to execute this function.",
                                      # "Ensure that any intermediary layers are loaded, but avoid loading a layer when not neccessary.",
 
-                                    "When performing any operation such as buffering, clipping, intersecting, layer extraction, etc., which generate new layers, that generates an output layer , include the code to load the resulting output layer into QGIS",
+                                    # "When performing any operation such as buffering, clipping, intersecting, layer extraction, etc., which generate new layers, that generates an output layer , include the code to load the resulting output layer into QGIS",
+                                    "When performing any operation that generates an output vector or raster layer , include the code to load the resulting output layer into QGIS",
                                     "When performing any operation such as counting of features, generating plots (scatter plot, bar plot), etc., which do not require creation of new layers, do not include load the resulting output layer into QGIS rather print the result",
                                     "For tasks that contains interrogative words such as ('how', 'what', 'why', 'when', 'where', 'which'), ensure that no layers are loaded into the QGIS, instead the result should be printed",
                                     "The data needed for the task are already loaded in the qgis environment, so there is no need to load data; just use the provided data path.",
@@ -468,12 +357,13 @@ debug_requirement = [
     "When printing the result of plots e.g barplot,scatterplot, boxplot etc, always print out the file path of the result only, ensure any description or comment is not added.",
     "When creating a scatter plot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot, ensure the correct tool is used",
     "When using tool that is used to generate counts e.g 'Vector information(gdal:ogrinfo), Count points in polygon(native:countpointsinpolygon), etc., ensure you print the count",
-"NOTE: `vector_layer.featureCount()` can be use to generate the count of features",
+    "NOTE: `vector_layer.featureCount()` can be use to generate the count of features",
     "When using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
     "Similarly, if you used geopandas to generate a new layer, use `QgsVectorLayer` to load the feature as a new layer: For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')` for the case of a shapefile.",
     "Whenever a new layer is being saved, ensure the code first checks if a file with the same name already exists in the output directory, and if it does, append a number (e.g filename_1, filename_2, etc) to the filename to create a unique name, thereby avoiding any errors related to overwriting or saving the layer.",
     "When naming any output layer, choose a name that is concise, descriptive, easy to read, and free of spaces.",
-    "Ensure that temporary layer is not used as the output parameter"
+    "Ensure that temporary layer is not used as the output parameter",
+"When adding a new field to the a shapefile, it should be noted that the maximum character for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation."
     # "If you performed join, always export the joined layer as a new shapefile and load the new shapefile. `QgsVectorFileWriter.writeAsVectorFormatV3()` is recommended to be used to export the joined layer. It is used in this format: `QgsVectorFileWriter.writeAsVectorFormatV3(layer, output, QgsProject.instance().transformContext(), options)`."
     # f"If you performed join, you can follow this tempelate to create your code: {codebase.attribute_join}"
 ]

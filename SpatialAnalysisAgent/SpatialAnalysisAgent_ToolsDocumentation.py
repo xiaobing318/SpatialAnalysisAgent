@@ -157,27 +157,6 @@ def fix_section_content(content):
 
     return "\n".join(fixed_lines)
 
-
-
-
-# Usage example
-# documentation_str = tool_documentation_collection(tool_ID="native_fieldcalculator2")
-# print(documentation_str)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # **************************************************
 #
 def tool_documentation_collection(tool_ID, tool_dir=Tools_Documentation_dir):
@@ -221,38 +200,20 @@ def tool_documentation_collection(tool_ID, tool_dir=Tools_Documentation_dir):
         output += f"{content.strip()}\n\n" if isinstance(content, str) else f"{content}\n\n"
 
     return output
-#     # return tool_total_str_lines
-
-# Usage example
-# documentation_str = tool_documentation_collection(tool_ID="native_fieldcalculator")
-# print(documentation_str)
-
-# **************************************************************************************************************************
-
 
 def check_toml_file_for_errors(file_path):
 
-
-    # # Walk through all subdirectories and files in the given directory
-    # for root, dirs, files in os.walk(root_directory):
-    #     for file in files:
-    #         if file == f"{file_ID}.toml":
-    #             file_path = os.path.join(root, file)
     try:
         with open(file_path, "rb") as f:
-            tomllib.load(f)  # Try loading the TOML file
-        # If successful, return the file path
+            tomllib.load(f)
         print(f"File {file_path} is free from errors.")
-        return file_path  # No errors found, return the path
-
+        return file_path
     except Exception as e:
         # If there's an error, add the file to problematic_files
         print(f"Error in file {file_path}: {e}")
         return False
 
 # ************************************************************************************************************************
-
-
 
 def fix_toml_file(file_path):
     """
@@ -264,23 +225,16 @@ def fix_toml_file(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
-        # Split content into lines
         lines = content.splitlines()
 
-        # Iterate over the lines to find and fix 'example_code = ' issues
         for i in range(len(lines)):
-            # Check if the line contains 'example_code ='
             if 'code_example =' in lines[i]:
                 # Check for single quotes or triple single quotes on the same line
                 if lines[i].strip().endswith("'") or lines[i].strip().endswith("'''"):
-                    # print(f"Fixing 'example_code =' in {file_path} (same line)...")
-                    # Replace single quotes or triple single quotes with triple double quotes
                     lines[i] = lines[i].replace("'", '"')
 
                 # If 'example_code =' is followed by single quotes or triple single quotes on the next line
                 elif i + 1 < len(lines) and (lines[i + 1].strip() == "'" or lines[i + 1].strip() == "'''"):
-                    # print(f"Fixing 'example_code =' in {file_path} (next line)...")
-                    # Replace the following line's quotes with triple double quotes
                     lines[i + 1] = lines[i + 1].replace("'", '"')
 
         # Check the last line for dangling quotes and clean them first
@@ -394,5 +348,3 @@ def fix_section_content(content):
 
     return "\n".join(fixed_lines)
 
-# path = r"D:\Onedrive\OneDrive - The Pennsylvania State University\PhD Work\SpatialAnalysisAgent_Reasearch\Manuscript\New folder\3d_tessellate.toml"
-# fix_toml_file(path)

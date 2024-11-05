@@ -12,10 +12,6 @@ if current_script_dir not in sys.path:
 
 import SpatialAnalysisAgent_Codebase as codebase
 
-# import SpatialAnalysisAgent_helper as helper
-# from Tools_Documentations import documentation
-# from SpatialAnalysisAgent_Codebase import algorithms_dict, algorithm_names
-# from SpatialAnalysisAgent_Codebase import tools_index
 
 def load_config():
     current_script_dir = os.path.dirname(os.path.abspath(__file__))

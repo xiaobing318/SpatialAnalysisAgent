@@ -1,6 +1,13 @@
 from pydantic import BaseModel
 # from openai import OpenAI
 
+table_formats = ["CSV", 'Parquet', "TXT"]
+vector_formats = ["ESRI shapefile", "GeoPackage", "KML"]
+raster_formats = ["Tiff", "JPEG", "PNG", "ERDAS IMG", "JP2", "HDF5" "HDF"]
+
+support_formats = table_formats + vector_formats + raster_formats
+
+
 role = r'''A professional Geo-information scientist and programmer good at Python. You have worked on Geographic information science more than 20 years, and know every detail and pitfall when processing spatial data and coding. You are a very careful person to follow instruction exactly in work.
 '''
 

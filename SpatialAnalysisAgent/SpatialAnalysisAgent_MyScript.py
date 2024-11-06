@@ -62,7 +62,8 @@ if __name__ == "__main__":
     # OpenAI_key = sys.argv[3]
     model_name = sys.argv[3]
     workspace_directory = sys.argv[4]
-    main(task, data_path,workspace_directory, model_name)
+    is_review = sys.argv[5]
+    main(task, data_path,workspace_directory, model_name, is_review)
 
 
 task_name = helper.generate_task_name_with_gpt(task)
@@ -273,31 +274,40 @@ print("```python")
 extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
 
-# #%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
-code_review_prompt_str = helper.code_review_prompt(extracted_code = extracted_code, data_path = DATA_LOCATIONS, selected_tool_dict= SelectedTools, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
-# print(code_review_prompt_str)
-code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
-clear_output(wait=True)
-review_str_LLM_reply_str = helper.convert_chunks_to_code_str(chunks=code_review_prompt_str_chunks)
-
-# Print the message and apply a waiting time with progress dots
-print("-------AI is reviewing the generated code--------", end="")
-for i in range(1):
-    sys.stdout.flush()
-    time.sleep(2)  # Adjust the number of seconds as needed
-print()  # Move to the next line
+if is_review:
 
 
-#EXTRACTING REVIEW_CODE
-print("\n\n")
-print(f"---------------------------FINAL REVIEWED CODE-----------------------------------")
-print("```python")
-reviewed_code = helper.extract_code_from_str(review_str_LLM_reply_str, task_explanation)
-print("```")
+    #%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
+    # Print the message and apply a waiting time with progress dots
+    print("\n -------AI is reviewing the generated code--------", end="")
+    code_review_prompt_str = helper.code_review_prompt(extracted_code = extracted_code, data_path = DATA_LOCATIONS, selected_tool_dict= SelectedTools, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
+    # print(code_review_prompt_str)
+    code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
+    clear_output(wait=False)
+    review_str_LLM_reply_str = helper.convert_chunks_to_code_str(chunks=code_review_prompt_str_chunks)
 
-#%% EXECUTION OF THE CODE
-code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=5, task=task, model_name=model_name, documentation_str=combined_documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
-# display(Code(code, language='python'))
+
+    for i in range(1):
+        sys.stdout.flush()
+        time.sleep(1)  # Adjust the number of seconds as needed
+    print()  # Move to the next line
+
+
+    #EXTRACTING REVIEW_CODE
+    print("\n\n")
+    print(f"---------------------------FINAL REVIEWED CODE-----------------------------------")
+    print("```python")
+    reviewed_code = helper.extract_code_from_str(review_str_LLM_reply_str, task_explanation)
+    print("```")
+
+    #%% EXECUTION OF THE CODE
+    code, output = helper.execute_complete_program(code=reviewed_code, try_cnt=5, task=task, model_name=model_name, documentation_str=combined_documentation_str, data_path= data_path, workspace_directory=workspace_directory, review=True)
+    # display(Code(code, language='python'))
+else:
+    code, output = helper.execute_complete_program(code= extracted_code, try_cnt=5, task=task, model_name=model_name,
+                                                   documentation_str=combined_documentation_str, data_path=data_path,
+                                                   workspace_directory=workspace_directory, review=True)
+
 
 
 # Display the captured output (like the file path) in your GUI or terminal

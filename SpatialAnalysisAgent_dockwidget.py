@@ -726,6 +726,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # self.update_OpenAI_key()
         # Retrieve the API key from the config
         self.OpenAI_key = self.get_openai_key()
+        is_review = self.review_checkbox.isChecked()
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
         script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
         self.OpenAI_key = self.get_openai_key()  # Retrieve the API key from the line edit
@@ -751,7 +752,8 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.data_path_history.append(self.data_path)
             self.data_path_completer.model().setStringList(self.data_path_history)
 
-        self.thread = ScriptThread(script_path, self.task, self.data_path, self.workspace_directory, self.OpenAI_key, self.model_name)
+
+        self.thread = ScriptThread(script_path, self.task, self.data_path, self.workspace_directory, self.OpenAI_key, self.model_name, is_review)
 
         self.thread.output_line.connect(self.update_output)
         self.thread.graph_ready.connect(self.update_graph)
@@ -1023,7 +1025,7 @@ class ScriptThread(QThread):
     report_ready = pyqtSignal(str)
     script_finished = pyqtSignal(bool)
 
-    def __init__(self, script_path, task, data_path, workspace_directory, OpenAI_key, model_name):
+    def __init__(self, script_path, task, data_path, workspace_directory, OpenAI_key, model_name, is_review):
         super().__init__()
         self.script_path = script_path
         self.task = task
@@ -1031,6 +1033,7 @@ class ScriptThread(QThread):
         self.workspace_directory = workspace_directory
         self.OpenAI_key = OpenAI_key
         self.model_name = model_name
+        self.is_review = is_review
         self._is_running = True  # Flag to control the running state
 
     def run(self):
@@ -1054,6 +1057,7 @@ class ScriptThread(QThread):
                 'workspace_directory':self.workspace_directory,
                 # 'OpenAI_key': self.OpenAI_key,
                 'model_name': self.model_name,
+                'is_review': self.is_review,
                 'check_running': self.check_running,
                 '_is_running': self._is_running,
                 'output_signal': self.chatgpt_update,  # Pass the chatgpt_update signal

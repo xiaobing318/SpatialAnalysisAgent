@@ -269,7 +269,7 @@ LLM_reply_str = helper.convert_chunks_to_code_str(chunks=Operation_prompt_str_ch
 # print(LLM_reply_str)
 #EXTRACTING CODE
 
-print("\n ---------------------------EXTRACTED CODE:--------------------------------------\n")
+print("\n ---------------------------GENERATED CODE:--------------------------------------\n")
 print("```python")
 extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
@@ -279,7 +279,7 @@ if is_review:
 
     #%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
     # Print the message and apply a waiting time with progress dots
-    print("\n -------AI is reviewing the generated code--------", end="")
+    print("\n ----AI is reviewing the generated code (Disable code review in the Settings tab)----", end="")
     code_review_prompt_str = helper.code_review_prompt(extracted_code = extracted_code, data_path = DATA_LOCATIONS, selected_tool_dict= SelectedTools, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
     # print(code_review_prompt_str)
     code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))

@@ -242,7 +242,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # self.SelectDataPath_ToolBtn.clicked.connect(self.openFileDialog)
         self.clear_textboxesBtn.clicked.connect(self.clear_textboxes)
         self.loadData.clicked.connect(self.load_data)
-        self.refresh_slnGraph_Btn.clicked.connect(self.refresh_slnGraph)
+        # self.refresh_slnGraph_Btn.clicked.connect(self.refresh_slnGraph)
         # self.refresh_report_Btn.clicked.connect(self.refresh_report)
         self.run_button.clicked.connect(self.clear_report)
         self.add_document_button.clicked.connect(self.add_documentation_file)

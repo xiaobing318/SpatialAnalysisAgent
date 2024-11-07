@@ -66,7 +66,7 @@ def add_data_overview_to_data_location(task, data_location_list, model = r'gpt-4
 
     for idx, data in enumerate(attributes_json['data_locations']):
         meta_str = data['meta_str']
-        data_location_list[idx] += data_location_list[idx] + " Data overview: " + meta_str
+        data_location_list[idx] += ". Data overview: " + meta_str
     return attributes_json, data_location_list
 
 def get_prompt_to_pick_up_data_locations(task, data_locations):

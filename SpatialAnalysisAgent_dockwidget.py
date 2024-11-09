@@ -674,6 +674,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             return  # Stop further execution if the task is empty
         # print("Sending message:", self.task_LineEdit.toPlainText())  # Debugging statement
         # Emit the user's message in chatgpt_ans first
+
         self.append_message(user_message)
 
         # Call update_config_file to save the latest API key
@@ -840,7 +841,9 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def append_message(self, message):
         # message = self.task_LineEdit.toPlainText()
         if message.strip():  # Check if message is not empty
+
             self.update_chatgpt_ans_textBrowser(f"User: {message}", is_user=True)
+            self.update_output("\n*************************************************************************")  # Separator in the output window
             self.update_output(f"User: {message}")
             if self.ChatMode_checkbox.isChecked():
                 # Clear the input field after sending the message when switch is checked
@@ -860,12 +863,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.update_graph(html_graph_path)
             self.update_chatgpt_ans_textBrowser("AI: Geoprocessing workflow is ready.")  # Emit the message to chatgpt_ans
 
-        elif "Captured Output:" in line:  # Check for "Captured Output" flag
-            generated_output = line.split("Captured Output:")[1].strip()
+        elif "Output:" in line:  # Check for "Output" flag
+            generated_output = line.split("Output:")[1].strip()
             # Check if generated output is not empty before emitting
             if generated_output:
                 self.update_report(generated_output)
-                self.update_chatgpt_ans_textBrowser(f"AI: {generated_output}")  # Emit captured output
+                self.update_chatgpt_ans_textBrowser(f"AI: {generated_output}")  # Emit Output
         elif "List of selected tool IDs:" in line:
             tool_IDs = line.split("List of selected tool IDs:")[1].strip()
             if tool_IDs:
@@ -890,13 +893,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.output_text_edit.verticalScrollBar().setValue(self.output_text_edit.verticalScrollBar().maximum())
 
         # Check if the line contains the completion message
-        if "-----Script completed-----" in clean_line:
-            # self.update_chatgpt_ans_textBrowser(f"AI: Done")
-            self.run_button.setEnabled(True)
-            self.clear_textboxesBtn.setEnabled(True)
-            self.task_LineEdit.setEnabled(True)
-            self.data_pathLineEdit.setEnabled(True)
-            self.loadData.setEnabled(True)
+        # if "-----Script completed-----" in clean_line:
+        #     # self.update_chatgpt_ans_textBrowser(f"AI: Done")
+        #     self.run_button.setEnabled(True)
+        #     self.clear_textboxesBtn.setEnabled(True)
+        #     self.task_LineEdit.setEnabled(True)
+        #     self.data_pathLineEdit.setEnabled(True)
+        #     self.loadData.setEnabled(True)
 
 
     # @pyqtSlot(bool)
@@ -906,11 +909,21 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             # self.output_text_edit.append("The script ran successfully.")
             # self.output_text_edit.insertPlainText("The script ran successfully2.")
             self.update_chatgpt_ans_textBrowser(f"AI: Done")
+            self.run_button.setEnabled(True)
+            self.clear_textboxesBtn.setEnabled(True)
+            self.task_LineEdit.setEnabled(True)
+            self.data_pathLineEdit.setEnabled(True)
+            self.loadData.setEnabled(True)
 
         else:
             # self.output_text_edit.append("The script finished with errors.")
             self.output_text_edit.insertPlainText("The script finished with errors.")
             self.update_chatgpt_ans_textBrowser(f"AI: The script finished with errors.")
+            self.run_button.setEnabled(True)
+            self.clear_textboxesBtn.setEnabled(True)
+            self.task_LineEdit.setEnabled(True)
+            self.data_pathLineEdit.setEnabled(True)
+            self.loadData.setEnabled(True)
 
 
 
@@ -1124,12 +1137,12 @@ class ScriptThread(QThread):
                     self.update_graph(html_graph_path)
                     self.chatgpt_update.emit("AI: Geoprocessing Workflow is ready.")  # Emit the message to chatgpt_ans
 
-                elif "Captured Output:" in line:  # Check for "Captured Output" flag
-                    generated_output = line.split("Captured Output:")[1].strip()
+                elif "Output:" in line:  # Check for "Output" flag
+                    generated_output = line.split("Output:")[1].strip()
                     # Check if generated output is not empty before emitting
                     if generated_output:
                         self.update_report(generated_output)
-                        self.chatgpt_update.emit(f"AI: {generated_output}")  # Emit captured output
+                        self.chatgpt_update.emit(f"AI: {generated_output}")  # Emit Output
                 elif "List of selected tool IDs:" in line:
                     tool_IDs = line.split("List of selected tool IDs:")[1].strip()
                     if tool_IDs:

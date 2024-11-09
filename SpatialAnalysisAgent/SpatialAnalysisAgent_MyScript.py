@@ -76,6 +76,8 @@ DataEye_path = os.path.join(SpatialAnalysisAgent_dir,'SpatialAnalysisAgent_DataE
 if DataEye_path not in sys.path:
     sys.path.append(DataEye_path)
 
+print ('\n---------- AI IS ANALYZING THE TASK TO SELECT THE APPROPRIATE TOOL(S) ----------\n')
+
 import data_eye
 
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -186,7 +188,7 @@ for selected_tool in selected_tools:
         if selected_tool_file_path:
             break
     if not selected_tool_file_path:
-        print(f"File {selected_tool_file_ID}.toml not found.")
+        print(f"Tool documentation for {selected_tool_file_ID}.toml is not provided")
         continue
 
     if selected_tool_file_path:
@@ -221,6 +223,7 @@ combined_documentation_str = '\n'.join(all_documentation)
 
 
 # #%% --------------------------------------------------------SOLUTION GRAPH -----------------------------------------------
+print ('\n---------- AI IS GENERATING THE GEOPROCESSING WORKFLOW FOR THE TASK ----------\n')
 script_directory = os.path.dirname(os.path.abspath(__file__))
 save_dir = os.path.join(script_directory, "graphs")
 if not os.path.exists(save_dir):
@@ -260,16 +263,19 @@ print(f"GRAPH_SAVED:{html_graph_path}")
 # Create and print the operation prompt string for each selected tool
 operation_prompt_str = helper.create_operation_prompt(task = task, data_path =DATA_LOCATIONS, workspace_directory =workspace_directory, selected_tools =SelectedTools, documentation_str=combined_documentation_str)
 print(f"OPERATION PROMPT: {operation_prompt_str}")
+print ('\n---------- AI IS GENERATING THE OPERATION CODE ----------\n')
 
 Operation_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, operation_prompt_str))
 
 clear_output(wait=True)
+
+
 # clear_output(wait=False)
 LLM_reply_str = helper.convert_chunks_to_code_str(chunks=Operation_prompt_str_chunks)
 # print(LLM_reply_str)
 #EXTRACTING CODE
 
-print("\n ---------------------------GENERATED CODE:--------------------------------------\n")
+print("\n --- GENERATED CODE ---\n")
 print("```python")
 extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
@@ -279,7 +285,7 @@ if is_review:
 
     #%% --------------------------------------------- CODE REVIEW ------------------------------------------------------
     # Print the message and apply a waiting time with progress dots
-    print("\n ----AI is reviewing the generated code (Disable code review in the Settings tab)----", end="")
+    print("\n ----AI IS REVIEWING THE GENERATED CODE(DISABLE CODE REVIEW IN THE SETTINGS TAB)----", end="")
     code_review_prompt_str = helper.code_review_prompt(extracted_code = extracted_code, data_path = DATA_LOCATIONS, selected_tool_dict= SelectedTools, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
     # print(code_review_prompt_str)
     code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
@@ -295,7 +301,7 @@ if is_review:
 
     #EXTRACTING REVIEW_CODE
     print("\n\n")
-    print(f"---------------------------FINAL REVIEWED CODE-----------------------------------")
+    print(f"--- FINAL REVIEWED CODE ---")
     print("```python")
     reviewed_code = helper.extract_code_from_str(review_str_LLM_reply_str, task_explanation)
     print("```")
@@ -312,10 +318,10 @@ else:
 
 # Display the captured output (like the file path) in your GUI or terminal
 for line in output.splitlines():
-    print(f"Captured Output: {line}")
+    print(f"Output: {line}")
 
 
-print("-----Script completed-----")
+# print("-----Script completed-----")
 
 
 

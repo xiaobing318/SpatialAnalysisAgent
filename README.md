@@ -30,25 +30,25 @@ https://github.com/user-attachments/assets/4b23eba4-3e99-47ec-85d6-6efb7ebb6b20
 
 [//]: # (### Normalized Difference Vegetation Index &#40;NDVI&#41; generation with remote sensing images)
 [//]: # (<h2 style="margin-bottom: 0;">Normalized Difference Vegetation Index &#40;NDVI&#41; generation with remote sensing images</h2>)
-<a href="https://www.youtube.com/watch?v=1QbvKbWEgX0&t=5s">
+<a href="https://www.youtube.com/watch?v=1QbvKbWEgX0&t=5s" target="_blank">
   <img src="https://img.youtube.com/vi/1QbvKbWEgX0/0.jpg" alt="YouTube Video" width="800">
 </a>
 
 
 [//]: # (### Fast food accessibility analysis)
-<a href="https://youtu.be/wSEQILjgNWI">
+<a href="https://youtu.be/wSEQILjgNWI&t=5s" target="_blank">
   <img src="https://img.youtube.com/vi/wSEQILjgNWI/0.jpg" alt="YouTube Video" width="800">
 </a>
 
-<a href="https://youtu.be/rmKfJBOOm6E">
+<a href="https://youtu.be/rmKfJBOOm6E&t=5s" target="_blank">
   <img src="https://img.youtube.com/vi/rmKfJBOOm6E/0.jpg" alt="YouTube Video" width="800">
 </a>
 
-<a href="https://youtu.be/rhm_wAhPbRU">
+<a href="https://youtu.be/rhm_wAhPbRU&t=5s" target="_blank">
   <img src="https://img.youtube.com/vi/rhm_wAhPbRU/0.jpg" alt="YouTube Video" width="800">
 </a>
 
-<a href="https://youtu.be/MV2R5cEfpxg">
+<a href="https://youtu.be/MV2R5cEfpxg&t=5s" target="_blank">
   <img src="https://img.youtube.com/vi/MV2R5cEfpxg/0.jpg" alt="YouTube Video" width="800">
 </a>
 

@@ -37,7 +37,7 @@ https://github.com/user-attachments/assets/4b23eba4-3e99-47ec-85d6-6efb7ebb6b20
 
 [//]: # (### Fast food accessibility analysis)
 <a href="https://youtu.be/wSEQILjgNWI&t=8s" target="_blank">
-  <img src="https://img.youtube.com/vi/wSEQILjgNWI/0.jpg" alt="YouTube Video" width="800">
+  <img src="https://img.youtube.com/vi/wSEQILjgNWI/0.jpg" alt="YouTube Video" width="900">
 </a>
 
 <a href="https://youtu.be/rmKfJBOOm6E&t=8s" target="_blank">

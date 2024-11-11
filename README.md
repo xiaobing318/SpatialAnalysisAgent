@@ -29,9 +29,16 @@ https://github.com/user-attachments/assets/4b23eba4-3e99-47ec-85d6-6efb7ebb6b20
 
 [![YouTube Video](https://img.youtube.com/vi/1QbvKbWEgX0/0.jpg)](https://youtu.be/1QbvKbWEgX0)
 
+### Normalized Difference Vegetation Index (NDVI) generation with remote sensing images
 <a href="https://youtu.be/1QbvKbWEgX0">
   <img src="https://img.youtube.com/vi/1QbvKbWEgX0/0.jpg" alt="YouTube Video" width="800">
 </a>
+
+### Fast food accessibility analysis
+<a href="https://youtu.be/wSEQILjgNWI">
+  <img src="https://img.youtube.com/vi/wSEQILjgNWI/0.jpg" alt="YouTube Video" width="800">
+</a>
+
 
 Find more examples on the [Case Studies](https://github.com/Teakinboyewa/SpatialAnalysisAgent/blob/master/Case_Studies.md) page
 

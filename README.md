@@ -30,8 +30,14 @@ https://github.com/user-attachments/assets/4b23eba4-3e99-47ec-85d6-6efb7ebb6b20
 
 [//]: # (### Normalized Difference Vegetation Index &#40;NDVI&#41; generation with remote sensing images)
 <h2 style="margin-bottom: 0;">Normalized Difference Vegetation Index (NDVI) generation with remote sensing images</h2>
+
+[//]: # (<a href="https://youtu.be/1QbvKbWEgX0">)
+
+[//]: # (  <img src="https://img.youtube.com/vi/1QbvKbWEgX0/0.jpg" alt="YouTube Video" width="800">)
+
+[//]: # (</a>)
 <a href="https://youtu.be/1QbvKbWEgX0">
-  <img src="https://img.youtube.com/vi/1QbvKbWEgX0/0.jpg" alt="YouTube Video" width="800">
+  <img src="https://img.youtube.com/vi/1QbvKbWEgX0/0.jpg" alt="NDVI Video" style="width: 100%; max-width: 800px; display: block; margin: 0 auto;">
 </a>
 
 ### Fast food accessibility analysis

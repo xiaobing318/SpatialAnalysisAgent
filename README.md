@@ -30,8 +30,7 @@ https://github.com/user-attachments/assets/4b23eba4-3e99-47ec-85d6-6efb7ebb6b20
 
 [//]: # (### Normalized Difference Vegetation Index &#40;NDVI&#41; generation with remote sensing images)
 [//]: # (<h2 style="margin-bottom: 0;">Normalized Difference Vegetation Index &#40;NDVI&#41; generation with remote sensing images</h2>)
-<a href="https://youtu.be/1QbvKbWEgX0">
-
+<a href="https://www.youtube.com/watch?v=1QbvKbWEgX0&t=5s">
   <img src="https://img.youtube.com/vi/1QbvKbWEgX0/0.jpg" alt="YouTube Video" width="800">
 </a>
 

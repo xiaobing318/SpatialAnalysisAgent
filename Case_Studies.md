@@ -5,6 +5,8 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 2. Code Generation Accuracy: Demonstrates the agent's proficiency in generating executable code to perform various spatial analysis tasks.
 3. End-to-End Problem Solving: Evaluates the agent's ability to select the appropriate tool, generate the correct code, and successfully execute the complete operation.
 
+You can access other 110 spatial anlaysis cases [here](https://giscience.psu.edu/copilot_test/) 
+
 ## Level 1: Tool Selection Capability
 ### Case 1.1: Add new fields for x and y to the fast food restaurants layer, then extract the elevation values from the DEM layer and save the results in a new layer.
 
@@ -84,4 +86,3 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ### Case 3.7: Generate contour lines based on the DEM using interval of 2. Add the evelation as an attribute to the contour line layer.
 ![Contour Generation.png](Doc%2FCase%20Studies%2FLevel%203%2FContour%20Generation.png)
 
-You can access several other test cases (over 100 cases) [here](https://drive.google.com/drive/folders/15mkLwr3hegzxH2cQSX2DKQGGc7vrQtk-?usp=drive_link) 

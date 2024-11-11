@@ -27,9 +27,9 @@ https://github.com/user-attachments/assets/4c69d024-22c4-4458-ad6f-9b660715aef9
 
 https://github.com/user-attachments/assets/4b23eba4-3e99-47ec-85d6-6efb7ebb6b20
 
-[![YouTube Video](https://img.youtube.com/vi/1QbvKbWEgX0/0.jpg)](https://youtu.be/1QbvKbWEgX0)
 
-### Normalized Difference Vegetation Index (NDVI) generation with remote sensing images
+[//]: # (### Normalized Difference Vegetation Index &#40;NDVI&#41; generation with remote sensing images)
+<h3 style="margin-bottom: 0;">Normalized Difference Vegetation Index (NDVI) generation with remote sensing images</h3>
 <a href="https://youtu.be/1QbvKbWEgX0">
   <img src="https://img.youtube.com/vi/1QbvKbWEgX0/0.jpg" alt="YouTube Video" width="800">
 </a>

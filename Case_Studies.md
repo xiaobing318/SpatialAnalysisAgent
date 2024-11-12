@@ -1,87 +1,64 @@
 # Case Studies
-The case studies demonstrate the capabilities of the Spatial Analysis Agent across three categories:
+The case studies demonstrate the capabilities of the Spatial Analysis Agent across three levels:
 
-1. Tool Selection Capability: Showcases the agent's ability to identify and recommend the appropriate tool(s) for specific operations.
-2. Code Generation Accuracy: Demonstrates the agent's proficiency in generating executable code to perform various spatial analysis tasks.
-3. End-to-End Problem Solving: Evaluates the agent's ability to select the appropriate tool, generate the correct code, and successfully execute the complete operation.
+1. Basic level: At this level, the tasks are straightforward, involving a single tool along with one (or occasionally two) data layers. The agent is expected to perform a straightforward operation that usually requires a single step, such as calculating the area of polygons or selecting features based on attributes.
+2. Intermediate level : At this level, tasks become more complex and involve multiple steps and tools. The agent is guided with specific instructions or a list of steps to perform the task. Although the steps are outlined, the agent still needs to generate the correct code for each step and link them together to perform the analysis.
+3. Advanced level : In the advanced level, tasks are multistep, and the agent is expected to determine the appropriate steps independently without explicit instructions, to devise the best approach for achieving the desired outcome.Evaluates the agent's ability to select the appropriate tool, generate the correct code, and successfully execute the complete operation.
 
-## Level 1: Tool Selection Capability
-### Case 1.1: Add new fields for x and y to the fast food restaurants layer, then extract the elevation values from the DEM layer and save the results in a new layer.
+## Level 1: Basic level
+### Case 1.1: Can you please create 2000-feet zones around each health facilities in Washington DC to identify areas of service coverage?
 
-![FastFoodElevation.png](Doc%2FCase%20Studies%2FLevel%201%2FPA%20DEM%20and%20Fast%20foods%2FFastFoodElevation.png)
+![Health facilities coverage zone .png](Doc%2FCase%20Studies%2FLevel%201%2FHealth%20facilities%20coverage%20zone%20.png)
 
-### Case 1.2: Perform the following task: 1) Reproject this road vector layer to NAD27/ UTM Zone 10 . 2) Create a new field that contains the length of the road features. Let the name of the field be "Length". 3) Extract roads that have length shorter than 100-meters.
+### Case 1.2: Generate contour lines from the DEM of Puerto Rico with a 50-meter interval.
 
-![RoadNetwork.png](Doc%2FCase%20Studies%2FLevel%201%2FRoadNetwork%2FRoadNetwork.png)
+![Contour lines from DEM.png](Doc%2FCase%20Studies%2FLevel%201%2FContour%20lines%20from%20DEM.png)
 
-### Case 1.3: Can you please delete all the empty columns?
+### Case 1.3: Select the USA counties that have more than 50,000 population.
 
-![Delete empty fields.png](Doc%2FCase%20Studies%2FLevel%201%2FData%20processing%2FDelete%20empty%20fields.png)
+![Selection of high population counties.png](Doc%2FCase%20Studies%2FLevel%201%2FSelection%20of%20high%20population%20counties.png)
 
-## Level 2: Code Generation Accuracy
-### Case 2.1: "Calculate the ruggedness index for Penssylvania, then summarize the ruggedness index value for each counties"
+## Case 1.4: Clip the land cover data of the USA to the Pennsylvania boundary.
 
-![Ruggedness.png](Doc%2FCase%20Studies%2FLevel%202%2FRuggedness%2FRuggedness.png)
+![Extracting land cover information.png](Doc%2FCase%20Studies%2FLevel%201%2FExtracting%20land%20cover%20information.png)
 
-![Codes2.png](Doc%2FCase%20Studies%2FLevel%202%2FRuggedness%2FCodes2.png)
-
-
-### Case 2.2: "Create barchart showing obesity prevalence in the United States. Ensure all labels are clear"
-
-![Obesity Barchart Map.png](Doc%2FCase%20Studies%2FLevel%202%2FObesity%20Barchart%2FObesity%20Barchart%20Map.png)
-
-![Obesity Barchart.png](Doc%2FCase%20Studies%2FLevel%202%2FObesity%20Barchart%2FObesity%20Barchart.png)
-
-![Code.png](Doc%2FCase%20Studies%2FLevel%202%2FObesity%20Barchart%2FCode.png)
-
-
-### Case 2.3: Perform the following tasks: 1) Count the fast food restaurants in each county and store the result in a new field named "Count". 2) Calculate the fast food accessibility score for each county as (Count / Population) * 1,000 and store the result in a new field named "Score". 3) Create a thematic map showing the fast food accessibility score for each county. 
-
-![Thematic map.png](Doc%2FCase%20Studies%2FLevel%202%2FObesity%20Score%20and%20fast%20food%2FThematic%20map.png)
-
-![3sD9wcDDey.png](Doc%2FCase%20Studies%2FLevel%202%2FObesity%20Score%20and%20fast%20food%2F3sD9wcDDey.png)
-
-### Case 2.4: Perform the following task: 1) Clip the DEM to PA Boundaries and load the clipped DEM. 2) Generate the zonal statistics for every county in PA, focusing on average elevation. 3) Create a choropleth map showing the average elevation of each county in PA, using a red color gradient to represent elevation differences. Load the Choropleth map
-![Elevation Choropleth.png](Doc%2FCase%20Studies%2FLevel%202%2FElevation%20Choropleth%2FElevation%20Choropleth.png)
-
-![Elevation_ChoroplethCodes.png](Doc%2FCase%20Studies%2FLevel%202%2FElevation%20Choropleth%2FElevation_ChoroplethCodes.png)
-
-### Case 2.4: Please highlight the largest county and the smalest county in South Carolina.
+### Case 1.5: Please highlight the largest county and the smalest county in South Carolina.
 ![County Selection](Doc/Case%20Studies/Level%202/CountySelection.png)
 
+## Level 2: Intermediate level
+### Case 2.1: Perform the following task: 1) Clip the DEM to SC boundary and load the clipped DEM. 2) Show me the histogram for the clipped DEM pixel values. 3) Generate the zonal statistics for every county in SC, focusing on average elevation. 4) Finally create a choropleth map showing the average elevation of each county in SC.
 
-## Level 3: End-to-End Problem Solving
+![Zonal statistics.png](Doc%2FCase%20Studies%2FLevel%202%2FZonal%20statistics.png)
 
-### Case 3.1: "Can you please generate a HTML report to show the building area for each building? You can look at the columns information, if no building area exists, please calculate yourself. Also make sure to use map projection when calculating area."
 
-![Case1.png](Doc%2FCase%20Studies%2FLevel%203%2FCase1.png)
+### Case 2.2: Merge the four DEMs into a single raster and perform terrain characteristic analysis for Richland County, including slope, aspect, hillshade, terrain ruggedness index (TRI), and topographic Position Index (TPI).
 
-### Case 3.2: "What kind of analysis can I do for the DEM data?"
-![DEM Analysis Outputs2.png](Doc%2FCase%20Studies%2FLevel%203%2FDEM%20Analysis%2FDEM%20Analysis%20Outputs2.png)
+![Richland county terrain analysis.png](Doc%2FCase%20Studies%2FLevel%202%2FRichland%20county%20terrain%20analysis.png)
 
-### Calculate the correlation coefficients between obesity rates and supermarket visit rates for each states in the USA. Let the result be in html format
 
-![Correlation coefficient case report.png](Doc%2FCase%20Studies%2FLevel%203%2FCorrelation%20Coefficient%2FCorrelation%20coefficient%20case%20report.png)
+### Case 2.3: Generate an obesity risk behavior index of each county in the contiguous US by analyzing the rate of visits to unhealthy food retailers (such as convenience store, alcoholic drinking places, and limited service restaurant) and the visit rate to places that support physical activity (e.g., sports centers, parks, fitness centers). Visualize the results in a thematic map to highlight the obesity risk behavior index across counties.
 
-### Case 3.3: Apply an affine transformation to the vector layer to scale by a factor of 2 and rotate 30 degrees.
+![County level obesity risk behavior index analysis.png](Doc%2FCase%20Studies%2FLevel%202%2FCounty%20level%20obesity%20risk%20behavior%20index%20analysis.png)
 
-![Affine transformation.png](Doc%2FCase%20Studies%2FLevel%202%2FAffine%20Transformation%2FAffine%20transformation.png)
+
+## Level 3: Advanced level
+
+### Case 3.1: Could you analyze and visualize the fast food accessibility score for each county based on the number of fast food restaurants and population using a thematic map with blue graduated colors. Then, analyze the correlation between the county-level obesity rate and the fast food accessibility score by drawing a scatter plot with a regression line.
+![Figure 11_Fastfood accessibility analysis.png](Doc%2FCase%20Studies%2FLevel%203%2FFigure%2011_Fastfood%20accessibility%20analysis.png)
+
+
+### Case 3.2: Could you show the spatial distribution of the COVID-19 cases across US counties?
+
+![Covid19 cases.png](Doc%2FCase%20Studies%2FLevel%203%2FCovid19%20cases.png)
+
+### Case 3.3: Generate the Normalized Difference Vegetation Index (NDVI) of Akure from these satellite imageries.
+
+![NDVI.png](Doc%2FCase%20Studies%2FLevel%203%2FNDVI.png)
+
 
 ### Case 3.4: Can you please select the residential area and calculate the total area covered by the residential area in square kilometers
 
 ![Selection of Land use.png](Doc%2FCase%20Studies%2FLevel%203%2FSelection%20of%20Land%20use.png)
 
-### Case 3.5: Can you please create 20 random points in the DEM extend, and extract the elevation value for each point?
-
-![Random Points.png](Doc%2FCase%20Studies%2FLevel%203%2FRandom%20Points.png)
-
-### Case 3.6: Could you please show me the change in population from year 2000 to year 2008 for each counties in South Carolina?
-
-![Pop change.png](Doc%2FCase%20Studies%2FLevel%201%2FData%20processing%2FPop%20change.png)
-![Pop change_barplot.png](Doc%2FCase%20Studies%2FLevel%201%2FData%20processing%2FPop%20change_barplot.png)
-
-
-### Case 3.7: Generate contour lines based on the DEM using interval of 2. Add the evelation as an attribute to the contour line layer.
-![Contour Generation.png](Doc%2FCase%20Studies%2FLevel%203%2FContour%20Generation.png)
 
 You can access several other test cases (over 100 cases) [here](https://drive.google.com/drive/folders/15mkLwr3hegzxH2cQSX2DKQGGc7vrQtk-?usp=drive_link) 

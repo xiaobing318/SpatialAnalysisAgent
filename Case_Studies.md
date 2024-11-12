@@ -61,4 +61,4 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ![Selection of Land use.png](Doc%2FCase%20Studies%2FLevel%203%2FSelection%20of%20Land%20use.png)
 
 
-You can access several other test cases (over 100 cases) [here](https://drive.google.com/drive/folders/15mkLwr3hegzxH2cQSX2DKQGGc7vrQtk-?usp=drive_link) 
+You can access several other test cases (over 100 cases) [here](https://giscience.psu.edu/copilot_test/) 

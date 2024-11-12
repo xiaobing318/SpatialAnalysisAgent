@@ -12,6 +12,7 @@ QGIS Plugin page: https://plugins.qgis.org/plugins/SpatialAnalysisAgent-master/
 - Find ```AutonomousGIS-SpatialAnalysisAgent``` and click ```Install Plugin```
 
 Alternatively,
+
 - [Download](https://github.com/Teakinboyewa/SpatialAnalysisAgent/archive/refs/heads/master.zip) the master repository of the plugin from GitHub
 - Launch QGIS software and navigate to ```Plugin >  Manage and install Plugins.. > Install from ZIP```
 - Click on ```...``` to select the directory of the downloaded zip file and ```Install plugin```

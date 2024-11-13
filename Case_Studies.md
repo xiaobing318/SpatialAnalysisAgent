@@ -6,7 +6,7 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 3. Advanced level : In the advanced level, tasks are multistep, and the agent is expected to determine the appropriate steps independently without explicit instructions, to devise the best approach for achieving the desired outcome.Evaluates the agent's ability to select the appropriate tool, generate the correct code, and successfully execute the complete operation.
 
 You can access over 100 test cases/analysis examples [here](https://giscience.psu.edu/copilot_test/) 
-and [here] (https://giscience.psu.edu/gis-copilot-demonstrations/)
+and [here](https://giscience.psu.edu/gis-copilot-demonstrations/)
 
 ## Level 1: Basic level
 ### Case 1.1: Can you please create 2000-feet zones around each health facilities in Washington DC to identify areas of service coverage?

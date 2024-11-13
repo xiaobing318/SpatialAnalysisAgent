@@ -1,5 +1,5 @@
 # Case Studies
-The case studies demonstrate the capabilities of the Spatial Analysis Agent across three levels:
+The case studies demonstrate the capabilities of the Spatial Analysis Agent (GIS Copilot) across three levels:
 
 1. Basic level: At this level, the tasks are straightforward, involving a single tool along with one (or occasionally two) data layers. The agent is expected to perform a straightforward operation that usually requires a single step, such as calculating the area of polygons or selecting features based on attributes.
 2. Intermediate level : At this level, tasks become more complex and involve multiple steps and tools. The agent is guided with specific instructions or a list of steps to perform the task. Although the steps are outlined, the agent still needs to generate the correct code for each step and link them together to perform the analysis.

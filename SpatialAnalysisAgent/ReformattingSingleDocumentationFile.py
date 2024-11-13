@@ -119,9 +119,11 @@ def fix_section_content(content):
                 # For parameters section, apply the special line break logic
                 if current_section == 'parameters':
                     # Ensure that the opening triple quotes are on the same line as 'parameters ='
-                    fixed_lines.append(f'{add_line_breaks_to_parameters("\n".join(section_content))}\n"""')
+                    section_content_text = add_line_breaks_to_parameters("\n".join(section_content))
+                    fixed_lines.append(f'{section_content_text}\n"""')
                 else:
-                    fixed_lines.append(f'"""\n{"\n".join(section_content)}\n"""')
+                    section_content_text = "\n".join(section_content)
+                    fixed_lines.append(f'"""\n{section_content_text}\n"""')
                 section_content = []
             current_section = None
 
@@ -160,9 +162,11 @@ def fix_section_content(content):
     if current_section:
         if current_section == 'parameters':
             # Ensure the opening triple quotes stay on the same line
-            fixed_lines.append(f'{add_line_breaks_to_parameters(" ".join(section_content))}\n"""')
+            section_content_text = add_line_breaks_to_parameters(" ".join(section_content))
+            fixed_lines.append(f'{section_content_text}\n"""')
         else:
-            fixed_lines.append(f'"""\n{"\n".join(section_content)}\n"""')
+            section_content_text = "\n".join(section_content)
+            fixed_lines.append(f'"""\n{section_content_text}\n"""')
 
     return "\n".join(fixed_lines)
 

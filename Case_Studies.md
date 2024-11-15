@@ -1,9 +1,11 @@
 # Case Studies
-The case studies demonstrate the capabilities of the Spatial Analysis Agent across three levels:
+The case studies demonstrate the capabilities of the Spatial Analysis Agent (GIS Copilot) across three levels:
 
 1. Basic level: At this level, the tasks are straightforward, involving a single tool along with one (or occasionally two) data layers. The agent is expected to perform a straightforward operation that usually requires a single step, such as calculating the area of polygons or selecting features based on attributes.
 2. Intermediate level : At this level, tasks become more complex and involve multiple steps and tools. The agent is guided with specific instructions or a list of steps to perform the task. Although the steps are outlined, the agent still needs to generate the correct code for each step and link them together to perform the analysis.
 3. Advanced level : In the advanced level, tasks are multistep, and the agent is expected to determine the appropriate steps independently without explicit instructions, to devise the best approach for achieving the desired outcome.Evaluates the agent's ability to select the appropriate tool, generate the correct code, and successfully execute the complete operation.
+
+### You can access over 100 test cases/analysis examples [here](https://giscience.psu.edu/copilot_test/) and [here](https://giscience.psu.edu/gis-copilot-demonstrations/).
 
 ## Level 1: Basic level
 ### Case 1.1: Can you please create 2000-feet zones around each health facilities in Washington DC to identify areas of service coverage?
@@ -59,6 +61,3 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent acro
 ### Case 3.4: Can you please select the residential area and calculate the total area covered by the residential area in square kilometers
 
 ![Selection of Land use.png](Doc%2FCase%20Studies%2FLevel%203%2FSelection%20of%20Land%20use.png)
-
-
-You can access several other test cases (over 100 cases) [here](https://giscience.psu.edu/copilot_test/) 

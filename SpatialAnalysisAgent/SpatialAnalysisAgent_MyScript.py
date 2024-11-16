@@ -288,7 +288,7 @@ if is_review:
     print("\n ----AI IS REVIEWING THE GENERATED CODE(YOU CAN DISABLE CODE REVIEW IN THE SETTINGS TAB)----", end="")
     code_review_prompt_str = helper.code_review_prompt(extracted_code = extracted_code, data_path = DATA_LOCATIONS, selected_tool_dict= SelectedTools, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
     # print(code_review_prompt_str)
-    code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
+    code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str))
     clear_output(wait=False)
     review_str_LLM_reply_str = helper.convert_chunks_to_code_str(chunks=code_review_prompt_str_chunks)
 

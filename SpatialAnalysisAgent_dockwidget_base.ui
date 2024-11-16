@@ -349,7 +349,7 @@ padding: 5px; /* padding inside the text edit */
           <item>
            <widget class="QPushButton" name="Run_Generated_code">
             <property name="text">
-             <string>Run code</string>
+             <string>Run Code</string>
             </property>
            </widget>
           </item>
@@ -363,7 +363,7 @@ padding: 5px; /* padding inside the text edit */
           <item>
            <widget class="QPushButton" name="open_code_button">
             <property name="text">
-             <string>Open from file</string>
+             <string>Open from File</string>
             </property>
            </widget>
           </item>

@@ -275,7 +275,7 @@ LLM_reply_str = helper.convert_chunks_to_code_str(chunks=Operation_prompt_str_ch
 # print(LLM_reply_str)
 #EXTRACTING CODE
 
-print("\n --- GENERATED CODE ---\n")
+print("\n -------------------------- GENERATED CODE --------------------------------------------\n")
 print("```python")
 extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
@@ -301,7 +301,7 @@ if is_review:
 
     #EXTRACTING REVIEW_CODE
     print("\n\n")
-    print(f"--- FINAL REVIEWED CODE ---")
+    print(f"-------------------------- FINAL REVIEWED CODE --------------------------\n")
     print("```python")
     reviewed_code = helper.extract_code_from_str(review_str_LLM_reply_str, task_explanation)
     print("```")
@@ -316,10 +316,10 @@ else:
 
 
 
+generated_code = code
 # Display the captured output (like the file path) in your GUI or terminal
 for line in output.splitlines():
     print(f"Output: {line}")
-
 
 # print("-----Script completed-----")
 

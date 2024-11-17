@@ -348,6 +348,11 @@ padding: 5px; /* padding inside the text edit */
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QPushButton" name="Run_Generated_code">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Run Code</string>
             </property>
@@ -355,6 +360,11 @@ padding: 5px; /* padding inside the text edit */
           </item>
           <item>
            <widget class="QPushButton" name="save_code_button">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Save as a Python File</string>
             </property>
@@ -362,6 +372,11 @@ padding: 5px; /* padding inside the text edit */
           </item>
           <item>
            <widget class="QPushButton" name="open_code_button">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Open from File</string>
             </property>
@@ -405,10 +420,20 @@ padding: 5px; /* padding inside the text edit */
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
             <widget class="QWidget" name="tab_5">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
              <attribute name="title">
               <string>Output Window</string>
              </attribute>
@@ -445,6 +470,11 @@ padding: 5px; /* padding inside the text edit */
                 <width>80</width>
                 <height>35</height>
                </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
               </property>
               <property name="text">
                <string>Clear</string>

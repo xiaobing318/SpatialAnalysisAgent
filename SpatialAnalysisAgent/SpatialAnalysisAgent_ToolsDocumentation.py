@@ -111,8 +111,8 @@ def fix_section_content(content):
                     # fixed_lines.append(f'{processed_line}\n"""')
 
                 else:
-                    section_content_text = "\n".join(section_content)
-                    fixed_lines.append(f'"""\n{section_content_text}\n"""')
+                    fixed_lines.append('"""\n' + "\n".join(section_content) + '\n"""')
+                    # fixed_lines.append(f'"""\n{"\n".join(section_content)}\n"""')
                 section_content = []
             current_section = None
 

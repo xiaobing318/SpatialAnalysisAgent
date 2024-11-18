@@ -41,37 +41,25 @@ You are very good at providing explanation to a task and  identifying QGIS tools
 OperationIdentification_task_prefix = rf' Provide a brief explanation on which tool that can be used to perform this task. Identify the most appropriate tools from QGIS processing tool algorithms or any other algorithm or python libraries in order to perform this task:'
 
 
-
 OperationIdentification_requirements = [
     "Think step by step and skip any step that is not applicable for the task at hand",
-
-    # rf"When creating a thematic map, select the tool named 'Thematic Map Creation'. It is more easier. The tool 'Set style for vector layer' requires a style file, therefore it may not the suitable tool to use.",
-    # f"If you need to create a thematic map, select the customized tool from {other_QGIS_operations} named 'Thematic Map Creation'",
     "Identify the most appropriate and the best tool for the task",
     "The identification of the most appropriate tool should be guided by the properties of the data provided",
-    f"You can Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task: {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
-    "You are not limited to QGIS python functions, you can also use other python functions asuch as geoppandas, numpy, scipy etc.",
-    # f"If your answer is 'Yes', then return the exact name of the tool as given in the list. But if your answer is 'No', return any other tool you think is most appropriate from the list in {other_tools} and return the exact name as listed in the list.  DO NOT select any existing QGIS tool for thematic map creation. E.g, do not select 'categorized renderer from styles'",
+    f"You can Look through the available qgis processing tool algorithms in here and specify if any of the tools can be used for the task: {codebase.algorithm_names}. NOTE: DO NOT return the tool ID",# e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
+    "You are not limited to QGIS python functions, you can also use other python functions asuch as geopandas, numpy, scipy etc.",
     "NOTE:  Algorithm `native:rastercalculator` is not the correct ID for Raster Calculator, the correct ID is `native:rastercalc`",
     "DO NOT provide Additional details of any tool",
     f"DO NOT make fake tool. If you cannot find any suitable qgis tool, return any tool name that you think is most appropriate based on the descriptions of tools listed in the 'Customized tool' ptovided and if you cannot find other tools, provide any other tools that is suitable",#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
-    #f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from {tools_list} . E.g, do not select 'categorized renderer from styles'",
     f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
     "If creating charts or plots such as barchart, barplot, scatterplot etc., you should make use of `seaborn` by default except another method is specified",
-    # f"If a task involve the creation of density map, DO NOT select any existing QGIS tool for density map creation, rather select density map  depending on the method to be used. E.g 'Density map (Kernel Density Estimation)' for density map creation using kernel density estimation:{tools_list}.",
-    f"If a task involve the use of kernel density map estimation, DO NOT select any existing QGIS tool for density map creation, rather select Density map (Kernel Density Estimation) listed in the 'Customized tools' provided",#{other_tools}.",
-    # f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from ({tools_list})"
+    f"If a task involve the use of kernel density map estimation, DO NOT select any existing QGIS tool for density map creation, rather select Density map (Kernel Density Estimation) listed in the 'Customized tools' provided",
     "When using `gdal:proximity`, ensure all shapefiles are rasterized before using them",
-    f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from other tools contained in the 'Customized tools' provided"
-    # f"If a task involve the creation of density map using kernel density estimation method, NOTE: 'Density map (Kernel Density Estimation)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}",
-    # f"If a task involve the creation of density map using inverse distance weighting , NOTE: 'Density map (idw)' is to be used. DO NOT select any existing QGIS tool for density map creation, rather select from {other_tools}"
+    # f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from other tools contained in the 'Customized tools' provided."
 ]
 
 OperationIdentification_reply_example_1 = "To select the tracts with population above 3000, the tool suitable for the operation is found in the qgis processing tools and the name is  'Extract by attribute' tool. This tool create a new vector layer that only contains matching features from an input layer"
 
 OperationIdentification_reply_example_2 = "To create a thematic map there is no suitable tool within the qgis processing tool. Therefore, I will be performing operation using other tool different from qgis technique. I will be using 'Thematic map creation' tool to perform this task. This operation enables rendering a map using a specified attribute"
-
-
 
 OperationIdentification_reply_example_3 = "To extract the counties with Median household income below 50,000 in Pennsylvania, the tool suitable for this operation is found in the QGIS processing tools. The steps to be followed are Use the 'Extract by attribute' tool to select counties where the 'Median_hou' field is below 50,000. Then, use the 'Extract by attribute' tool again to select counties where the 'STATEFP' field is 42, which corresponds to Pennsylvania. If multiple conditions can be combined, then the 'Select by expression' tool will achieve this in one step using an expression."
 
@@ -91,10 +79,10 @@ ToolSelect_reply_example2 = """ {'Selected tool': ["Select by expression", "Sele
 
 
 ToolSelect_requirements = [
-                        f"Look through the available qgis processing tool algorithms in here {codebase.algorithm_names}. NOTE: DO NOT return the tool ID e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
+                        f"Look through the available qgis processing tool algorithms in here {codebase.algorithm_names}. NOTE: DO NOT return the tool ID",# e.g, 'qgis:heatmapkerneldensityestimation'. This is not a tool name, it is an ID.",
                         f"DO NOT make fake tool. If you cannot find any qgis tool that match, return any tool name that you think is most appropriate based on the descriptions of tools listed in the 'Customized tools' provided. And if you cannot still find suitable tool just use the name of the tool or python library mentioned in the explanation provided",#other tools, provide any other tools that is suitable"#select from the return 'Unknown' as for the 'Selected tool' key in the reply JSON format. DO NOT use ```json and ```",
-                        f"If a task involve the use of kernel density map estimation, DO NOT select any existing QGIS tool for density map creation, rather select Density map (Kernel Density Estimation) listed in the 'Customized tools' provided",#{other_tools}.",
-                        f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from other tools contained in the 'Customized tools' provided",#the Other tools ({tools_list})"
+                        # # f"If a task involve the use of kernel density map estimation, DO NOT select any existing QGIS tool for density map creation, rather select Density map (Kernel Density Estimation) listed in the 'Customized tools' provided",#{other_tools}.",
+                        # f"if a task involve the use of Inverse Distance Weighted (IDW) interpolation, DO NOT select any existing QGIS tool, rather select from other tools contained in the 'Customized tools' provided",#the Other tools ({tools_list})"
                         f"If a task directly mention creation of thematic map. NOTE: Thematic map creation is to be used. DO NOT select any existing QGIS tool for thematic map creation, rather select from the 'Customized tools' provided. E.g, do not select 'categorized renderer from styles'",
                         f"For a single tool, your response should be in form of this example: {ToolSelect_reply_example1}",
                         "When creating charts or plots such as barchart, barplot, scatterplot etc., you should make use of `seaborn` by default except another method is specified",
@@ -209,44 +197,32 @@ perform_idw_interpolation()
 """
 operation_requirement = [
     "Think step by step",
-    # "Pay close attention to the task. You may need to perform more than one operation. For example, you may need to perform aggregation first before performing select by attribute",
     "If you need to perform more than one operation, you must perform the operations step by step",
     "Use the provided selected tools provided",
-# "You are not limited to QGIS python functions, you can also use other python functions asuch as geoppandas, numpy, scipy etc.",
     "DO NOT include the QGIS initialization code in the script",
     f"When using QGIS processing algorithm, use `QgsVectorLayer` to load shapefiles. For example `output_layer = QgsVectorLayer(result['OUTPUT'], 'Layer Name', 'ogr')`",
-    # "Intending to use the QGIS processing tool to perform tasks",
     "Put your reply into a Python code block, Explanation or conversation can be Python comments at the begining of the code block(enclosed by ```python and ```).",
-
     "The python code is only in a function named in with the operation name e.g 'perform_idw_interpolation()'. The last line is to execute this function.",
     "If you need to use `QVariant` should be imported from `PyQt5.Qtcore` and NOT `qgis.core`",
     "If you need to use `QColor` should be imported from `PyQt5.QtGui`",
-    # "NOTE: `QgsVectorJoinInfo` may not always be available or accessible in recent QGIS installations, thus use `QgsVectorLayerJoinInfo` instead",
     "Put your reply into a Python code block (enclosed by python and ), NO explanation or conversation outside the code block.",
     "If you need to use `QgsVectorLayer`, it should always be imported from qgis.core.",
-
-    # "Display Output in QGIS",
     "DO NOT add validity check and DO NOT raise any exception.",
     "DO NOT raise exceptions messages.",
-    # "When performing any operation such as buffering, clipping, intersecting, layer extraction, etc., which generate new layers, that generates an output layer , include the code to load the resulting output layer into QGIS",
     "When performing any operation that generates an output vector or raster layer , include the code to load the resulting output layer into QGIS",
     "When performing any operation such as counting of features, generating plots (scatter plot, bar plot), etc., which do not require creation of new layers, do not include load the resulting output layer into QGIS rather print the result",
     "If you need to use any field from the input shapefile layer, first access the fields (example code: `fields = input_layer.fields()`), then select the appropriate field carefully from the list of fields in the layer.",
     "If you need to load a raster layer, use this format `output_layer = QgsRasterLayer(output_path, 'Slope Output')`",
     "When using Raster calculator 'native:rastercalculator' is wrong rather the correct ID for the Raster Calculator algorithm is 'native:rastercalc'.",
     "When creating plots such as barplot, scatterplot etc., usually their result is a html or image file. Always save the file into the specified output directory and print the output layer. Do not Load the output HTML/ or image in QGIS as a standalone resource. ",
-
     "When creating charts or plots such as barchart, barplot, scatterplot etc., you should make use of `seaborn` by default except another method is specified",
-    # "When creating plot (Scatter plot, bar plot, etc,), save the plot as an HTML file",
-    # "NOTE: if using `plt.savefig()`, `plt.savefig()` does not support saving figures directly in HTML format. Therefore, save the plot in a supported format (e.g., PNG) and then embed it in an HTML file.",
-    # "NOTE: When saving plot (Scatter plot, bar plot, etc), `plt.savefig()` does not support saving figures directly in HTML format. Therefore, use `mpld3` library, which allows exporting matplotlib plots to interactive HTML.",
     "When creating a scatterplot, 'native:scatterplot' and 'qgis:scatterplot' are not supported. The correct tool is qgis:vectorlayerscatterplot.",
     "When using tool that is used to generate counts e.g 'Vector information(gdal:ogrinfo), Count points in polygon(native:countpointsinpolygon), etc., don't just print the file path (e.g the html path) but also ensure you print the count(e.g Number of conties)",
     "NOTE: `vector_layer.featureCount()` can be use to generate the count of features",
     "If you are printing any file path (e.g html, png, etc.), Do not include any additional information. just print the file path",
     "When loading a CSV layer as a layer, use this: `'f'file///{csv_path}?delimeter=,''`, assuming the csv is comma-separated, but use the csv_path directly for the Input parameter in join operations.",
     "If you are to use processing algorithm, you do not need to include the code to load a data",
-    "For tasks that contains interrogative words such as ('how', 'what', 'why', 'when', 'where', 'which'), ensure that no layers are loaded into the QGIS, instead the result should be printed",    "If you are creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",# Always print out the result"
+    "For tasks that contains interrogative words such as ('how', 'what', 'why', 'when', 'where', 'which'), ensure that no layers are loaded into the QGIS, instead the result should be printed",    "If you are creating plots such as barplot, scatterplot etc., usually their result is a html file. Always save the html file into the specified output directory and print the output layer. Do not Load the output HTML in QGIS as a standalone resource.",
     "If you are using the processing algorithm, make the output parameter to be the user's specified output directory . And use `QgsVectorLayer` to load the feature as a new layer: For example `Buffer_layer = QgsVectorLayer(result['OUTPUT'], 'Buffered output', 'ogr')` for the case of a shapefile.",
     "Similarly, if you used geopandas to generate a new layer, use `QgsVectorLayer` to load the feature as a new layer: For example `Buffer_layer = QgsVectorLayer(result['OUTPUT'], 'Buffered output', 'ogr')` for the case of a shapefile.",
     "Whenever a new layer is being saved, ensure the code first checks if a file with the same name already exists in the output directory, and if it doesn't, go ahead and save with the original name, but if same name exist, append a number to the filename to create a unique name, thereby avoiding any errors related to overwriting or saving the layer.",
@@ -254,9 +230,9 @@ operation_requirement = [
     "Ensure that temporary layer is not used as the output parameter",
     "When using `gdal:proximity`, ensure all shapefiles are rasterized before using them",
     "When performing multi-step tasks that involve creating intermediary layers, ensure there is a waiting period before proceeding to the next step. This allows enough time for the intermediary layers to be fully created, preventing errors such as 'data not found.'",
-
-    "When adding a new field to the a shapefile, it should be noted that the maximum character for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation"
-
+    "When adding a new field to the a shapefile, it should be noted that the maximum length for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation."
+    # "Also, if you need to create a thematic map after joining attribute to a shapefile, note that the maximum character for field name is 10, so ensure that the field name used for thematic map creation match the field name in the resulting shapefile using for the thematic map creation."
+    "When creating a thematic map after joining attributes to a shapefile, ensure that the field name length for the attribute use for thematic map do not exceed 10, if it exceed 10, truncate the field name (E.g, 'White_Population' can be truncated to 'White_Popu'). Adhering to the 10 field name length limit ensures consistency and prevents errors during thematic map creation."
 ]
 
 # ------------- OPERATION_CODE REVIEW------------------------------------------------------
@@ -304,7 +280,10 @@ operation_code_review_requirement = ["Review the codes very carefully to ensure 
                                     "When using `gdal:proximity`, ensure all shapefiles are rasterized before using them",
                                     "When performing multi-step tasks that involve creating intermediary layers, ensure there is a waiting period before proceeding to the next step. This allows enough time for the intermediary layers to be fully created, preventing errors such as 'data not found.'",
 
-"When adding a new field to the a shapefile, it should be noted that the maximum character for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation."
+                                    "When adding a new field to the a shapefile, it should be noted that the maximum length for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation.",
+                                    # "Also, if you need to create a thematic map after joining attribute to a shapefile, note that the maximum character for field name is 10, so ensure that the field name used for thematic map creation match the field name in the resulting shapefile using for the thematic map creation."
+                                    "When creating a thematic map after joining attributes to a shapefile, ensure that the field name length for the attribute use for thematic map do not exceed 10, if it exceed 10, truncate the field name. Adhering to the 10 field name length limit ensures consistency and prevents errors during thematic map creation."
+
                                      ]
 
 
@@ -359,7 +338,7 @@ debug_requirement = [
     "Whenever a new layer is being saved, ensure the code first checks if a file with the same name already exists in the output directory, and if it does, append a number (e.g filename_1, filename_2, etc) to the filename to create a unique name, thereby avoiding any errors related to overwriting or saving the layer.",
     "When naming any output layer, choose a name that is concise, descriptive, easy to read, and free of spaces.",
     "Ensure that temporary layer is not used as the output parameter",
-"When adding a new field to the a shapefile, it should be noted that the maximum character for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation."
+"When adding a new field to the a shapefile, it should be noted that the maximum length for field name is 10, so avoid mismatch in the fieldname in the data and in the calculation."
     # "If you performed join, always export the joined layer as a new shapefile and load the new shapefile. `QgsVectorFileWriter.writeAsVectorFormatV3()` is recommended to be used to export the joined layer. It is used in this format: `QgsVectorFileWriter.writeAsVectorFormatV3(layer, output, QgsProject.instance().transformContext(), options)`."
     # f"If you performed join, you can follow this tempelate to create your code: {codebase.attribute_join}"
 ]

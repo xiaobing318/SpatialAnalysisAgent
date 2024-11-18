@@ -275,7 +275,7 @@ LLM_reply_str = helper.convert_chunks_to_code_str(chunks=Operation_prompt_str_ch
 # print(LLM_reply_str)
 #EXTRACTING CODE
 
-print("\n --- GENERATED CODE ---\n")
+print("\n -------------------------- GENERATED CODE --------------------------------------------\n")
 print("```python")
 extracted_code = helper.extract_code_from_str(LLM_reply_str, task)
 print("```")
@@ -288,7 +288,7 @@ if is_review:
     print("\n ----AI IS REVIEWING THE GENERATED CODE(YOU CAN DISABLE CODE REVIEW IN THE SETTINGS TAB)----", end="")
     code_review_prompt_str = helper.code_review_prompt(extracted_code = extracted_code, data_path = DATA_LOCATIONS, selected_tool_dict= SelectedTools, workspace_directory = workspace_directory, documentation_str=combined_documentation_str)
     # print(code_review_prompt_str)
-    code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str ))
+    code_review_prompt_str_chunks = asyncio.run(helper.fetch_chunks(model, code_review_prompt_str))
     clear_output(wait=False)
     review_str_LLM_reply_str = helper.convert_chunks_to_code_str(chunks=code_review_prompt_str_chunks)
 
@@ -301,7 +301,7 @@ if is_review:
 
     #EXTRACTING REVIEW_CODE
     print("\n\n")
-    print(f"--- FINAL REVIEWED CODE ---")
+    print(f"-------------------------- FINAL REVIEWED CODE --------------------------\n")
     print("```python")
     reviewed_code = helper.extract_code_from_str(review_str_LLM_reply_str, task_explanation)
     print("```")
@@ -316,10 +316,10 @@ else:
 
 
 
+generated_code = code
 # Display the captured output (like the file path) in your GUI or terminal
 for line in output.splitlines():
     print(f"Output: {line}")
-
 
 # print("-----Script completed-----")
 

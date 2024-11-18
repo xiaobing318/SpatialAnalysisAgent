@@ -29,6 +29,8 @@ import shutil
 import sys
 import urllib
 
+import iface
+import qgis
 import requests
 from qgis.PyQt import QtGui, QtWidgets, uic
 from qgis.PyQt.QtCore import pyqtSignal
@@ -45,7 +47,8 @@ from io import StringIO
 import time
 from PyQt5.QtWebKitWidgets import QWebView
 from qgis.PyQt.QtCore import Qt, QCoreApplication
-from qgis._core import QgsVectorLayer, QgsRasterLayer
+from qgis._core import QgsVectorLayer, QgsRasterLayer, QgsProcessing
+
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QWidget, QSizeGrip, QMessageBox, \
     QInputDialog, QTextBrowser
@@ -123,7 +126,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """Constructor."""
         super(SpatialAnalysisAgentDockWidget, self).__init__(parent)
 
-
         self.setupUi(self)
 
         from .install_packages.check_packages import check_and_install_libraries
@@ -146,10 +148,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.chatgpt_ans_textBrowser.setOpenLinks(False)
         self.chatgpt_ans_textBrowser.anchorClicked.connect(self.open_link)
 
-
         self.import_libraries()
-
-
 
         self.load_OpenAI_key()
 
@@ -209,6 +208,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Apply the syntax highlighter
         self.highlighter = PythonHighlighter(self.output_text_edit.document())
+        self.code_highlighter = PythonHighlighter(self.CodeEditor.document(), always_highlight=True)
 
         # Set default workspace directory to plugin directory
         # current_script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -220,6 +220,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Connect button to open directory dialog
         self.select_workspace_Btn.clicked.connect(self.open_directory_dialog)
+        self.Run_Generated_code.clicked.connect(self.run_generated_code)
 
 
         # Connect the visibility changed signal for all layers
@@ -238,6 +239,10 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # self.ESGpushButton.clicked.connect(self.run_slnGraph_script)sss
         self.interrupt_button.clicked.connect(self.interrupt)
         self.interrupt_button.clicked.connect(self.stop_script)
+        # Connect buttons to methods
+        self.save_code_button.clicked.connect(self.save_code_to_file)
+        self.open_code_button.clicked.connect(self.load_code_from_file)
+        self.clear_code_editorBtn.clicked.connect(self.clear_code_editor)
         # self.pushButton = self.findChild(QPushButton, 'pushButton')
         # self.SelectDataPath_ToolBtn.clicked.connect(self.openFileDialog)
         self.clear_textboxesBtn.clicked.connect(self.clear_textboxes)
@@ -254,6 +259,112 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Populate data_pathLineEdit with currently loaded layers
         # self.populate_data_path_line_edit()
         self.on_layer_visibility_changed()
+
+    def append_execution_output(self, line):
+        # Check if text is empty
+
+        if not line.strip():
+            return
+        # Split the text into individual lines
+        lines = line.strip().split('\n')
+        for line in lines:
+            # Prepend '>>>' to each line
+            formatted_line = f">>> {line}"
+
+            if "Traceback" in line or "Error" in line:
+                color = QColor("red")
+            elif "Warning" in line:
+                color = QColor("orange")
+            elif "Execution completed" in line:
+                color = QColor("green")
+            else:
+                color = QColor("black")
+            # Append the formatted line to the text edit
+            # self.execution_output_text_edit.appendPlainText(formatted_line)
+            # Append the formatted line with color
+            self.append_colored_text(self.execution_output_text_edit, formatted_line, color)
+        # Ensure the cursor moves to the end
+        self.execution_output_text_edit.moveCursor(QTextCursor.End)
+        # Scroll to the bottom
+        self.execution_output_text_edit.verticalScrollBar().setValue(
+            self.execution_output_text_edit.verticalScrollBar().maximum()
+        )
+
+    def append_colored_text(self, text_edit, text, color):
+        cursor = text_edit.textCursor()
+        cursor.movePosition(QTextCursor.End)
+        text_edit.setTextCursor(cursor)
+
+        format = QTextCharFormat()
+        format.setForeground(color)
+
+        cursor.insertText(text + '\n', format)
+    def save_code_to_file(self):
+        code = self.CodeEditor.toPlainText()
+        if not code.strip():
+            QMessageBox.warning(self, "No Code", "There is no code to save.")
+            return
+
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Code As",
+            "",
+            "Python(*.py);;Text file (*.txt);;All Files (*)",
+            options=options
+        )
+        if file_name:
+            try:
+                with open(file_name, 'w', encoding='utf-8') as file:
+                    file.write(code)
+                QMessageBox.information(self, "Success", f"Code saved to:\n{file_name}")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to save code:\n{str(e)}")
+
+    def load_code_from_file(self):
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Code File",
+            "",
+            "Python or Text Files (*.py *.txt);;All Files (*)",
+            options=options
+        )
+        if file_name:
+            try:
+                with open(file_name, 'r', encoding='utf-8') as file:
+                    code = file.read()
+                self.CodeEditor.setPlainText(code)
+                # If needed, rehighlight
+                # self.code_highlighter.rehighlight()
+                QMessageBox.information(self, "Success", f"Code loaded from:\n{file_name}")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to load code:\n{str(e)}")
+
+    def run_generated_code(self):
+        self.append_execution_output("Running code ...")
+        # Get the code from the CodeEditor
+        code_to_run = self.CodeEditor.toPlainText()
+
+        if not code_to_run.strip():
+            QMessageBox.warning(self, "No Code", "There is no code to run.")
+            return
+
+        # Prepare the execution environment without limitations
+        import __main__
+        # Import 'processing' into __main__ if not already imported
+        if 'processing' not in __main__.__dict__:
+            import processing
+            __main__.processing = processing  # Add 'processing' to __main__
+
+        exec_globals = __main__.__dict__
+        exec_locals = {}
+
+        self.generated_code_thread = RunGeneratedCodeThread(code_to_run, exec_globals)
+        self.generated_code_thread.CodeEditor_output_line.connect(self.append_execution_output)
+        self.generated_code_thread.execution_error.connect(self.append_execution_output)
+        self.generated_code_thread.finished.connect(self.generated_code_execution_finished)
+        self.generated_code_thread.start()
 
     def show_contribution_dialog(self):
         """Open the ContributionDialog for user interaction."""
@@ -445,6 +556,10 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             # self.refresh_report_Btn.clicked.connect(self.refresh_report)
         else:
             return
+
+    def clear_code_editor(self):
+        self.execution_output_text_edit.clear()
+
 
     def populate_data_path_line_edit(self):
         # Retrieve all layers currently in the project
@@ -668,6 +783,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def send_button_clicked(self):
         """Slot to handle the send button click."""
         user_message =self.task_LineEdit.toPlainText().strip()
+        self.CodeEditor.clear()
 
         if not user_message:
             self.update_chatgpt_ans_textBrowser(f"AI: Please enter a task in the task field.", is_user=False)
@@ -759,8 +875,8 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.thread.output_line.connect(self.update_output)
         self.thread.graph_ready.connect(self.update_graph)
         self.thread.report_ready.connect(self.update_report)
-
         self.thread.chatgpt_update.connect(self.update_chatgpt_ans_textBrowser)
+        self.thread.generated_code_ready.connect(self.update_code_editor)
         self.thread.script_finished.connect(self.thread_finished)
         self.thread.start()
 
@@ -771,6 +887,9 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.data_pathLineEdit.setEnabled(False)
         self.loadData.setEnabled(False)
 
+    def update_code_editor(self, code):
+        """Update the code_editor widget with the last extracted code block."""
+        self.CodeEditor.setPlainText(code)
 
     def update_chatgpt_ans_textBrowser(self, message, is_user=False):
         # Append new message to conversation history
@@ -796,8 +915,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
 
     def append_text_with_format(self, text, is_user=True):
-        # Regular expression to detect URLs and file paths
-        # This pattern now includes spaces within the file paths
         url_pattern = re.compile(
             r'((?:https?://|file:///)[^\s]+)'  # URLs starting with http://, https://, or file:///
             r'|'
@@ -877,7 +994,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 self.update_chatgpt_ans_textBrowser(f"AI: Selected tool(s): {tool_IDs}")
 
 
-
         if "```python" in clean_line or "```" in clean_line:
             self.output_text_edit.insertPlainText(line)
         else:
@@ -891,16 +1007,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.output_text_edit.repaint()
         # Move the scroll bar to the bottom to avoid unwanted gaps or large spaces
         self.output_text_edit.verticalScrollBar().setValue(self.output_text_edit.verticalScrollBar().maximum())
-
-        # Check if the line contains the completion message
-        # if "-----Script completed-----" in clean_line:
-        #     # self.update_chatgpt_ans_textBrowser(f"AI: Done")
-        #     self.run_button.setEnabled(True)
-        #     self.clear_textboxesBtn.setEnabled(True)
-        #     self.task_LineEdit.setEnabled(True)
-        #     self.data_pathLineEdit.setEnabled(True)
-        #     self.loadData.setEnabled(True)
-
 
     # @pyqtSlot(bool)
     def thread_finished(self, success):
@@ -941,12 +1047,16 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.update_chatgpt_ans_textBrowser("--------------------------------------------------------------")
 
 
+    def generated_code_execution_finished(self):
+        # QMessageBox.information(self, "Execution Complete", "The generated code has finished executing.")
+        if self.generated_code_thread.success:
+            self.append_execution_output("Execution completed")
+        else:
+            self.append_execution_output("The script finished with errors.")
     def clear_textboxes(self):
         self.output_text_edit.clear()
         self.task_LineEdit.clear()
         self.chatgpt_ans_textBrowser.clear()
-        # self.output_text_edit_2.clear()
-        # Clear conversation history to ensure no previous responses are carried forward
         self.conversation_history = []
 
     def interrupt(self):
@@ -976,9 +1086,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     # Set destination for Customized Tool
                     destination_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SpatialAnalysisAgent",
                                                    "Tools_Documentation","Customized_Tools")
-
-
-
                 # Ensure the destination directory exists; if not, create it
                 if not os.path.exists(destination_dir):
                     os.makedirs(destination_dir)
@@ -998,9 +1105,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
                         # Check if the file already exists
                         if os.path.exists(new_file_path):
-                            # Ask the user if they want to replace the file
-                            # If neither 'replace all' nor 'skip all' is set, ask the user
-
                             reply = QMessageBox.question(
                                 None, 'File Exists',
                                 f'The file "{os.path.basename(file_path)}" already exists. Do you want to replace it?',
@@ -1009,8 +1113,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                             # If user chooses 'No', skip the file
                             if reply == QMessageBox.No:
                                 continue  # Skip to the next file
-
-
                         # Copy the file to the new directory
                         shutil.copy(file_path, new_file_path)
                         # print(f"File {file_path} copied to {new_file_path}")  # or update your UI to reflect the change
@@ -1036,7 +1138,9 @@ class ScriptThread(QThread):
     chatgpt_update = pyqtSignal(str)
     graph_ready = pyqtSignal(str)
     report_ready = pyqtSignal(str)
+    generated_code_ready = pyqtSignal(str)
     script_finished = pyqtSignal(bool)
+
 
     def __init__(self, script_path, task, data_path, workspace_directory, OpenAI_key, model_name, is_review):
         super().__init__()
@@ -1076,15 +1180,18 @@ class ScriptThread(QThread):
                 'output_signal': self.chatgpt_update,  # Pass the chatgpt_update signal
             }
 
+
             # Override print function to flush outputs
             def print_flush(*args, **kwargs):
                 print(*args, **kwargs, flush=True)
 
             local_vars['print'] = print_flush
 
+
             # Redirect stdout and stderr
             stream_redirector = StreamRedirector()
             stream_redirector.output_written.connect(self.output_line.emit)
+            # stream_redirector.output_written.connect(capture_output_code)
 
             sys.stdout = stream_redirector
             sys.stderr = stream_redirector
@@ -1096,6 +1203,14 @@ class ScriptThread(QThread):
             exec_locals = local_vars
 
             exec(script_content, exec_globals, exec_locals)
+
+            # Capture the `code` variable directly from the execution environment
+            if 'generated_code' in exec_locals:
+                self.generated_code_ready.emit(exec_locals['generated_code'])
+
+            else:
+                # Handle the case where 'generated_code' is not found
+                self.output_line.emit("Error: 'generated_code' not found after script execution.")
 
             self.script_finished.emit(True)
 
@@ -1163,10 +1278,6 @@ class ScriptThread(QThread):
     def stop(self):
         self._is_running = False
 
-
-    # def isRunning(self):
-    #     return self._is_running
-
     def check_running(self):
         return self._is_running
 
@@ -1215,8 +1326,9 @@ class GPTRequestThread(QThread):
 
 
 class PythonHighlighter(QSyntaxHighlighter):
-    def __init__(self, document):
+    def __init__(self, document, always_highlight =False):
         super(PythonHighlighter, self).__init__(document)
+        self.always_highlight = always_highlight
         self.python_block = False  # Initialize python_block as False
 
         # Define the syntax highlighting rules
@@ -1228,7 +1340,8 @@ class PythonHighlighter(QSyntaxHighlighter):
         keywords = [
             "def", "class", "if", "else", "elif", "while", "for", "return", "import", "from", "as", "with", "try",
             "except", "finally", "raise", "yield", "lambda", "pass", "break", "continue", "global", "nonlocal",
-            "assert", "del"
+            "assert", "del", "and", "as", "assert", "break", "class", "continue", "del", "elif", "else", "except",
+            "False", "finally", "for", "in", "is", "None", "not", "or", "pass", "raise", "return", "True", "print"
         ]
         for keyword in keywords:
             pattern = re.compile(r'\b' + keyword + r'\b')
@@ -1246,20 +1359,17 @@ class PythonHighlighter(QSyntaxHighlighter):
         self.highlighting_rules.append((re.compile(r'#.*'), comment_format))
 
     def highlightBlock(self, text):
-        # for pattern, format in self.highlighting_rules:
-        #     for match in pattern.finditer(text):
-        #         start, end = match.span()
-        #         self.setFormat(start, end - start, format)
-        # Check if this block is the start or end of a Python code section
-        if text.strip() == "```python":
-            self.python_block = True
-            return  # Don't highlight the marker line
-        elif text.strip() == "```":
-            self.python_block = False
-            return  # Don't highlight the marker line
+        if not self.always_highlight:
+            if text.strip() == "```python":
+                self.python_block = True
+                return  # Don't highlight the marker line
+            elif text.strip() == "```":
+                self.python_block = False
+                return  # Don't highlight the marker line
 
         # Apply syntax highlighting only if we're inside a Python block
-        if self.python_block:
+        # if self.python_block:
+        if self.always_highlight or self.python_block:
             for pattern, format in self.highlighting_rules:
                 for match in pattern.finditer(text):
                     start, end = match.span()
@@ -1470,3 +1580,33 @@ class StreamRedirector(QObject):
             self.output_written.emit(self.buffer)
             self.buffer = ''
 
+class RunGeneratedCodeThread(QThread):
+    CodeEditor_output_line = pyqtSignal(str)
+    execution_error = pyqtSignal(str)
+
+    def __init__(self, code_to_run, exec_globals):
+        super().__init__()
+        self.code_to_run = code_to_run
+        self.exec_globals = exec_globals  # Store exec_globals
+
+    def run(self):
+        self.success = True
+        # Redirect stdout and stderr
+        original_stdout = sys.stdout
+        original_stderr = sys.stderr
+        sys.stdout = StreamRedirector()
+        sys.stderr = StreamRedirector()
+
+        sys.stdout.output_written.connect(self.CodeEditor_output_line.emit)
+        sys.stderr.output_written.connect(self.CodeEditor_output_line.emit)
+
+        try:
+            exec_locals = {}
+            exec(self.code_to_run, self.exec_globals, exec_locals)
+        except Exception as e:
+            self.success = False
+            traceback_str = traceback.format_exc()
+            self.execution_error.emit(f"Error executing code:\n{traceback_str}")
+        finally:
+            sys.stdout = original_stdout
+            sys.stderr = original_stderr

@@ -55,6 +55,21 @@ def get_data_overview(data_location_dict):
             print("Error in get_data_overview()", data, e)
     return data_location_dict
 
+
+# def add_data_overview_to_data_location(task, data_location_list, model = r'gpt-4o-2024-08-06'):
+#     prompt = get_prompt_to_pick_up_data_locations(task=task,
+#                                                   data_locations=data_location_list)
+#     response = get_LLM_reply(prompt=prompt,
+#                                     model=model)
+#     # pprint.pp(result.choices[0].message)
+#     attributes_json = json.loads(response.choices[0].message.content)
+#     get_data_overview(attributes_json)
+#
+#     for idx, data in enumerate(attributes_json['data_locations']):
+#         meta_str = data['meta_str']
+#         data_location_list[idx] += ". Data overview: " + meta_str
+#     return attributes_json, data_location_list
+
 def add_data_overview_to_data_location(task, data_location_list, model = r'gpt-4o-2024-08-06'):
     prompt = get_prompt_to_pick_up_data_locations(task=task,
                                                   data_locations=data_location_list)
@@ -64,10 +79,16 @@ def add_data_overview_to_data_location(task, data_location_list, model = r'gpt-4
     attributes_json = json.loads(response.choices[0].message.content)
     get_data_overview(attributes_json)
 
-    for idx, data in enumerate(attributes_json['data_locations']):
-        meta_str = data['meta_str']
-        data_location_list[idx] += ". Data overview: " + meta_str
+    for idx, data in enumerate(attributes_json.get('data_locations', [])):
+        meta_str = data.get('meta_str','')
+        if idx < len(data_location_list):  # Ensure index is valid
+            if meta_str:  # Only append if meta_str is not empty
+                data_location_list[idx] += ". Data overview: " + meta_str
+        else:
+            # Log or handle index out of range issue (optional)
+            print(f"Index {idx} out of range for data_location_list.")
     return attributes_json, data_location_list
+
 
 def get_prompt_to_pick_up_data_locations(task, data_locations):
     data_locations_str = '\n'.join([f"{idx + 1}. {line}" for idx, line in enumerate(data_locations)])
@@ -88,7 +109,6 @@ def see_table(file_path):
     types_str = '| '.join([f"{col}: {dtype}, {sample_df.iloc[0][col]} " for col, dtype in df.dtypes.items()])
     types_str = f"column names, data types, and sample values (column_name: data_type, sample value |):[{types_str}]"
     meta_str = types_str
-
     return meta_str
 
 def _get_df_types_str(df):

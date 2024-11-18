@@ -368,8 +368,8 @@ def fix_section_content(content):
             # Ensure the opening triple quotes stay on the same line
             fixed_lines.append(f'{add_line_breaks_to_parameters(" ".join(section_content))}\n"""')
         else:
-            section_content_text = "\n".join(section_content)
-            fixed_lines.append(f'"""\n{section_content_text}\n"""')
+            #fixed_lines.append(f'"""\n{"\n".join(section_content)}\n"""')
+            fixed_lines.append('"""\n' + "\n".join(section_content) + '\n"""')
 
     return "\n".join(fixed_lines)
 

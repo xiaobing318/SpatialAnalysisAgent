@@ -124,6 +124,7 @@ LLM_reply_str = helper.convert_chunks_to_str(chunks=chunks)
 # print(f"Work directory: {workspace_directory}")
 # print("Select the QGIS tool: \n")
 print(f"TASK_BREAKDOWN: {LLM_reply_str}")
+print("_")
 task_breakdown = LLM_reply_str
 ##*************************************** TOOL SELECT ***************************************************************
 ToolSelect_prompt_str = helper.create_ToolSelect_prompt(task=task_breakdown, data_path=DATA_LOCATIONS)

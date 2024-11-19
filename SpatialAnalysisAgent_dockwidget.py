@@ -128,6 +128,9 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self.setupUi(self)
 
+        self.is_task_breakdown = False
+        self.task_breakdown_lines = []
+
         from .install_packages.check_packages import check_and_install_libraries
         # Run the check before the class definition
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1008,44 +1011,94 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         clean_line = self.strip_ansi_sequences(line)
 
-        # for line in captured_stdout.splitlines():
-        if "GRAPH_SAVED:" in line:
-            html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
-            self.update_graph(html_graph_path)
-            self.update_chatgpt_ans_textBrowser("Geoprocessing workflow is ready.")  # Emit the message to chatgpt_ans
-
-        elif "Output:" in line:  # Check for "Output" flag
-            generated_output = line.split("Output:")[1].strip()
-            # Check if generated output is not empty before emitting
-            if generated_output:
-                self.update_report(generated_output)
-                self.update_chatgpt_ans_textBrowser(f"{generated_output}")  # Emit Output
-        elif "List of selected tool IDs:" in line:
-            tool_IDs = line.split("List of selected tool IDs:")[1].strip()
-            if tool_IDs:
-                # self.tool_filename_ready.emit(tool_filename)  # Emit the tool filename
-                # self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_filename}")
-                self.update_chatgpt_ans_textBrowser(f"Selected tool(s): {tool_IDs}")
-
-        elif "TASK_BREAKDOWN:" in line:
-            task_breakdown = line.split("TASK_BREAKDOWN:")[1].strip()
-            if task_breakdown:
-                self.update_chatgpt_ans_textBrowser((f"{task_breakdown}"))
-
-
-        if "```python" in clean_line or "```" in clean_line:
-            self.output_text_edit.insertPlainText(line)
+        if self.is_task_breakdown:
+            # Check if the current line marks the end of the task breakdown
+            if line.strip() == "_":
+                self.is_task_breakdown = False
+                # Process the accumulated task breakdown lines
+                task_breakdown_text = "\n".join(self.task_breakdown_lines)
+                self.update_chatgpt_ans_textBrowser(task_breakdown_text)
+                self.task_breakdown_lines = []  # Reset the accumulator
+            else:
+                # Accumulate the line
+                self.task_breakdown_lines.append(clean_line)
         else:
+            if "GRAPH_SAVED:" in line:
+                html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
+                self.update_graph(html_graph_path)
+                self.update_chatgpt_ans_textBrowser(
+                    "Geoprocessing workflow is ready.")  # Emit the message to chatgpt_ans
 
-            self.output_text_edit.insertPlainText(clean_line)
-            # Conditionally add newline only if it is not already present
+            elif "Output:" in line:  # Check for "Output" flag
+                generated_output = line.split("Output:")[1].strip()
+                if generated_output:
+                    self.update_report(generated_output)
+                    self.update_chatgpt_ans_textBrowser(f"{generated_output}")  # Emit Output
+
+            elif "List of selected tool IDs:" in line:
+                tool_IDs = line.split("List of selected tool IDs:")[1].strip()
+                if tool_IDs:
+                    self.update_chatgpt_ans_textBrowser(f"Selected tool(s): {tool_IDs}")
+
+            elif "TASK_BREAKDOWN:" in line:
+                # Start accumulating task breakdown lines
+                self.is_task_breakdown = True
+                task_breakdown_line = line.split("TASK_BREAKDOWN:")[1].strip()
+                self.task_breakdown_lines = [task_breakdown_line]
+
+        # The rest of your code for handling the output text edit
+        self.output_text_edit.insertPlainText(clean_line)
         if not clean_line.endswith('\n'):
             self.output_text_edit.insertPlainText('\n')
-        # self.output_text_edit.insertPlainText('\n')  # Add a newline after each line
-        self.output_text_edit.moveCursor(QTextCursor.End)  # Ensure cursor is at the end
+        self.output_text_edit.moveCursor(QTextCursor.End)
         self.output_text_edit.repaint()
-        # Move the scroll bar to the bottom to avoid unwanted gaps or large spaces
         self.output_text_edit.verticalScrollBar().setValue(self.output_text_edit.verticalScrollBar().maximum())
+
+
+
+
+        # clean_line = self.strip_ansi_sequences(line)
+        #
+        # # for line in captured_stdout.splitlines():
+        # if "GRAPH_SAVED:" in line:
+        #     html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
+        #     self.update_graph(html_graph_path)
+        #     self.update_chatgpt_ans_textBrowser("Geoprocessing workflow is ready.")  # Emit the message to chatgpt_ans
+        #
+        # elif "Output:" in line:  # Check for "Output" flag
+        #     generated_output = line.split("Output:")[1].strip()
+        #     # Check if generated output is not empty before emitting
+        #     if generated_output:
+        #         self.update_report(generated_output)
+        #         self.update_chatgpt_ans_textBrowser(f"{generated_output}")  # Emit Output
+        # elif "List of selected tool IDs:" in line:
+        #     tool_IDs = line.split("List of selected tool IDs:")[1].strip()
+        #     if tool_IDs:
+        #         # self.tool_filename_ready.emit(tool_filename)  # Emit the tool filename
+        #         # self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_filename}")
+        #         self.update_chatgpt_ans_textBrowser(f"Selected tool(s): {tool_IDs}")
+        #
+        # elif "TASK_BREAKDOWN:" in line:
+        #     task_breakdown = line.split("TASK_BREAKDOWN:")[1].strip()
+        #     if task_breakdown:
+        #         self.update_chatgpt_ans_textBrowser((f"{task_breakdown}"))
+        #
+        #
+        #
+        #
+        # if "```python" in clean_line or "```" in clean_line:
+        #     self.output_text_edit.insertPlainText(line)
+        # else:
+        #
+        #     self.output_text_edit.insertPlainText(clean_line)
+        #     # Conditionally add newline only if it is not already present
+        # if not clean_line.endswith('\n'):
+        #     self.output_text_edit.insertPlainText('\n')
+        # # self.output_text_edit.insertPlainText('\n')  # Add a newline after each line
+        # self.output_text_edit.moveCursor(QTextCursor.End)  # Ensure cursor is at the end
+        # self.output_text_edit.repaint()
+        # # Move the scroll bar to the bottom to avoid unwanted gaps or large spaces
+        # self.output_text_edit.verticalScrollBar().setValue(self.output_text_edit.verticalScrollBar().maximum())
 
     # @pyqtSlot(bool)
     def thread_finished(self, success):
@@ -1289,7 +1342,7 @@ class ScriptThread(QThread):
                 if "GRAPH_SAVED:" in line:
                     html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
                     self.update_graph(html_graph_path)
-                    self.chatgpt_update.emit("Geoprocessing Workflow is ready.")  # Emit the message to chatgpt_ans
+                    self.chatgpt_update.emit(f"Geoprocessing Workflow is ready.")  # Emit the message to chatgpt_ans
 
                 elif "Output:" in line:  # Check for "Output" flag
                     generated_output = line.split("Output:")[1].strip()

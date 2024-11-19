@@ -1645,8 +1645,8 @@ class RunGeneratedCodeThread(QThread):
         sys.stderr.output_written.connect(self.CodeEditor_output_line.emit)
 
         try:
-            exec_locals = {}
-            exec(self.code_to_run, self.exec_globals, exec_locals)
+            # exec_locals = {}
+            exec(self.code_to_run, self.exec_globals)
         except Exception as e:
             self.success = False
             traceback_str = traceback.format_exc()

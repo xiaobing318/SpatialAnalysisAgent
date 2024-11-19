@@ -337,7 +337,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 self.CodeEditor.setPlainText(code)
                 # If needed, rehighlight
                 # self.code_highlighter.rehighlight()
-                QMessageBox.information(self, "Success", f"Code loaded from:\n{file_name}")
+                # QMessageBox.information(self, "Success", f"Code loaded from:\n{file_name}")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to load code:\n{str(e)}")
 
@@ -782,15 +782,18 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.data_pathLineEdit.setPlainText(all_paths)
     def send_button_clicked(self):
         """Slot to handle the send button click."""
+
+        # self.chatgpt_ans_textBrowser.setAlignment(Qt.AlignLeft)
         user_message =self.task_LineEdit.toPlainText().strip()
         self.CodeEditor.clear()
 
         if not user_message:
-            self.update_chatgpt_ans_textBrowser(f"AI: Please enter a task in the task field.", is_user=False)
+            self.update_chatgpt_ans_textBrowser(f"Please enter a task in the task field.", is_user=False)
             return  # Stop further execution if the task is empty
         # print("Sending message:", self.task_LineEdit.toPlainText())  # Debugging statement
         # Emit the user's message in chatgpt_ans first
 
+        self.update_chatgpt_ans_textBrowser(f"--------------------------------------------------------------",is_user = None)
         self.append_message(user_message)
 
         # Call update_config_file to save the latest API key
@@ -800,7 +803,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.read_updated_config()
 
         if not self.ChatMode_checkbox.isChecked() and self.data_pathLineEdit.isEnabled() and not self.data_pathLineEdit.toPlainText().strip():
-            self.update_chatgpt_ans_textBrowser(f"AI: Please load the data to be used.", is_user=False)
+            self.update_chatgpt_ans_textBrowser(f"Please load the data to be used.", is_user=False)
             return  # Stop further execution if data path is required but empty
 
 
@@ -828,7 +831,8 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.gpt_thread = GPTRequestThread(user_message, self.OpenAI_key, self.model_name, self.conversation_history)  # your-api-key-here
         # self.gpt_thread = GPTRequestThread(user_message, "AAzz", self.conversation_history)#your-api-key-here
         self.gpt_thread.output_line.connect(self.update_output)
-        self.gpt_thread.finished_signal.connect(lambda:self.update_chatgpt_ans_textBrowser("AI: Done", is_user=False))
+        self.gpt_thread.chatgpt_update.connect(lambda reply: self.update_chatgpt_ans_textBrowser(f"{reply}", is_user=False))
+        self.gpt_thread.finished_signal.connect(lambda:self.update_chatgpt_ans_textBrowser("Done", is_user=False))
 
         self.gpt_thread.start()
 
@@ -848,7 +852,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         script_path = os.path.join(current_script_dir, "SpatialAnalysisAgent", "SpatialAnalysisAgent_MyScript.py")
         self.OpenAI_key = self.get_openai_key()  # Retrieve the API key from the line edit
         if not self.OpenAI_key:
-            self.update_chatgpt_ans_textBrowser(f"AI: Please enter a valid OpenAI API key.", is_user=False)
+            self.update_chatgpt_ans_textBrowser(f"Please enter a valid OpenAI API key.", is_user=False)
             return
         self.model_name = self.modelNameComboBox.currentText()
 
@@ -904,7 +908,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def stop_script(self):
         if self.thread:
             self.thread.terminate()
-            self.update_chatgpt_ans_textBrowser(f"AI: Script terminated")
+            self.update_chatgpt_ans_textBrowser(f"Script terminated")
             # print("Script terminated")
             # Re-enable the send_button
         self.run_button.setEnabled(True)
@@ -941,12 +945,39 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         cursor = self.chatgpt_ans_textBrowser.textCursor()
         cursor.movePosition(QTextCursor.End)
 
-
-
         if is_user:
-            html = f'<div style="text-align: left; padding: 10px; margin: 5px; border: 2px solid blue; border-radius: 10px;">{text}</div>'
+            prefix = "User: "
+            color_prefix = "green"
+            color_message = "black"
+            message = text
+        elif is_user is False:
+            prefix = "AI: "
+            color_prefix = 'blue'
+            color_message = 'black'
+
         else:
-            html = f'<div style="text-align: right; padding: 10px; margin: 5px; border: 2px solid green; border-radius: 10px;">{text}</div>'
+            prefix = ""  # No prefix
+            color_prefix = ""  # No color
+            color_message = 'black'
+
+        message = text
+
+
+
+            # Process URLs in the message
+        message = url_pattern.sub(replace_urls, message)
+            # color = 'green'
+
+        html = f'''
+            <div style= "text-align: left; padding: 10px; margin: 5px; border: 2px solid gray; border-radius: 10px; ">
+                <span style="color: {color_prefix};">{prefix}</span><span style="color: {color_message};">{message}</span>
+                
+            </div>
+            '''
+        # if is_user:
+        #     html = f'<div style="text-align: left; padding: 10px; margin: 5px; border: 2px solid blue; border-radius: 10px;">{text}</div>'
+        # else:
+        #     html = f'<div style="text-align: left; padding: 10px; margin: 5px; border: 2px solid green; border-radius: 10px;">{text}</div>'
 
         cursor.insertHtml(html)
         cursor.insertHtml('<br>')  # Add a line break between messages
@@ -959,9 +990,9 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # message = self.task_LineEdit.toPlainText()
         if message.strip():  # Check if message is not empty
 
-            self.update_chatgpt_ans_textBrowser(f"User: {message}", is_user=True)
+            self.update_chatgpt_ans_textBrowser(f"{message}", is_user=True)
             self.update_output("\n*************************************************************************")  # Separator in the output window
-            self.update_output(f"User: {message}")
+            self.update_output(f"{message}")
             if self.ChatMode_checkbox.isChecked():
                 # Clear the input field after sending the message when switch is checked
                 self.task_LineEdit.clear()
@@ -978,7 +1009,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if "GRAPH_SAVED:" in line:
             html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
             self.update_graph(html_graph_path)
-            self.update_chatgpt_ans_textBrowser("AI: Geoprocessing workflow is ready.")  # Emit the message to chatgpt_ans
+            self.update_chatgpt_ans_textBrowser("Geoprocessing workflow is ready.")  # Emit the message to chatgpt_ans
 
         elif "Output:" in line:  # Check for "Output" flag
             generated_output = line.split("Output:")[1].strip()
@@ -991,7 +1022,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             if tool_IDs:
                 # self.tool_filename_ready.emit(tool_filename)  # Emit the tool filename
                 # self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_filename}")
-                self.update_chatgpt_ans_textBrowser(f"AI: Selected tool(s): {tool_IDs}")
+                self.update_chatgpt_ans_textBrowser(f"Selected tool(s): {tool_IDs}")
+
+        elif "TASK_BREAKDOWN:" in line:
+            task_breakdown = line.split("TASK_BREAKDOWN:")[1].strip()
+            if task_breakdown:
+                self.update_chatgpt_ans_textBrowser((f"{task_breakdown}"))
 
 
         if "```python" in clean_line or "```" in clean_line:
@@ -1014,7 +1050,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if success:
             # self.output_text_edit.append("The script ran successfully.")
             # self.output_text_edit.insertPlainText("The script ran successfully2.")
-            self.update_chatgpt_ans_textBrowser(f"AI: Done")
+            self.update_chatgpt_ans_textBrowser(f"Done")
             self.run_button.setEnabled(True)
             self.clear_textboxesBtn.setEnabled(True)
             self.task_LineEdit.setEnabled(True)
@@ -1024,7 +1060,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         else:
             # self.output_text_edit.append("The script finished with errors.")
             self.output_text_edit.insertPlainText("The script finished with errors.")
-            self.update_chatgpt_ans_textBrowser(f"AI: The script finished with errors.")
+            self.update_chatgpt_ans_textBrowser(f"The script finished with errors.")
             self.run_button.setEnabled(True)
             self.clear_textboxesBtn.setEnabled(True)
             self.task_LineEdit.setEnabled(True)
@@ -1250,7 +1286,7 @@ class ScriptThread(QThread):
                 if "GRAPH_SAVED:" in line:
                     html_graph_path = line.split("GRAPH_SAVED:")[1].strip()
                     self.update_graph(html_graph_path)
-                    self.chatgpt_update.emit("AI: Geoprocessing Workflow is ready.")  # Emit the message to chatgpt_ans
+                    self.chatgpt_update.emit("Geoprocessing Workflow is ready.")  # Emit the message to chatgpt_ans
 
                 elif "Output:" in line:  # Check for "Output" flag
                     generated_output = line.split("Output:")[1].strip()
@@ -1263,7 +1299,13 @@ class ScriptThread(QThread):
                     if tool_IDs:
                         # self.tool_filename_ready.emit(tool_filename)  # Emit the tool filename
                         # self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_filename}")
-                        self.chatgpt_update.emit(f"AI: Selected tool(s): {tool_IDs}")
+                        self.chatgpt_update.emit(f"Selected tool(s): {tool_IDs}")
+
+
+                elif "TASK_BREAKDOWN" in line:
+                    task_breakdown = line.split("TASK_BREAKDOWN")[1].strip()
+                    if task_breakdown:
+                        self.chatgpt_update.emit((f"{task_breakdown}"))
                 # else:
                 #     self.output_line.emit(line)
 
@@ -1284,6 +1326,7 @@ class ScriptThread(QThread):
 
 class GPTRequestThread(QThread):
     output_line = pyqtSignal(str)
+    chatgpt_update = pyqtSignal(str)
     finished_signal = pyqtSignal()
 
     def __init__(self, prompt, OpenAI_key, model_name, conversation_history):
@@ -1318,7 +1361,8 @@ class GPTRequestThread(QThread):
                 ]
             )
             reply = response.choices[0].message.content.strip()
-            self.output_line.emit(f"AI: {reply}")
+            # self.output_line.emit(f"AI: {reply}")
+            self.chatgpt_update.emit(reply)
         except Exception as e:
             self.output_line.emit(f"Error: {str(e)}")
         finally:

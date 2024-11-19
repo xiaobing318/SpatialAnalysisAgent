@@ -793,7 +793,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # print("Sending message:", self.task_LineEdit.toPlainText())  # Debugging statement
         # Emit the user's message in chatgpt_ans first
 
-        self.update_chatgpt_ans_textBrowser(f"--------------------------------------------------------------",is_user = None)
+        self.update_chatgpt_ans_textBrowser(f"--------------------------------------------------------------------------------------------",is_user = None)
         self.append_message(user_message)
 
         # Call update_config_file to save the latest API key
@@ -1016,7 +1016,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             # Check if generated output is not empty before emitting
             if generated_output:
                 self.update_report(generated_output)
-                self.update_chatgpt_ans_textBrowser(f"AI: {generated_output}")  # Emit Output
+                self.update_chatgpt_ans_textBrowser(f"{generated_output}")  # Emit Output
         elif "List of selected tool IDs:" in line:
             tool_IDs = line.split("List of selected tool IDs:")[1].strip()
             if tool_IDs:
@@ -1080,7 +1080,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.data_pathLineEdit.setEnabled(True)
         self.loadData.setEnabled(True)
         self.clear_textboxesBtn.setEnabled(True)
-        self.update_chatgpt_ans_textBrowser("--------------------------------------------------------------")
+        # self.update_chatgpt_ans_textBrowser("--------------------------------------------------------------")
 
 
     def generated_code_execution_finished(self):
@@ -1254,7 +1254,7 @@ class ScriptThread(QThread):
             # Handle exceptions
             traceback_str = traceback.format_exc()
             self.output_line.emit(f"Error: {e}\n{traceback_str}")
-            self.chatgpt_update.emit(f"AI: An error occurred: {str(e)}\n{traceback_str}")
+            self.chatgpt_update.emit(f"An error occurred: {str(e)}\n{traceback_str}")
             self.script_finished.emit(False)
         finally:
             sys.stdout = original_stdout
@@ -1293,7 +1293,7 @@ class ScriptThread(QThread):
                     # Check if generated output is not empty before emitting
                     if generated_output:
                         self.update_report(generated_output)
-                        self.chatgpt_update.emit(f"AI: {generated_output}")  # Emit Output
+                        self.chatgpt_update.emit(f"{generated_output}")  # Emit Output
                 elif "List of selected tool IDs:" in line:
                     tool_IDs = line.split("List of selected tool IDs:")[1].strip()
                     if tool_IDs:

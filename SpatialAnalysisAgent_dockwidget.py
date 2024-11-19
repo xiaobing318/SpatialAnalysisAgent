@@ -250,6 +250,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # self.refresh_slnGraph_Btn.clicked.connect(self.refresh_slnGraph)
         # self.refresh_report_Btn.clicked.connect(self.refresh_report)
         self.run_button.clicked.connect(self.clear_report)
+        self.Run_Generated_code.clicked.connect(self.clear_report)
         self.add_document_button.clicked.connect(self.add_documentation_file)
         # self.add_document_github_button.clicked.connect(self.open_upload_dialog)
         self.add_document_github_button.clicked.connect(self.show_contribution_dialog)
@@ -342,6 +343,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 QMessageBox.critical(self, "Error", f"Failed to load code:\n{str(e)}")
 
     def run_generated_code(self):
+        self.report_web_view.setHtml('')
         self.append_execution_output("Running code ...")
         # Get the code from the CodeEditor
         code_to_run = self.CodeEditor.toPlainText()
@@ -363,6 +365,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.generated_code_thread = RunGeneratedCodeThread(code_to_run, exec_globals)
         self.generated_code_thread.CodeEditor_output_line.connect(self.append_execution_output)
         self.generated_code_thread.execution_error.connect(self.append_execution_output)
+        self.generated_code_thread.report_ready.connect(self.update_report)
         self.generated_code_thread.finished.connect(self.generated_code_execution_finished)
         self.generated_code_thread.start()
 
@@ -1627,6 +1630,7 @@ class StreamRedirector(QObject):
 class RunGeneratedCodeThread(QThread):
     CodeEditor_output_line = pyqtSignal(str)
     execution_error = pyqtSignal(str)
+    report_ready = pyqtSignal(str)
 
     def __init__(self, code_to_run, exec_globals):
         super().__init__()
@@ -1641,7 +1645,8 @@ class RunGeneratedCodeThread(QThread):
         sys.stdout = StreamRedirector()
         sys.stderr = StreamRedirector()
 
-        sys.stdout.output_written.connect(self.CodeEditor_output_line.emit)
+        sys.stdout.output_written.connect(self.handle_output_line)
+        # sys.stdout.output_written.connect(self.CodeEditor_output_line.emit)
         sys.stderr.output_written.connect(self.CodeEditor_output_line.emit)
 
         try:
@@ -1654,3 +1659,14 @@ class RunGeneratedCodeThread(QThread):
         finally:
             sys.stdout = original_stdout
             sys.stderr = original_stderr
+
+    def handle_output_line(self, line):
+        # Emit the line to the execution output
+        self.CodeEditor_output_line.emit(line)
+        path_pattern = re.compile(r'([A-Za-z]:\\[^\\/:*?"<>|\r\n]+(?:\\[^\\/:*?"<>|\r\n]+)*\.\w+|/[^/ ]+/[^ ]+)')
+        match = path_pattern.search(line)
+        if match:
+            generated_output = match.group(0)
+            if generated_output:
+                self.report_ready.emit(generated_output)
+

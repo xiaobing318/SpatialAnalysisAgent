@@ -127,6 +127,7 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         super(SpatialAnalysisAgentDockWidget, self).__init__(parent)
 
         self.setupUi(self)
+        self.resize(400,2)
 
         self.is_task_breakdown = False
         self.task_breakdown_lines = []
@@ -164,7 +165,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # self.thread = None  # Initialize thread variable
         self.interrupt_button.clicked.connect(self.interrupt)
         # Set the window size
-        self.resize(800, 600)
 
         # Ensure the window has minimize and maximize buttons
         self.setWindowFlags(self.windowFlags() |

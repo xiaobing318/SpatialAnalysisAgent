@@ -1157,8 +1157,9 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     def get_openai_key (self):
         api_key = self.OpenAI_key_LineEdit.text()
-        if not api_key:
-            raise ValueError("API key is empty. Please enter a valid OpenAI API key.")
+        # if not api_key:
+            # raise ValueError("API key is empty. Please enter a valid OpenAI API key.")
+            # self.update_chatgpt_ans_textBrowser(f"Please enter a valid OpenAI API keyYYY.")
         return api_key
 
     def add_documentation_file(self):

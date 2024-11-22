@@ -65,6 +65,9 @@ Find more examples on the [Case Studies](https://github.com/Teakinboyewa/Spatial
 
 
 # Installing required libraries
+
+This plugin requires Python >= 3.11 
+
 ## Required python libraries
 - ```openai```
 - ```langchain_openai```
@@ -79,6 +82,7 @@ Find more examples on the [Case Studies](https://github.com/Teakinboyewa/Spatial
 - ```toml```
 - ```seaborn```
 - ```pydantic```
+- ```rasterio```
 
 **Note:** All the required python libraries are expected to be installed automatically. However, if any of these python libraries failed to install automatically, you may install them manually by following the steps below to install the libraries.
 

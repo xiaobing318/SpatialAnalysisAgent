@@ -28,8 +28,7 @@ import os
 import shutil
 import sys
 import urllib
-
-import iface
+# import iface
 import qgis
 import requests
 from qgis.PyQt import QtGui, QtWidgets, uic
@@ -40,8 +39,6 @@ import re
 from qgis.PyQt import QtGui, QtWidgets, uic
 from qgis.PyQt.QtCore import pyqtSignal
 import configparser
-import os
-import sys
 import subprocess
 from io import StringIO
 import time

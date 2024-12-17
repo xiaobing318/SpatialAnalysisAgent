@@ -1,13 +1,26 @@
 # Case Studies
+
 The case studies demonstrate the capabilities of the Spatial Analysis Agent (GIS Copilot) across three levels:
 
 1. Basic level: At this level, the tasks are straightforward, involving a single tool along with one (or occasionally two) data layers. The agent is expected to perform a straightforward operation that usually requires a single step, such as calculating the area of polygons or selecting features based on attributes.
 2. Intermediate level : At this level, tasks become more complex and involve multiple steps and tools. The agent is guided with specific instructions or a list of steps to perform the task. Although the steps are outlined, the agent still needs to generate the correct code for each step and link them together to perform the analysis.
 3. Advanced level : In the advanced level, tasks are multistep, and the agent is expected to determine the appropriate steps independently without explicit instructions, to devise the best approach for achieving the desired outcome.Evaluates the agent's ability to select the appropriate tool, generate the correct code, and successfully execute the complete operation.
+```c
+/*
+notes:杨小兵-2024-12-17
 
-### You can access over 100 test cases/analysis examples [here](https://giscience.psu.edu/copilot_test/) and [here](https://giscience.psu.edu/gis-copilot-demonstrations/).
+案例研究展示了空间分析代理 (GIS Copilot) 在三个层面上的功能：
+
+1. 基础级别：在此级别，任务很简单，涉及一个工具以及一个（有时是两个）数据层。代理需要执行通常只需一个步骤的简单操作，例如计算多边形的面积或根据属性选择特征。
+2. 中级级别：在此级别，任务变得更加复杂，涉及多个步骤和工具。代理需要通过特定说明或步骤列表来指导执行任务。尽管已概述了步骤，但代理仍需要为每个步骤生成正确的代码并将它们链接在一起以执行分析。
+3. 高级级别：在高级级别，任务是多步骤的，代理需要在没有明确说明的情况下独立确定适当的步骤，以设计出实现预期结果的最佳方法。评估代理选择适当工具、生成正确代码和成功执行完整操作的能力。
+*/
+```
+
+## You can access over 100 test cases/analysis examples [here](https://giscience.psu.edu/copilot_test/) and [here](https://giscience.psu.edu/gis-copilot-demonstrations/).
 
 ## Level 1: Basic level
+
 ### Case 1.1: Can you please create 2000-feet zones around each health facilities in Washington DC to identify areas of service coverage?
 
 ![Health facilities coverage zone .png](Doc%2FCase%20Studies%2FLevel%201%2FHealth%20facilities%20coverage%20zone%20.png)
@@ -20,7 +33,7 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent (GIS
 
 ![Selection of high population counties.png](Doc%2FCase%20Studies%2FLevel%201%2FSelection%20of%20high%20population%20counties.png)
 
-## Case 1.4: Clip the land cover data of the USA to the Pennsylvania boundary.
+### Case 1.4: Clip the land cover data of the USA to the Pennsylvania boundary.
 
 ![Extracting land cover information.png](Doc%2FCase%20Studies%2FLevel%201%2FExtracting%20land%20cover%20information.png)
 
@@ -28,6 +41,7 @@ The case studies demonstrate the capabilities of the Spatial Analysis Agent (GIS
 ![County Selection](Doc/Case%20Studies/Level%202/CountySelection.png)
 
 ## Level 2: Intermediate level
+
 ### Case 2.1: Perform the following task: 1) Clip the DEM to SC boundary and load the clipped DEM. 2) Show me the histogram for the clipped DEM pixel values. 3) Generate the zonal statistics for every county in SC, focusing on average elevation. 4) Finally create a choropleth map showing the average elevation of each county in SC.
 
 ![Zonal statistics.png](Doc%2FCase%20Studies%2FLevel%202%2FZonal%20statistics.png)

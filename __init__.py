@@ -87,6 +87,6 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
-    # 从当前目录下的Spatial_Analysis_Agent.py文件中导入SpatialAnalysisAgent类
+    # 从当前目录下的Spatial_Analysis_Agent.py文件中导入SpatialAnalysisAgent
     from .SpatialAnalysisAgent import SpatialAnalysisAgent
     return SpatialAnalysisAgent(iface)

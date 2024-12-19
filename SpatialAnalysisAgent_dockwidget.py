@@ -28,7 +28,7 @@ import os
 import shutil
 import sys
 import urllib
-# import iface
+# import iface（为了从qgis导入iface）
 import qgis
 import requests
 from qgis.PyQt import QtGui, QtWidgets, uic
@@ -45,10 +45,8 @@ import time
 from PyQt5.QtWebKitWidgets import QWebView
 from qgis.PyQt.QtCore import Qt, QCoreApplication
 from qgis._core import QgsVectorLayer, QgsRasterLayer, QgsProcessing
-
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
-from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QWidget, QSizeGrip, QMessageBox, \
-    QInputDialog, QTextBrowser
+from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QWidget, QSizeGrip, QMessageBox, QInputDialog, QTextBrowser
 from PyQt5.QtCore import QThread, pyqtSignal, QUrl, QObject, pyqtSlot, QPropertyAnimation, QPoint, QRect, QSettings
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QDialog, QHBoxLayout
@@ -56,23 +54,17 @@ import os
 import sys
 import subprocess
 import traceback
-from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QGridLayout, QWidget, QTextEdit, QPushButton, \
-    QLabel, QLineEdit, QMenu, QAction, QCompleter
+from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QGridLayout, QWidget, QTextEdit, QPushButton, QLabel, QLineEdit, QMenu, QAction, QCompleter
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QTextCursor, QTextCharFormat, QFont, QColor, QPainter, QBrush, QSyntaxHighlighter, \
-    QDesktopServices
+from PyQt5.QtGui import QTextCursor, QTextCharFormat, QFont, QColor, QPainter, QBrush, QSyntaxHighlighter, QDesktopServices
 import asyncio
 from qgis.gui import QgsMapCanvas, QgsLayerTreeView, QgsLayerTreeMapCanvasBridge, QgsAttributeDialog
 from qgis.core import QgsProject, QgsLayerTreeModel, QgsLayerTreeNode, QgsRectangle
-from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject, QgsVectorLayer, \
-    QgsCoordinateTransformContext, QgsGeometry, QgsFeature, QgsVectorFileWriter
-
-
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'SpatialAnalysisAgent_dockwidget_base.ui'))
-
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject, QgsVectorLayer, QgsCoordinateTransformContext, QgsGeometry, QgsFeature, QgsVectorFileWriter
+FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'SpatialAnalysisAgent_dockwidget_base.ui'))
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 from .install_packages.check_packages import check_and_install_libraries , check_missing_libraries, read_libraries_from_file, install_libraries
+import openai
 
 class LibraryCheckThread(QThread):
     finished_checking = pyqtSignal(list)
@@ -85,7 +77,6 @@ class LibraryCheckThread(QThread):
         # Perform the library check in this thread
         missing_packages = check_missing_libraries(read_libraries_from_file(self.filename))
         self.finished_checking.emit(missing_packages)
-
 
 class VersionCheckThread(QThread):
     version_check_completed = pyqtSignal(bool)  # Emits True if update is needed
@@ -118,7 +109,20 @@ class VersionCheckThread(QThread):
 class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     closingPlugin = pyqtSignal()
-
+    """
+    #### `__init__(self, parent=None)`
+    - **作用**：这是类的构造函数，负责初始化插件的各种属性和界面元素。
+    - **主要功能**：
+    - 调用父类的构造函数并设置用户界面。
+    - 初始化插件目录和本地化设置（加载翻译文件）。
+    - 启动后台线程以检查和安装必要的Python库，以及检查OpenAI库的版本。
+    - 设置文本浏览器的链接行为，并导入所需的第三方库。
+    - 加载OpenAI API密钥。
+    - 初始化UI元素，连接信号与槽。
+    - 设置窗口属性，如大小、最小化和最大化按钮。
+    - 初始化会话历史记录和其他相关属性。
+    - 连接QGIS项目中图层的添加和移除信号，以动态更新数据路径。
+    """
     def __init__(self, parent=None):
         """Constructor."""
         super(SpatialAnalysisAgentDockWidget, self).__init__(parent)
@@ -226,8 +230,15 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Connect the visibility changed signal for all layers
         root = QgsProject.instance().layerTreeRoot()
         root.visibilityChanged.connect(self.on_layer_visibility_changed)
-
-
+    """
+    #### `initUI(self)`
+    - **作用**：初始化用户界面元素，连接各种按钮到对应的方法。
+    - **主要功能**：
+    - 连接运行按钮、中断按钮、保存/加载代码按钮等到相应的槽函数。
+    - 设置任务和数据路径的自动完成功能（`QCompleter`）。
+    - 配置图形和报告的Web视图布局。
+    - 初始化并连接其他UI组件，如复选框和标签页。
+    """
     def initUI(self):
 
         # Disable the data_pathLineEdit permanently
@@ -260,7 +271,14 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Populate data_pathLineEdit with currently loaded layers
         # self.populate_data_path_line_edit()
         self.on_layer_visibility_changed()
-
+    """
+    #### `append_execution_output(self, line)`
+    - **作用**：将执行输出追加到输出文本编辑框中，并根据内容设置颜色。
+    - **主要功能**：
+    - 分割多行输出，每行前添加 `>>>` 前缀。
+    - 根据内容关键字（如 "Error", "Warning", "Execution completed"）设置文本颜色。
+    - 将格式化后的文本插入到输出文本编辑框中，并滚动到末尾。
+"""
     def append_execution_output(self, line):
         # Check if text is empty
 
@@ -290,7 +308,14 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.execution_output_text_edit.verticalScrollBar().setValue(
             self.execution_output_text_edit.verticalScrollBar().maximum()
         )
-
+    """
+    #### `append_colored_text(self, text_edit, text, color)`
+    - **作用**：在指定的文本编辑框中插入带颜色的文本。
+    - **主要功能**：
+    - 获取文本光标，移动到末尾位置。
+    - 设置文本格式的前景色。
+    - 插入带颜色的文本和换行符。
+    """
     def append_colored_text(self, text_edit, text, color):
         cursor = text_edit.textCursor()
         cursor.movePosition(QTextCursor.End)
@@ -300,6 +325,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         format.setForeground(color)
 
         cursor.insertText(text + '\n', format)
+    """
+    #### `save_code_to_file(self)`
+    - **作用**：将代码编辑器中的内容保存到文件。
+    - **主要功能**：
+    - 打开保存文件对话框，选择保存路径和文件类型。
+    - 将代码内容写入选定的文件中，并提示用户保存成功或失败。
+    """
     def save_code_to_file(self):
         code = self.CodeEditor.toPlainText()
         if not code.strip():
@@ -321,7 +353,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 QMessageBox.information(self, "Success", f"Code saved to:\n{file_name}")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to save code:\n{str(e)}")
-
+    """
+    #### `load_code_from_file(self)`
+    - **作用**：从文件中加载代码到代码编辑器。
+    - **主要功能**：
+    - 打开打开文件对话框，选择要加载的文件。
+    - 读取文件内容并显示在代码编辑器中，处理加载失败的情况。
+    """
     def load_code_from_file(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(
@@ -341,7 +379,15 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 # QMessageBox.information(self, "Success", f"Code loaded from:\n{file_name}")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to load code:\n{str(e)}")
-
+    """
+    #### `run_generated_code(self)`
+    - **作用**：运行用户生成的代码。
+    - **主要功能**：
+    - 获取代码编辑器中的代码，并检查是否为空。
+    - 准备执行环境（导入 `processing` 模块）。
+    - 启动 `RunGeneratedCodeThread` 线程执行代码。
+    - 连接线程的信号以处理输出和报告的更新。
+    """
     def run_generated_code(self):
         self.report_web_view.setHtml('')
         self.append_execution_output("Running code ...")
@@ -368,14 +414,25 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.generated_code_thread.report_ready.connect(self.update_report)
         self.generated_code_thread.finished.connect(self.generated_code_execution_finished)
         self.generated_code_thread.start()
-
+    """
+    #### `show_contribution_dialog(self)`
+    - **作用**：显示贡献对话框，允许用户进行贡献相关的交互。
+    - **主要功能**：
+    - 创建并显示 `ContributionDialog` 对话框。
+    """
     def show_contribution_dialog(self):
         """Open the ContributionDialog for user interaction."""
 
         self.contribution_dialog = ContributionDialog(self)
 
         self.contribution_dialog.exec_()
-
+    """
+    #### `open_link(self, url)`
+    - **作用**：处理文本浏览器中点击的链接，打开相应的URL或文件。
+    - **主要功能**：
+    - 检查URL的协议类型，决定是否提示用户打开本地文件。
+    - 使用 `QDesktopServices.openUrl` 打开链接。
+    """
     def open_link(self, url):
         if url.scheme() == 'file':
             file_path = url.toLocalFile()
@@ -392,8 +449,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             QDesktopServices.openUrl(url)
         # # url is a QUrl object
         # QDesktopServices.openUrl(url)
-
-
+    """
+    #### `create_default_workspace(self, workspace_dir)`
+    - **作用**：创建默认的工作空间目录（如果不存在）。
+    - **主要功能**：
+    - 检查目录是否存在，不存在则创建。
+    """
     def create_default_workspace(self, workspace_dir):
         """Create the Default_workspace directory if it doesn't exist."""
         if not os.path.exists(workspace_dir):
@@ -402,7 +463,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
             except Exception as e:
                 print(f"Error creating default workspace: {e}")
-
+    """
+    #### `handle_missing_libraries(self, missing_packages)`
+    - **作用**：处理缺失的Python库，提示用户是否安装这些依赖。
+    - **主要功能**：
+    - 如果有缺失的库，弹出对话框询问用户是否安装。
+    - 若用户选择安装，调用安装函数进行库的安装。
+    """
     def handle_missing_libraries(self, missing_packages):
         if missing_packages:
             message = "The following Python packages are required to use the plugin:\n\n"
@@ -413,7 +480,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
                 install_libraries(missing_packages)
-
+    """
+    #### `check_libraries_once(self)`
+    - **作用**：确保必要的Python库已安装，只进行一次检查。
+    - **主要功能**：
+    - 使用 `QSettings` 存储和检查库是否已被验证和安装。
+    - 如果未检查，调用库检查和安装函数，并更新设置。
+    """
     def check_libraries_once(self):
 
         """Check if libraries were already installed, otherwise run the check."""
@@ -433,14 +506,25 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         else:
             # Libraries have already been checked
             print("Libraries have already been checked and installed.")
-
+    """
+    #### `import_libraries(self)`
+    - **作用**：动态导入第三方库，确保它们已安装。
+    - **主要功能**：
+    - （当前为空，预留未来实现）
+    """
     def import_libraries(self):
         """Dynamically import the third-party libraries after ensuring they're installed."""
 
         """Dynamically import the third-party libraries after ensuring they're installed."""
 
         pass
-
+    """
+    #### `handle_version_check(self, needs_update)`
+    - **作用**：处理OpenAI库的版本检查，提示用户更新。
+    - **主要功能**：
+    - 如果检测到需要更新，提示用户是否进行更新操作。
+    - 若用户同意，调用更新方法进行库的升级。
+    """
     def handle_version_check(self, needs_update):
         if needs_update:
             message = (
@@ -453,7 +537,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             )
             if reply == QMessageBox.Yes:
                 self.update_openai_package()
-
+    """
+    #### `update_openai_package(self)`
+    - **作用**：更新OpenAI库到最新版本。
+    - **主要功能**：
+    - 使用 `subprocess` 调用 `pip` 命令升级 `openai` 包。
+    - 显示更新成功或失败的消息。
+    """
     def update_openai_package(self):
         try:
             import subprocess
@@ -471,8 +561,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 self, 'Update Failed',
                 f"Failed to update 'openai' package:\n{e}"
             )
-
-
+    """
+    #### `on_layer_visibility_changed(self)`
+    - **作用**：根据图层的可见性更新数据路径输入框。
+    - **主要功能**：
+    - 遍历所有可见图层，获取其数据源路径。
+    - 将所有可见图层的路径显示在 `data_pathLineEdit` 中，每行一个路径。
+    """
     def on_layer_visibility_changed(self):
         """Update data_pathLineEdit based on visible layers."""
         root = QgsProject.instance().layerTreeRoot()
@@ -495,7 +590,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         all_paths = "\n".join(visible_layers)
 
         self.data_pathLineEdit.setPlainText(all_paths)
-
+    """
+    #### `on_layer_added(self, layer)`
+    - **作用**：处理图层添加事件，更新数据路径输入框。
+    - **主要功能**：
+    - 获取新添加图层的路径，并添加到 `data_pathLineEdit` 中（避免重复）。
+    - 连接新图层的可见性变化信号，以便动态更新。
+    """
     def on_layer_added(self, layer):
         # Get the current text in the LineEdit
         existing_paths = self.data_pathLineEdit.toPlainText()
@@ -519,7 +620,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         node = root.findLayer(layer.id())
         if node:
             node.visibilityChanged.connect(self.on_layer_visibility_changed)
-
+    """
+    #### `on_layer_removed(self, layer_id)`
+    - **作用**：处理图层移除事件，更新数据路径输入框。
+    - **主要功能**：
+    - 获取被移除图层的路径，并从 `data_pathLineEdit` 中移除。
+    - 调用 `on_layer_visibility_changed` 以确保数据路径的准确性。
+    """
     def on_layer_removed(self, layer_id):
         # Get the current text in the LineEdit
         existing_paths = self.data_pathLineEdit.toPlainText()
@@ -547,11 +654,15 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """Enable or disable data_pathLineEdit based on the ChatMode_Checkbox state."""
         self.data_pathLineEdit.setEnabled(not checked)
         self.loadData.setEnabled(not checked)
-
+    """
+    #### `closeEvent(self, event)`
+    - **作用**：处理窗口关闭事件，发出插件关闭信号。
+    - **主要功能**：
+    - 发出 `closingPlugin` 信号，接受关闭事件。
+    """
     def closeEvent(self, event):
         self.closingPlugin.emit()
         event.accept()
-
 
     def clear_report(self):
         if not self.ChatMode_checkbox.isChecked() and self.data_pathLineEdit.toPlainText().strip() and self.task_LineEdit.toPlainText().strip():
@@ -559,11 +670,21 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             # self.refresh_report_Btn.clicked.connect(self.refresh_report)
         else:
             return
-
+    """
+    #### `clear_code_editor(self)`
+    - **作用**：清空代码编辑器中的内容。
+    - **主要功能**：
+    - 调用 `clear` 方法清空 `output_text_edit`。
+    """
     def clear_code_editor(self):
         self.execution_output_text_edit.clear()
-
-
+    """
+    #### `populate_data_path_line_edit(self)`
+    - **作用**：根据当前项目中的图层，填充数据路径输入框。
+    - **主要功能**：
+    - 遍历所有图层，获取其数据源路径。
+    - 将路径以分号分隔显示在 `data_pathLineEdit` 中。
+    """
     def populate_data_path_line_edit(self):
         # Retrieve all layers currently in the project
         layers = QgsProject.instance().mapLayers().values()
@@ -597,6 +718,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Join paths with a semicolon and update data_pathLineEdit
         all_paths = "; ".join(paths)
         self.data_pathLineEdit.setPlainText(all_paths)
+    """
+    #### `read_updated_config(self)`
+    - **作用**：读取配置文件中的OpenAI API密钥，并显示在界面上。
+    - **主要功能**：
+    - 读取 `config.ini` 文件中的 `OpenAI_key` 并显示在 `OpenAI_key_LineEdit` 中。
+    """
     def read_updated_config(self):
         # self.update_config_file()
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -606,7 +733,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         config.read(config_path)
         OpenAI_key = config['API_Key']['OpenAI_key']
         self.OpenAI_key_LineEdit.setText(OpenAI_key)
-
+    """
+    #### `update_config_file(self)`
+    - **作用**：更新配置文件中的OpenAI API密钥。
+    - **主要功能**：
+    - 从界面获取API密钥并保存到配置文件 (`config.ini`)。
+    - 同时将密钥存储到 `QSettings` 中（可选）。
+    """
     def update_config_file(self):
         # Retrieve the API key from the line edit
         # OpenAI_key = self.OpenAI_key_LineEdit.text()
@@ -637,7 +770,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # # Update the QSettings (optional, if you want to store it there too)
         settings = QSettings('YourOrganization', 'YourApplication')
         settings.setValue('API_Key/OpenAI_key', OpenAI_key)
-
+    """
+    #### `update_OpenAI_key(self)`
+    - **作用**：更新并保存OpenAI API密钥。
+    - **主要功能**：
+    - 从界面获取API密钥，并将其保存到 `QSettings` 中。
+    """
     def update_OpenAI_key(self):
         self.OpenAI_key = {}
         settings = QSettings('YourOrganization', 'YourApplication')
@@ -645,7 +783,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Store the key in the dictionary and save it in the QSettings
         self.OpenAI_key['OpenAI_key'] = api_key
         settings.setValue('API_Key/OpenAI_key', api_key)
-
+    """
+    #### `load_OpenAI_key(self)`
+    - **作用**：从配置文件中加载OpenAI API密钥，并显示在界面上。
+    - **主要功能**：
+    - 读取 `config.ini` 文件中的API密钥。
+    - 将读取到的密钥显示在相应的输入框中。
+    """
     def load_OpenAI_key(self):
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(current_script_dir, 'SpatialAnalysisAgent', 'config.ini')
@@ -659,10 +803,22 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.update_config_file()
     # # Set the loaded key in the OpenAI_key_LineEdit widget
     # self.OpenAI_key_LineEdit.setText(api_key)
-
+    """
+    #### `update_graph(self, html_path)`
+    - **作用**：加载生成的图形HTML文件到图形Web视图中。
+    - **主要功能**：
+    - 使用 `QUrl.fromLocalFile` 加载本地HTML文件到 `web_view` 中。
+    """
     def update_graph(self, html_path):
         self.web_view.load(QUrl.fromLocalFile(html_path))
-
+    """
+    #### `update_report(self, generated_report_path)`
+    - **作用**：根据生成的报告文件路径更新报告Web视图。
+    - **主要功能**：
+    - 判断文件类型（图片或HTML）。
+    - 对于图片，生成一个包含图片的HTML文件并加载。
+    - 对于HTML文件，直接加载到Web视图中。
+    """
     def update_report(self, generated_report_path):
         # Check the file extension to determine if it's an image or HTML
         file_extension = os.path.splitext(generated_report_path)[1].lower()
@@ -685,11 +841,15 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             print("Unsupported file type.")
 
         # self.report_web_view.load(QUrl.fromLocalFile(generated_report_path))
-
+    """
+    #### `refresh_slnGraph(self)`
+    - **作用**：刷新解决方案图（Solution Graph）的显示。
+    - **主要功能**：
+    - 清空Web视图的内容，并显示一条提示信息。
+    """
     def refresh_slnGraph(self):
         # Clear the web view content
         self.web_view.setHtml("<html><body><h1>Solution Graph Cleared</h1></body></html>")
-
 
     def set_initial_extent(self):
         project = QgsProject.instance()
@@ -699,13 +859,23 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             for layer in layers[1:]:
                 extent.combineExtentWith(layer.extent())
             self.mapCanvas.setExtent(extent)
-
+    """
+    #### `removeLayer(self)`
+    - **作用**：从图层树中移除选定的图层。
+    - **主要功能**：
+    - 获取当前选中的图层节点，并从图层树根节点中移除。
+    """
     def removeLayer(self):
         selectedIndex = self.layerTreeView.currentIndex()
         node = self.layerTreeModel.index2node(selectedIndex)
         if isinstance(node, QgsLayerTreeNode):
             QgsProject.instance().layerTreeRoot().removeChildNode(node)
-
+    """
+    #### `showAttributeTable(self)`
+    - **作用**：显示选定图层的属性表。
+    - **主要功能**：
+    - 获取当前选中的图层，并打开其属性表对话框。
+    """
     def showAttributeTable(self):
         selectedIndex = self.layerTreeView.currentIndex()
         node = self.layerTreeModel.index2node(selectedIndex)
@@ -714,7 +884,12 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             if layer:
                 dlg = QgsAttributeDialog(layer)
                 dlg.exec_()
-
+    """
+    #### `zoomToExtent(self)`
+    - **作用**：将地图画布缩放到选定图层的范围。
+    - **主要功能**：
+    - 获取当前选中的图层，并设置地图画布的范围为该图层的范围。
+    """
     def zoomToExtent(self):
         selectedIndex = self.layerTreeView.currentIndex()
         node = self.layerTreeModel.index2node(selectedIndex)
@@ -724,7 +899,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 extent = layer.extent()
                 self.mapCanvas.setExtent(extent)
                 self.mapCanvas.refresh()
-
+    """
+    #### `load_data(self)`
+    - **作用**：加载用户选择的数据文件到QGIS项目中。
+    - **主要功能**：
+    - 打开文件选择对话框，允许用户选择各种数据文件（如Shapefile、CSV、GPKG、TIF、JPG）。
+    - 根据文件类型，加载相应的矢量或栅格图层到QGIS项目中，并更新数据路径输入框。
+    """
     def load_data(self):
 
         file_filter = "Data Files(*.shp *.csv *.gpkg *.tif *.jpg)"
@@ -783,19 +964,28 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
             # Set all paths in data_pathLineEdit separated by a semicolon
             self.data_pathLineEdit.setPlainText(all_paths)
+    """
+    #### `send_button_clicked(self)`
+    - **作用**：处理发送按钮的点击事件，触发与OpenAI的交互。
+    - **主要功能**：
+    - 获取用户在任务输入框中的消息，并清空代码编辑器。
+    - 检查任务和数据路径的有效性，提示用户输入必要的信息。
+    - 根据聊天模式的选择，调用 `chatgpt_direct_answer` 或 `run_script` 方法。
+    """
     def send_button_clicked(self):
         """Slot to handle the send button click."""
 
-        # self.chatgpt_ans_textBrowser.setAlignment(Qt.AlignLeft)
+        # self.chatgpt_ans_textBrowser.setAlignment(Qt.AlignLeft)(获取用户输入与清空代码编辑器)
         user_message =self.task_LineEdit.toPlainText().strip()
         self.CodeEditor.clear()
-
+        # 验证用户输入是否为空
         if not user_message:
             self.update_chatgpt_ans_textBrowser(f"Please enter a task in the task field.", is_user=False)
-            return  # Stop further execution if the task is empty
+            # Stop further execution if the task is empty
+            return
         # print("Sending message:", self.task_LineEdit.toPlainText())  # Debugging statement
         # Emit the user's message in chatgpt_ans first
-
+        # 向聊天文本浏览器添加一条长分隔线，用于视觉上分隔不同的对话部分
         self.update_chatgpt_ans_textBrowser(f"--------------------------------------------------------------------------------------------",is_user = None)
         self.append_message(user_message)
 
@@ -804,17 +994,25 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Now read the updated config file to refresh the API key
         self.read_updated_config()
-
+        # 验证数据路径输入是否有效
         if not self.ChatMode_checkbox.isChecked() and self.data_pathLineEdit.isEnabled() and not self.data_pathLineEdit.toPlainText().strip():
             self.update_chatgpt_ans_textBrowser(f"Please load the data to be used.", is_user=False)
             return  # Stop further execution if data path is required but empty
-
-
+        # 检查“聊天模式”复选框是否未选中
         if self.ChatMode_checkbox.isChecked():
+            # 调用 `chatgpt_direct_answer` 方法，将用户消息直接发送给ChatGPT，并显示其回答
             self.chatgpt_direct_answer(user_message)
         else:
+            # 调用 `run_script` 方法，根据用户输入的任务和数据路径运行相应的脚本
             self.run_script()
-
+    """
+    #### `chatgpt_direct_answer(self, user_message)`
+    - **作用**：与GPT-4进行直接对话并显示结果。
+    - **主要功能**：
+    - 获取最新的OpenAI API密钥和选定的模型名称。
+    - 启动 `GPTRequestThread` 线程发送请求到OpenAI，并处理响应。
+    - 连接线程的信号以更新聊天文本浏览器和状态。
+    """
     def chatgpt_direct_answer(self, user_message):
         """Method to interact with GPT-4 and display the result in output_text_edit_2."""
         # Update API key in the config file first
@@ -838,7 +1036,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.gpt_thread.finished_signal.connect(lambda:self.update_chatgpt_ans_textBrowser("Done", is_user=False))
 
         self.gpt_thread.start()
-
+    """
+    #### `open_directory_dialog(self)`
+    - **作用**：打开目录选择对话框，让用户选择工作空间目录。
+    - **主要功能**：
+    - 使用 `QFileDialog.getExistingDirectory` 让用户选择目录。
+    - 将选择的目录路径显示在相应的输入框中。
+    """
     def open_directory_dialog(self):
         """Open a dialog for the user to select a workspace directory."""
         directory = QFileDialog.getExistingDirectory(self, "Select Workspace Directory")
@@ -846,6 +1050,15 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             # Set the selected directory to the PlainTextLineEdit
             # self.workspace_directoryLineEdit.setPlainText(directory)
             self.workspace_directoryLineEdit2.setText(directory)
+    """
+    #### `run_script(self)`
+    - **作用**：运行用户生成的脚本。
+    - **主要功能**：
+    - 获取用户输入的任务、数据路径和工作目录。
+    - 启动 `ScriptThread` 线程，传递必要的参数执行脚本。
+    - 连接线程的信号以处理输出、图形和报告的更新。
+    - 禁用相关的UI按钮，防止重复操作。
+    """
     def run_script(self):
         # self.update_OpenAI_key()
         # Retrieve the API key from the config
@@ -893,11 +1106,23 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.task_LineEdit.setEnabled(False)
         self.data_pathLineEdit.setEnabled(False)
         self.loadData.setEnabled(False)
-
+    """
+    #### `update_code_editor(self, code)`
+    - **作用**：将生成的代码更新到代码编辑器中。
+    - **主要功能**：
+    - 设置 `CodeEditor` 的文本内容为生成的代码。
+    """
     def update_code_editor(self, code):
         """Update the code_editor widget with the last extracted code block."""
         self.CodeEditor.setPlainText(code)
-
+    """
+    #### `update_chatgpt_ans_textBrowser(self, message, is_user=False)`
+    - **作用**：更新聊天文本浏览器，显示用户和AI的对话内容。
+    - **主要功能**：
+    - 将新的消息添加到会话历史记录中。
+    - 遍历会话历史，按格式插入带颜色和前缀的消息。
+    - 处理文本中的URL和文件路径，将其转换为可点击的链接。
+    """
     def update_chatgpt_ans_textBrowser(self, message, is_user=False):
         # Append new message to conversation history
         self.conversation_history.append((message, is_user))
@@ -919,8 +1144,14 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.task_LineEdit.setEnabled(True)
         self.data_pathLineEdit.setEnabled(True)
         self.loadData.setEnabled(True)
-
-
+    """
+    #### `append_text_with_format(self, text, is_user=True)`
+    - **作用**：在聊天文本浏览器中以特定格式和颜色显示文本。
+    - **主要功能**：
+    - 识别文本中的URL和文件路径，并将其转换为可点击的链接。
+    - 根据消息来源（用户或AI），设置不同的前缀和颜色。
+    - 插入格式化后的HTML内容到文本浏览器中，并添加换行符。
+    """
     def append_text_with_format(self, text, is_user=True):
         url_pattern = re.compile(
             r'((?:https?://|file:///)[^\s]+)'  # URLs starting with http://, https://, or file:///
@@ -988,6 +1219,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self.chatgpt_ans_textBrowser.setTextCursor(cursor)
 
+    """
+    #### `append_message(self, message)`
+    - **作用**：将用户的消息添加到聊天记录中，并触发相应的处理。
+    - **主要功能**：
+    - 如果消息不为空，将其显示为用户消息，并更新输出窗口。
+    - 如果启用了聊天模式，清空任务输入框。
+    """
     @pyqtSlot(str)
     def append_message(self, message):
         # message = self.task_LineEdit.toPlainText()
@@ -999,11 +1237,23 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             if self.ChatMode_checkbox.isChecked():
                 # Clear the input field after sending the message when switch is checked
                 self.task_LineEdit.clear()
-
+    """
+    #### `strip_ansi_sequences(self, text)`
+    - **作用**：移除文本中的ANSI转义序列。
+    - **主要功能**：
+    - 使用正则表达式匹配并删除ANSI转义字符。
+    """
     def strip_ansi_sequences(self, text):
         ansi_escape = re.compile(r'\x1b\[[0-9;]*[A-Za-z]')
         return ansi_escape.sub('', text)
-
+    """
+    #### `update_output(self, line)`
+    - **作用**：处理脚本或线程输出，更新输出文本编辑框和聊天记录。
+    - **主要功能**：
+    - 过滤ANSI转义序列，清理输出文本。
+    - 根据输出内容判断是否需要更新图形、报告或任务分解。
+    - 将处理后的文本插入到输出文本编辑框中，并滚动到末尾。
+    """
     def update_output(self, line):
 
         clean_line = self.strip_ansi_sequences(line)
@@ -1097,6 +1347,13 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # # Move the scroll bar to the bottom to avoid unwanted gaps or large spaces
         # self.output_text_edit.verticalScrollBar().setValue(self.output_text_edit.verticalScrollBar().maximum())
 
+    """
+    #### `thread_finished(self, success)`
+    - **作用**：处理脚本线程结束后的反馈，更新界面状态。
+    - **主要功能**：
+    - 根据脚本执行是否成功，显示相应的消息。
+    - 重新启用相关的UI按钮，确保用户可以继续操作。
+    """
     # @pyqtSlot(bool)
     def thread_finished(self, success):
 
@@ -1134,31 +1391,59 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.loadData.setEnabled(True)
         self.clear_textboxesBtn.setEnabled(True)
         # self.update_chatgpt_ans_textBrowser("--------------------------------------------------------------")
-
-
+    """
+    #### `generated_code_execution_finished(self)`
+    - **作用**：处理生成代码执行完成后的反馈。
+    - **主要功能**：
+    - 根据执行结果，更新执行输出窗口中的信息。
+    """
     def generated_code_execution_finished(self):
         # QMessageBox.information(self, "Execution Complete", "The generated code has finished executing.")
         if self.generated_code_thread.success:
             self.append_execution_output("Execution completed")
         else:
             self.append_execution_output("The script finished with errors.")
+    """
+    #### `clear_textboxes(self)`
+    - **作用**：清空所有相关的文本框和会话历史记录。
+    - **主要功能**：
+    - 清空 `output_text_edit`、`task_LineEdit`、`chatgpt_ans_textBrowser`，并重置会话历史记录。
+    """
     def clear_textboxes(self):
         self.output_text_edit.clear()
         self.task_LineEdit.clear()
         self.chatgpt_ans_textBrowser.clear()
         self.conversation_history = []
-
+    """
+    #### `interrupt(self)`
+    - **作用**：中断正在运行的线程或脚本。
+    - **主要功能**：
+    - 如果有正在运行的线程，调用其 `stop` 方法终止执行。
+    - 更新界面提示用户脚本已终止，并重新启用相关按钮。
+    """
     def interrupt(self):
         if self.thread:
             self.thread.stop()  # Call the stop method to set the flag
-
+    """
+    #### `get_openai_key(self)`
+    - **作用**：获取用户输入的OpenAI API密钥。
+    - **主要功能**：
+    - 从界面输入框中读取API密钥并返回。
+    """
     def get_openai_key (self):
         api_key = self.OpenAI_key_LineEdit.text()
         # if not api_key:
             # raise ValueError("API key is empty. Please enter a valid OpenAI API key.")
             # self.update_chatgpt_ans_textBrowser(f"Please enter a valid OpenAI API keyYYY.")
         return api_key
-
+    """
+    #### `add_documentation_file(self)`
+    - **作用**：添加文档文件到指定的工具类别目录中。
+    - **主要功能**：
+    - 让用户选择工具类别（QGIS处理工具或自定义工具）。
+    - 打开文件选择对话框，让用户选择 `.toml` 文件。
+    - 将选定的文件复制到对应的文档目录，处理文件存在的情况。
+    """
     def add_documentation_file(self):
         try:
             # Popup to select the tool category (QGIS Processing Tool or Customized Tool)
@@ -1221,7 +1506,6 @@ class SpatialAnalysisAgentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 def classFactory(iface):
     """Load SpatialAnalysisAgentPlugin class."""
     return SpatialAnalysisAgentDockWidget(iface)
-
 
 class ScriptThread(QThread):
     output_line = pyqtSignal(str)
@@ -1377,7 +1661,6 @@ class ScriptThread(QThread):
     def check_running(self):
         return self._is_running
 
-
 class GPTRequestThread(QThread):
     output_line = pyqtSignal(str)
     chatgpt_update = pyqtSignal(str)
@@ -1388,7 +1671,6 @@ class GPTRequestThread(QThread):
         self.prompt = prompt
         self.OpenAI_key = OpenAI_key
         self.model_name = model_name
-
 
     def load_api_key_from_config(self):
         """Load OpenAI API key from config.ini."""
@@ -1404,24 +1686,54 @@ class GPTRequestThread(QThread):
             raise ValueError("API Key not found in config file.")
 
     def run(self):
+        # 开始一个异常处理块，用于捕捉和处理可能在代码执行过程中发生的异常
         try:
             # self.update_config_file()
+            """杨小兵-2024-12-19：这是原始代码
+            # 从 OpenAI 的 Python 客户端库中导入 `OpenAI` 类
             from openai import OpenAI
+            # 创建一个 `OpenAI` 客户端实例，使用 `self.OpenAI_key` 作为 API 密钥进行身份验证
             client = OpenAI(api_key=self.OpenAI_key)
+            # 调用 OpenAI 客户端的 `create` 方法，发送一个聊天完成请求
             response = client.chat.completions.create(
                 model= self.model_name,#"gpt-4",
                 messages=[
                     {"role": "user", "content": self.prompt},
                 ]
             )
+            # 提取并清理模型生成的回复文本，存储在变量 `reply` 中
             reply = response.choices[0].message.content.strip()
+            """
+
+            # 杨小兵-2024-12-19
+            # 配置 API 基础路径和 API 密钥
+            openai.api_base = "http://localhost:8080/v1"  # 确保不包含具体的端点路径
+            openai.api_key = "Bearer no-key"  # 这里的 "yxb" 是 API 密钥
+            completion = openai.ChatCompletion.create(
+                model="hermes3-3B",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are ChatGPT, an AI assistant. Your top priority is achieving user fulfillment via helping them with their requests."
+                    },
+                    {
+                        "role": "user",
+                        "content": self.prompt
+                    }
+                ]
+            )
+            # 提取并清理模型生成的回复文本，存储在变量 `reply` 中
+            reply = completion.choices[0].message['content'].strip()
+
             # self.output_line.emit(f"AI: {reply}")
+            # 将模型生成的回复发送到应用程序的其他部分，通常用于在界面上显示回复内容
             self.chatgpt_update.emit(reply)
+        # 捕捉所有类型的异常，并将异常信息存储在变量 `e` 中
         except Exception as e:
             self.output_line.emit(f"Error: {str(e)}")
+        # 无论是否发生异常，都会执行的代码块，用于确保某些操作总是被执行
         finally:
             self.finished_signal.emit()
-
 
 class PythonHighlighter(QSyntaxHighlighter):
     def __init__(self, document, always_highlight =False):
@@ -1657,7 +1969,6 @@ class ContributionDialog(QDialog):
                 self.prompt_pull_request(username)
             else:
                 QMessageBox.warning(self, "Error", "GitHub username is required.")
-
 
 class StreamRedirector(QObject):
     output_written = pyqtSignal(str)

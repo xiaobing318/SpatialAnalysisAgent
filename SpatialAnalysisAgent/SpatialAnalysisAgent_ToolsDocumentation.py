@@ -1,7 +1,19 @@
 import os
 import sys
-import tomllib
+#import tomllib
 import re
+
+try:
+    if sys.version_info >= (3, 11):
+        import tomllib
+    else:
+        import tomli as tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
+    # 或者提示用户安装 tomli
+    from PyQt5.QtWidgets import QMessageBox
+    QMessageBox.critical(None, "依赖缺失", "缺少 'tomli' 模块，请安装该模块以支持 TOML 文件解析。")
+    raise
 
 
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
